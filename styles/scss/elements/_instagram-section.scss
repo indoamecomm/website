@@ -1,0 +1,134 @@
+
+/*=============================================
+=            14. Instagram section            =
+=============================================*/
+
+
+/*----------  instagram section intro  ----------*/
+
+.instagram-section-intro{
+    p{
+        a{
+            display: inline-block;
+            font-size: 14px;
+            line-height: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            color: #333333;
+            border-bottom: 1px solid transparent;
+
+            &:hover{
+                border-bottom: 1px solid #ccc;
+            }
+
+        }
+        @media #{$tablet-device}{
+            margin-top: -5px;
+        }
+        @media #{$large-mobile}{
+            margin-top: -5px;
+        }
+    }
+
+    h3{
+        font-size: 34px;
+        line-height: 48px;
+        text-transform: none;
+        font-weight: 400;
+        color: #333333;
+        margin-bottom: 0;
+        margin-top: 15px;
+    }
+}
+
+
+
+/*----------  instagram slider item  ----------*/
+
+.instagram-item {
+    position: relative;
+    z-index: 1;
+
+    &:before {
+        background-color: rgba($black, 0.4);
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition: 0.3s;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+    }
+
+    .instagram-hvr-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transition: 0.3s;
+        opacity: 0;
+        visibility: hidden;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+
+        span {
+            color: $white;
+            margin-right: 20px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+
+            i.fa {
+                margin-right: 5px;
+            }
+        }
+    }
+
+    a{
+        display: block;
+        img{
+            width: 100%;
+        }
+    }
+
+    &:hover {
+        &:before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .instagram-hvr-content {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+
+
+/*----------  instagram grid  ----------*/
+
+.instagram-grid{
+    margin-right: -15px;
+    margin-bottom: -15px;
+    .col{
+        width: 25%;
+        display: inline-block;
+        padding: 0;
+        padding-right: 15px;
+        padding-bottom: 15px;
+
+        @media #{$large-mobile}{
+            width: 50%;
+        }
+
+        @media #{$extra-small-mobile}{
+            width: 100%;
+        }
+    }
+}
+/*=====  End of 14. Instagram section  ======*/
+
