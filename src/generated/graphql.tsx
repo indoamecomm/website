@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -215,20 +214,20 @@ export type OrderStatus = {
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
 
-export type Product = {
-  __typename?: 'Product';
-  SubCategory?: Maybe<SubCategory>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  descriptionImageUrl: Scalars['String'];
-  hoverImageUrl: Scalars['String'];
-  id: Scalars['Int'];
-  imageUrl: Scalars['String'];
-  isDeleted: Scalars['Boolean'];
-  name: Scalars['String'];
-  productTypes?: Maybe<Array<Maybe<ProductType>>>;
-  subCategoryId: Scalars['Int'];
-  updatedAt?: Maybe<Scalars['DateTime']>;
-};
+// export type Product = {
+//   __typename?: 'Product';
+//   SubCategory?: Maybe<SubCategory>;
+//   createdAt?: Maybe<Scalars['DateTime']>;
+//   descriptionImageUrl: Scalars['String'];
+//   hoverImageUrl: Scalars['String'];
+//   id: Scalars['Int'];
+//   imageUrl: Scalars['String'];
+//   isDeleted: Scalars['Boolean'];
+//   name: Scalars['String'];
+//   productTypes?: Maybe<Array<Maybe<ProductType>>>;
+//   subCategoryId: Scalars['Int'];
+//   updatedAt?: Maybe<Scalars['DateTime']>;
+// };
 
 export type ProductType = {
   __typename?: 'ProductType';
@@ -3682,15 +3681,15 @@ export type Countries_Variance_Order_By = {
 };
 
 /** columns and relationships of "coupons" */
-export type Coupons = {
-  __typename?: 'coupons';
-  code: Scalars['String'];
-  createdAt?: Maybe<Scalars['timestamptz']>;
-  id: Scalars['Int'];
-  isValid: Scalars['Boolean'];
-  updatedAt?: Maybe<Scalars['timestamptz']>;
-  value: Scalars['Int'];
-};
+// export type Coupons = {
+//   __typename?: 'coupons';
+//   code: Scalars['String'];
+//   createdAt?: Maybe<Scalars['timestamptz']>;
+//   id: Scalars['Int'];
+//   isValid: Scalars['Boolean'];
+//   updatedAt?: Maybe<Scalars['timestamptz']>;
+//   value: Scalars['Int'];
+// };
 
 /** aggregated selection of "coupons" */
 export type Coupons_Aggregate = {
