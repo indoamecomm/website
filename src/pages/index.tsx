@@ -1,24 +1,22 @@
 import Head from "next/head";
 import React from "react";
 import {initializeApollo} from "../apollo";
-import Header from "../Components/Header/Header";
-import gql from "graphql-tag";
-import {useQuery} from "@apollo/client";
+import Header from "../Components/Header";
+import {GetBannerData, GetDealOfTheDay, GetHeaderData} from "../../queries/homeQuery";
+import {Banner_Type, Category, Deal_Of_The_Day, Store_Locations} from "../generated/graphql";
+import Banner from "../Components/Banner";
+import Deal from "../Components/Deal";
 
-const ViewerQuery = gql`
-	query MyQuery {
-		categories {
-			id
-			name
-		}
-	}
-`;
-const Home: React.FC = () => {
-	const {
-		data: {categories},
-	} = useQuery(ViewerQuery);
+interface HomeProps {
+	categories: Category[];
+	storeLocations: Store_Locations[];
+	shopCollection: Banner_Type[];
+	highlyUsed: Banner_Type[];
+	dealOfTheDay: Deal_Of_The_Day;
+}
 
-	console.log(categories);
+const Home: React.FC<HomeProps> = (props: HomeProps) => {
+	const {categories, storeLocations, shopCollection, highlyUsed, dealOfTheDay} = props;
 
 	return (
 		<>
@@ -28,28 +26,75 @@ const Home: React.FC = () => {
 				<title>IndoAmericanHS-Test</title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				{/* Favicon */}
-				<link rel="icon" href="assets/images/favicon.ico" />
+				<link rel="icon" href="/images/favicon.ico" />
 			</Head>
 
-			<Header />
-			<main></main>
+			<Header categories={categories} storeLocations={storeLocations} />
+			<main>
+				<Banner shopCollection={shopCollection} highlyUsed={highlyUsed} />
+				<SectionTitle />
+				<Deal dealOfTheDay={dealOfTheDay} />
+			</main>
 		</>
 	);
 };
 
 export default Home;
 
+const SectionTitle = () => {
+	return (
+		<div className="section-title-container mb-40">
+			<div className="container">
+				<div className="row">
+					<div className="col-6">
+						<div className="section-title__label section-title__label-style2 section-title__label--left section-title__label-style3--left">
+							<p>
+								SS-2020 <span className="line">sec1</span>
+							</p>
+						</div>
+					</div>
+					<div className="col-6 text-right">
+						<div className="section-title__label  section-title__label-style2 section-title__label--right section-title__label-style3--right">
+							<p>
+								WELCOME <br /> STRANGER
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
 export async function getStaticProps() {
 	const apolloClient = initializeApollo();
 
-	await apolloClient.query({
-		query: ViewerQuery,
+	const {
+		data: {categories, store_locations: storeLocations},
+	} = await apolloClient.query({
+		query: GetHeaderData,
+	});
+
+	const {
+		data: {shopCollection, highlyUsed},
+	} = await apolloClient.query({
+		query: GetBannerData,
+	});
+
+	const {
+		data: {deal_of_the_day},
+	} = await apolloClient.query({
+		query: GetDealOfTheDay,
 	});
 
 	return {
 		props: {
 			initialApolloState: apolloClient.cache.extract(),
+			categories,
+			storeLocations,
+			shopCollection,
+			highlyUsed,
+			dealOfTheDay: deal_of_the_day[0],
 		},
 	};
 }

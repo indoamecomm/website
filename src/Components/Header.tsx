@@ -1,6 +1,14 @@
 import React from "react";
+import {Category, Store_Locations} from "../generated/graphql";
 
-const Header = () => {
+interface HeaderProps {
+	categories: Category[];
+	storeLocations: Store_Locations[];
+}
+
+const Header: React.FC<HeaderProps> = (props) => {
+	const {categories, storeLocations} = props;
+
 	return (
 		<header className="header header-box-topbar header-sticky">
 			{/*=======  header bottom  =======*/}
@@ -85,39 +93,9 @@ const Header = () => {
 										<li className="menu-item-has-children">
 											<a>Products</a>
 											<ul className="sub-menu mega-menu mega-menu-column-5">
-												<li>
-													<a className="mega-column-title">Seeds</a>
-													<ul className="mega-sub-menu">
-														<li>
-															<a href="vegetable-seeds.html">Vegetable Seeds</a>
-														</li>
-														<li>
-															<a href="#">Flower Seeds</a>
-														</li>
-														<li>
-															<a href="#">Herbs</a>
-														</li>
-														<li>
-															<a href="#">Microgreens</a>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<a className="mega-column-title">Plants</a>
-													<ul className="mega-sub-menu">
-														<li>
-															<a href="#">Coming Soon </a>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<a className="mega-column-title">Collections</a>
-													<ul className="mega-sub-menu">
-														<li>
-															<a href="#">Coming Soon </a>
-														</li>
-													</ul>
-												</li>
+												{categories.map((category) => (
+													<HeaderCategoryCard category={category} key={category.id} isMobile={false} />
+												))}
 												<li>
 													<a className="mega-column-title">Downloads</a>
 													<ul className="mega-sub-menu">
@@ -161,20 +139,7 @@ const Header = () => {
 														</li>
 													</ul>
 												</li>
-												<li>
-													<a className="mega-column-title">Our Outlets</a>
-													<ul className="mega-sub-menu">
-														<li>
-															<a href="#">Outlet 1 </a>
-														</li>
-														<li>
-															<a href="#">Outlet 2</a>
-														</li>
-														<li>
-															<a href="#">Outlet 3</a>
-														</li>
-													</ul>
-												</li>
+												<HeaderStoreLocations storeLocations={storeLocations} isMobile={false} />
 												<li>
 													<a className="mega-column-title">Shop Related</a>
 													<ul className="mega-sub-menu">
@@ -242,44 +207,10 @@ const Header = () => {
 								<li>
 									<a href="#">Products</a>
 									<ul className="dl-submenu">
+										{categories.map((category) => (
+											<HeaderCategoryCard category={category} key={category.id} isMobile={true} />
+										))}
 										<li>
-											{" "}
-											<a href="#">Seeds</a>
-											<ul className="dl-submenu">
-												<li>
-													<a href="vegetable-seeds.html">Vegetable Seeds</a>
-												</li>
-												<li>
-													<a href="#">Flower Seeds</a>
-												</li>
-												<li>
-													<a href="#">Herbs</a>
-												</li>
-												<li>
-													<a href="#">Microgreens</a>
-												</li>
-											</ul>
-										</li>
-										<li>
-											{" "}
-											<a href="#">Plants</a>
-											<ul className="dl-submenu">
-												<li>
-													<a href="#">Coming Soon </a>
-												</li>
-											</ul>
-										</li>
-										<li>
-											{" "}
-											<a href="#">Collections</a>
-											<ul className="dl-submenu">
-												<li>
-													<a href="#">Coming Soon </a>
-												</li>
-											</ul>
-										</li>
-										<li>
-											{" "}
 											<a href="#">Downloads</a>
 											<ul className="dl-submenu">
 												<li>
@@ -380,20 +311,7 @@ const Header = () => {
 														</li>
 													</ul>
 												</li>
-												<li>
-													<a className="mega-column-title">Our Outlets</a>
-													<ul className="mega-sub-menu">
-														<li>
-															<a href="#">Outlet 1 </a>
-														</li>
-														<li>
-															<a href="#">Outlet 2</a>
-														</li>
-														<li>
-															<a href="#">Outlet 3</a>
-														</li>
-													</ul>
-												</li>
+												<HeaderStoreLocations storeLocations={storeLocations} isMobile={true} />
 												<li>
 													<a className="mega-column-title">Shop Related</a>
 													<ul className="mega-sub-menu">
@@ -449,3 +367,63 @@ const Header = () => {
 };
 
 export default Header;
+
+interface HeaderCategoryCardProps {
+	category: Category;
+	isMobile: boolean;
+}
+
+const HeaderCategoryCard: React.FC<HeaderCategoryCardProps> = (props: HeaderCategoryCardProps) => {
+	const {category, isMobile} = props;
+
+	return (
+		<li>
+			<a href="#" className={isMobile ? " " : "mega-column-title"}>
+				{category.name}
+			</a>
+			<ul className={isMobile ? "dl-submenu" : "mega-sub-menu"}>
+				{category.subCategories && category.subCategories.length > 0 ? (
+					category.subCategories?.map((subCategory) => (
+						<li key={subCategory?.id}>
+							<a href="vegetable-seeds.html">{subCategory?.name}</a>
+						</li>
+					))
+				) : (
+					<li>
+						<a href="vegetable-seeds.html">Coming soon</a>
+					</li>
+				)}
+			</ul>
+		</li>
+	);
+};
+
+interface HeaderStoreLocationProps {
+	storeLocations: Store_Locations[];
+	isMobile: boolean;
+}
+
+const HeaderStoreLocations: React.FC<HeaderStoreLocationProps> = (props: HeaderStoreLocationProps) => {
+	const {storeLocations, isMobile} = props;
+
+	return (
+		<li>
+			<a href="#" className={isMobile ? " " : "mega-column-title"}>
+				Other Outlets
+			</a>
+			<ul className={isMobile ? "dl-submenu" : "mega-sub-menu"}>
+				{storeLocations && storeLocations.length > 0 ? (
+					storeLocations.map((storeLocation) => (
+						<li key={storeLocation?.id}>
+							<a href="vegetable-seeds.html">{storeLocation?.name}</a>
+						</li>
+					))
+				) : (
+					<li>
+						<a href="vegetable-seeds.html">Coming soon</a>
+					</li>
+				)}
+			</ul>
+		</li>
+	);
+};

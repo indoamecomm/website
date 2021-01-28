@@ -1,123 +1,127 @@
-
 /*=============================================
 =            11. countdown timer            =
 =============================================*/
 
+.countdown-wrapper {
+	h3 {
+		font-size: 48px;
+		line-height: 58px;
+		color: $primary-web;
+		margin-bottom: 30px;
+		margin-top: -10px;
 
+		@media #{$small-mobile} {
+			font-size: 38px;
+			line-height: 48px;
+		}
 
-.countdown-wrapper{
-    h3{
-        font-size: 48px;
-        line-height: 58px;
-        color: #333;
-        margin-bottom: 30px;
-        margin-top: -10px;
+		@media #{$extra-small-mobile} {
+			font-size: 28px;
+			line-height: 38px;
+		}
+	}
+	a.lezada-button {
+		background-color: $primary-web !important;
 
-        @media #{$small-mobile}{
-            font-size: 38px;
-            line-height: 48px;
-        }
+		&:hover {
+			border-color: $primary-web;
+			color: $primary-web !important;
+			background-color: $white !important;
+		}
+	}
+	&--style2 {
+		a.lezada-button {
+			background-color: $primary-web !important;
 
-        @media #{$extra-small-mobile}{
-            font-size: 28px;
-            line-height: 38px;
-        }
-    }
+			&:hover {
+				border-color: $white;
+				color: $white !important;
+			}
+		}
+	}
 
-    &--style2{
-        a.lezada-button{
-            &:hover{
-                border-color: $white;
-                color: $white !important;
-            }
-        }
-    }
-
-    
-    &--white-bg{     
-        a.lezada-button{
-            &:hover{
-                border-color: $black;
-                color: $black !important;
-            }
-        }
-    }
+	&--white-bg {
+		a.lezada-button {
+			&:hover {
+				border-color: $primary-web;
+				color: $primary-web !important;
+			}
+		}
+	}
 }
 
-.deal-countdown{
-    &.text-white{
-        & *{
-            color: $white !important;
-        }
-    }
-    .single-countdown{
-        display: inline-block;
-        margin-bottom: 40px;
-        margin-right: 100px;
+.deal-countdown {
+	&.text-white {
+		& * {
+			color: $white !important;
+		}
+	}
+	.single-countdown {
+		display: inline-block;
+		margin-bottom: 40px;
+		margin-right: 100px;
 
-        @media #{$large-mobile}{
-            margin-right: 50px;
-        }
-        
+		@media #{$large-mobile} {
+			margin-right: 50px;
+		}
 
-        @media #{$extra-small-mobile}{
-            margin-right: 15px;
-        }
-        
-        &:last-child{
-            margin-right: 0;
+		@media #{$extra-small-mobile} {
+			margin-right: 15px;
+		}
 
-            .single-countdown__time{
-                &:after{
-                    display: none;
-                }
-            }
-        }
-        &__time{
-            position: relative;
-            display: block;
-            font-size: 56px;
-            line-height: 56px;
-            color: #7e7e7e;
-            font-weight: 300;
-            margin-bottom: 30px;
+		&:last-child {
+			margin-right: 0;
 
-            @media #{$large-mobile}{
-                font-size: 48px;
-                line-height: 48px;
-            }
+			.single-countdown__time {
+				&:after {
+					display: none;
+				}
+			}
+		}
+		&__time {
+			position: relative;
+			display: block;
+			font-size: 56px;
+			line-height: 56px;
+			color: #7e7e7e;
+			font-weight: 300;
+			margin-bottom: 30px;
 
-            @media #{$extra-small-mobile}{
-                font-size: 32px;
-                line-height: 22px;
-            }
+			@media #{$large-mobile} {
+				font-size: 48px;
+				line-height: 48px;
+			}
 
-            &:after{
-                position: absolute;
-                top: 0;
-                left: 170%;
-                content: ":";
-                font-size: 35px;
+			@media #{$extra-small-mobile} {
+				font-size: 32px;
+				line-height: 22px;
+			}
 
-                @media #{$large-mobile}{
-                    left: 150%;
-                }
+			&:after {
+				position: absolute;
+				top: 0;
+				left: 170%;
+				content: ":";
+				font-size: 35px;
 
-                @media #{$extra-small-mobile}{
-                    left: 120%;
-                }
-            }
-        }
+				@media #{$large-mobile} {
+					left: 150%;
+				}
 
-        &__text{
-            font-size: 14px;
-            line-height: 22px;
-            color: #9b9b9b;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-    }
+				@media #{$extra-small-mobile} {
+					left: 120%;
+				}
+			}
+		}
+
+		&__text {
+			font-size: 14px;
+			line-height: 22px;
+			color: #9b9b9b;
+			text-transform: uppercase;
+			font-weight: 600;
+		}
+	}
 }
 
 /*=====  End of 11. countdown timer  ======*/
-

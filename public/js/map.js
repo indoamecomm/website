@@ -173,7 +173,7 @@ function init() {
         position: new google.maps.LatLng(40.7590615,-73.969231),
         map: map,
         title: 'Lezada',
-        icon: "assets/images/icons/map_marker.png"
+        icon: "/images/icons/map_marker.png"
     });
 }
 
@@ -353,7 +353,7 @@ function init2() {
         position: new google.maps.LatLng(40.7590615,-73.969231),
         map: map,
         title: 'Lezada',
-        icon: "assets/images/icons/map_marker.png"
+        icon: "/images/icons/map_marker.png"
     });
 }
 
@@ -411,7 +411,7 @@ function init3() {
         position: new google.maps.LatLng(40.7590615,-73.969231),
         map: map,
         title: 'Lezada',
-        icon: "assets/images/icons/map_marker.png"
+        icon: "/images/icons/map_marker.png"
     });
 }
 
@@ -645,7 +645,7 @@ function init4() {
         position: new google.maps.LatLng(40.7590615,-73.969231),
         map: map,
         title: 'Lezada',
-        icon: "assets/images/icons/map_marker.png"
+        icon: "/images/icons/map_marker.png"
     });
 }
 
@@ -804,7 +804,7 @@ function init5() {
         position: new google.maps.LatLng(40.7590615,-73.969231),
         map: map,
         title: 'Lezada',
-        icon: "assets/images/icons/map_marker.png"
+        icon: "/images/icons/map_marker.png"
     });
 }
 

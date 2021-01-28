@@ -1,0 +1,11 @@
+overwrite: true
+schema:
+    - https://indoam.herokuapp.com/v1/graphql:
+          headers:
+              x-hasura-admin-secret: "indoame@321"
+generates:
+    src/generated/graphql.tsx:
+        plugins:
+            - "typescript"
+            - "typescript-operations"
+            - "typescript-react-apollo"
