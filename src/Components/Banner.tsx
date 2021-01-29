@@ -523,6 +523,10 @@ const Banner: React.FC<BannerProps> = (props) => {
 
 export default Banner;
 
+
+
+
+
 const SplitWordToSentence: React.FC<{word: string}> = (props) => {
 	const {word} = props;
 	return (

@@ -11,6 +11,7 @@
 		line-height: 64px;
 		margin-top: -13px;
 		margin-bottom: 15px;
+		color: $primary-web;
 
 		@media #{$tablet-device} {
 			font-size: 40px;
@@ -44,6 +45,7 @@
 
 	p {
 		line-height: 26px;
+		color: $primary-web;
 
 		&.subtitle {
 			&--deep {

@@ -238,8 +238,8 @@ export type ProductType = {
   isDeleted: Scalars['Boolean'];
   isFeatured: Scalars['Boolean'];
   name: Scalars['String'];
-  newPrice: Scalars['Int'];
-  oldPrice: Scalars['Int'];
+  discountedPrice: Scalars['Int'];
+  originalPrice: Scalars['Int'];
   productId: Scalars['Int'];
   rating: Scalars['Int'];
   recommendedCoverImage: Scalars['String'];

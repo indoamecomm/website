@@ -45,7 +45,21 @@ export const GetBannerData = gql`
 				cost
 			}
 		}
+		promotedBanners: banner_type(where: {type: {_eq: 3}}, order_by: {id: asc}) {
+			id
+			name
+			banners {
+				heading
+				description
+				id
+				image
+				title
+				typeId
+				cost
+			}
+		}
 	}
+
 `;
 
 
@@ -67,4 +81,39 @@ export const GetDealOfTheDay = gql`
 		}
 	}
 
+`;
+
+
+export const GetProductListing = gql`
+
+	query GetProductListing {
+		newProducts: product_type(order_by: {createdAt: desc}, limit: 9) {
+			id
+			imageUrl
+			name
+			originalPrice
+			discountedPrice
+			user_ratings_aggregate {
+			aggregate {
+				avg {
+				rating
+				}
+			}
+			}
+		}
+		featuredProducts: product_type(where: {isFeatured: {_eq: true}}) {
+			id
+			imageUrl
+			name
+			originalPrice
+			discountedPrice
+			user_ratings_aggregate {
+			aggregate {
+				avg {
+				rating
+				}
+			}
+			}
+		}
+	}
 `;
