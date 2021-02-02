@@ -7,7 +7,7 @@ const Cart: React.FC = () => {
 			<div className="cart-overlay-content">
 				{/*=======  close icon  =======*/}
 				<span className="close-icon" id="cart-close-icon">
-					<a href="javascript:void(0)">
+					<a>
 						<i className="ion-android-close" />
 					</a>
 				</span>

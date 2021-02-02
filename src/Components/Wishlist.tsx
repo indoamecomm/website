@@ -7,7 +7,7 @@ const Wishlist = () => {
 			<div className="wishlist-overlay-content">
 				{/*=======  close icon  =======*/}
 				<span className="close-icon" id="wishlist-close-icon">
-					<a href="javascript:void(0)">
+					<a>
 						<i className="ion-android-close" />
 					</a>
 				</span>
