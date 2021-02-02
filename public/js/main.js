@@ -391,157 +391,157 @@
 		/*----------  instagram image slider  ----------*/
 
 		// User Changeable Access
-		var activeId = $("#instafeed"),
-			myTemplate =
-				'<div class="col"><div class="instagram-item"><a href="{{link}}" target="_blank" id="{{id}}"><img src="{{image}}" /></a><div class="instagram-hvr-content"><span class="tottallikes"><i class="fa fa-heart"></i>{{likes}}</span><span class="totalcomments"><i class="fa fa-comments"></i>{{comments}}</span></div></div></div>';
+		// var activeId = $("#instafeed"),
+		// 	myTemplate =
+		// 		'<div class="col"><div class="instagram-item"><a href="{{link}}" target="_blank" id="{{id}}"><img src="{{image}}" /></a><div class="instagram-hvr-content"><span class="tottallikes"><i class="fa fa-heart"></i>{{likes}}</span><span class="totalcomments"><i class="fa fa-comments"></i>{{comments}}</span></div></div></div>';
 
-		if (activeId.length) {
-			var userID = activeId.attr("data-userid"),
-				accessTokenID = activeId.attr("data-accesstoken"),
-				userFeed = new Instafeed({
-					get: "user",
-					userId: userID,
-					accessToken: accessTokenID,
-					resolution: "standard_resolution",
-					template: myTemplate,
-					sortBy: "least-recent",
-					limit: 8,
-					links: false,
-				});
-			userFeed.run();
-		}
+		// if (activeId.length) {
+		// 	var userID = activeId.attr("data-userid"),
+		// 		accessTokenID = activeId.attr("data-accesstoken"),
+		// 		userFeed = new Instafeed({
+		// 			get: "user",
+		// 			userId: userID,
+		// 			accessToken: accessTokenID,
+		// 			resolution: "standard_resolution",
+		// 			template: myTemplate,
+		// 			sortBy: "least-recent",
+		// 			limit: 8,
+		// 			links: false,
+		// 		});
+		// 	userFeed.run();
+		// }
 
 		// User Changeable Access
-		var activeId2 = $("#instafeed2"),
-			myTemplate2 =
-				'<div class="col"><div class="instagram-item"><a href="{{link}}" target="_blank" id="{{id}}"><img src="{{image}}" /></a><div class="instagram-hvr-content"><span class="tottallikes"><i class="fa fa-heart"></i>{{likes}}</span><span class="totalcomments"><i class="fa fa-comments"></i>{{comments}}</span></div></div></div>';
+		// var activeId2 = $("#instafeed2"),
+		// 	myTemplate2 =
+		// 		'<div class="col"><div class="instagram-item"><a href="{{link}}" target="_blank" id="{{id}}"><img src="{{image}}" /></a><div class="instagram-hvr-content"><span class="tottallikes"><i class="fa fa-heart"></i>{{likes}}</span><span class="totalcomments"><i class="fa fa-comments"></i>{{comments}}</span></div></div></div>';
 
-		if (activeId2.length) {
-			var userID2 = activeId2.attr("data-userid2"),
-				accessTokenID2 = activeId2.attr("data-accesstoken2"),
-				userFeed2 = new Instafeed({
-					get: "user",
-					userId: userID2,
-					target: "instafeed2",
-					accessToken: accessTokenID2,
-					resolution: "standard_resolution",
-					template: myTemplate2,
-					sortBy: "least-recent",
-					limit: 8,
-					links: false,
-				});
-			userFeed2.run();
-		}
+		// if (activeId2.length) {
+		// 	var userID2 = activeId2.attr("data-userid2"),
+		// 		accessTokenID2 = activeId2.attr("data-accesstoken2"),
+		// 		userFeed2 = new Instafeed({
+		// 			get: "user",
+		// 			userId: userID2,
+		// 			target: "instafeed2",
+		// 			accessToken: accessTokenID2,
+		// 			resolution: "standard_resolution",
+		// 			template: myTemplate2,
+		// 			sortBy: "least-recent",
+		// 			limit: 8,
+		// 			links: false,
+		// 		});
+		// 	userFeed2.run();
+		// }
 
-		jQuery(window).on("load", function () {
-			var instagramFeed = $(".instagram-carousel");
-			instagramFeed.slick({
-				slidesToShow: 3,
-				slidesToScroll: 1,
-				autoplay: false,
-				dots: false,
-				arrows: true,
-				prevArrow: '<button type="button" class="slick-prev"><i class="ti-angle-left"></i></button>',
-				nextArrow: '<button type="button" class="slick-next"><i class="ti-angle-right"></i></button>',
-				responsive: [
-					{
-						breakpoint: 1499,
-						settings: {
-							slidesToShow: 3,
-						},
-					},
-					{
-						breakpoint: 1199,
-						settings: {
-							slidesToShow: 3,
-						},
-					},
-					{
-						breakpoint: 991,
-						settings: {
-							slidesToShow: 2,
-						},
-					},
-					{
-						breakpoint: 767,
-						settings: {
-							slidesToShow: 1,
-						},
-					},
-					{
-						breakpoint: 575,
-						settings: {
-							slidesToShow: 1,
-						},
-					},
-					{
-						breakpoint: 479,
-						settings: {
-							slidesToShow: 1,
-						},
-					},
-				],
-			});
+		// jQuery(window).on("load", function () {
+		// 	var instagramFeed = $(".instagram-carousel");
+		// 	instagramFeed.slick({
+		// 		slidesToShow: 3,
+		// 		slidesToScroll: 1,
+		// 		autoplay: false,
+		// 		dots: false,
+		// 		arrows: true,
+		// 		prevArrow: '<button type="button" class="slick-prev"><i class="ti-angle-left"></i></button>',
+		// 		nextArrow: '<button type="button" class="slick-next"><i class="ti-angle-right"></i></button>',
+		// 		responsive: [
+		// 			{
+		// 				breakpoint: 1499,
+		// 				settings: {
+		// 					slidesToShow: 3,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 1199,
+		// 				settings: {
+		// 					slidesToShow: 3,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 991,
+		// 				settings: {
+		// 					slidesToShow: 2,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 767,
+		// 				settings: {
+		// 					slidesToShow: 1,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 575,
+		// 				settings: {
+		// 					slidesToShow: 1,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 479,
+		// 				settings: {
+		// 					slidesToShow: 1,
+		// 				},
+		// 			},
+		// 		],
+		// 	});
 
-			var instagramFeed2 = $(".instagram-carousel-type2");
-			instagramFeed2.slick({
-				slidesToShow: 4,
-				slidesToScroll: 1,
-				autoplay: false,
-				dots: false,
-				arrows: true,
-				prevArrow: '<button type="button" class="slick-prev"><i class="ti-angle-left"></i></button>',
-				nextArrow: '<button type="button" class="slick-next"><i class="ti-angle-right"></i></button>',
-				responsive: [
-					{
-						breakpoint: 1499,
-						settings: {
-							slidesToShow: 4,
-						},
-					},
-					{
-						breakpoint: 1199,
-						settings: {
-							slidesToShow: 4,
-						},
-					},
-					{
-						breakpoint: 991,
-						settings: {
-							slidesToShow: 2,
-						},
-					},
-					{
-						breakpoint: 767,
-						settings: {
-							slidesToShow: 1,
-						},
-					},
-					{
-						breakpoint: 575,
-						settings: {
-							slidesToShow: 1,
-						},
-					},
-					{
-						breakpoint: 479,
-						settings: {
-							slidesToShow: 1,
-						},
-					},
-				],
-			});
+		// 	var instagramFeed2 = $(".instagram-carousel-type2");
+		// 	instagramFeed2.slick({
+		// 		slidesToShow: 4,
+		// 		slidesToScroll: 1,
+		// 		autoplay: false,
+		// 		dots: false,
+		// 		arrows: true,
+		// 		prevArrow: '<button type="button" class="slick-prev"><i class="ti-angle-left"></i></button>',
+		// 		nextArrow: '<button type="button" class="slick-next"><i class="ti-angle-right"></i></button>',
+		// 		responsive: [
+		// 			{
+		// 				breakpoint: 1499,
+		// 				settings: {
+		// 					slidesToShow: 4,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 1199,
+		// 				settings: {
+		// 					slidesToShow: 4,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 991,
+		// 				settings: {
+		// 					slidesToShow: 2,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 767,
+		// 				settings: {
+		// 					slidesToShow: 1,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 575,
+		// 				settings: {
+		// 					slidesToShow: 1,
+		// 				},
+		// 			},
+		// 			{
+		// 				breakpoint: 479,
+		// 				settings: {
+		// 					slidesToShow: 1,
+		// 				},
+		// 			},
+		// 		],
+		// 	});
 
 			/*----------  newsletter popup  ----------*/
 
-			if (screenSize >= 767) {
-				$("#newsletter-popup-body").addClass("newsletter-overlay-active");
+		// 	if (screenSize >= 767) {
+		// 		$("#newsletter-popup-body").addClass("newsletter-overlay-active");
 
-				setTimeout(function () {
-					$("#newsletter-content").addClass("show-popup");
-				}, 1000);
-			}
-		});
+		// 		setTimeout(function () {
+		// 			$("#newsletter-content").addClass("show-popup");
+		// 		}, 1000);
+		// 	}
+		// });
 
 		/*----------  cloth tag positioning  ----------*/
 

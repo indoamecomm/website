@@ -1,5 +1,7 @@
 import React from "react";
 import {Category, Store_Locations} from "../generated/graphql";
+import Cart from "./Cart";
+import Wishlist from "./Wishlist";
 
 interface HeaderProps {
 	categories: Category[];
@@ -11,6 +13,8 @@ const Header: React.FC<HeaderProps> = (props) => {
 
 	return (
 		<header className="header header-box-topbar header-sticky">
+			<Wishlist />
+			<Cart />
 			{/*=======  header bottom  =======*/}
 			<div className="header-bottom pt-40   pb-md-40  pb-sm-40">
 				<div className="container">

@@ -58,6 +58,20 @@ export const GetBannerData = gql`
 				cost
 			}
 		}
+  
+  	featuredProduct: banner_type(where: {type: {_eq: 4}}, order_by: {id: asc}) {
+			id
+			name
+			banners {
+				heading
+				description
+				id
+				image
+				title
+				typeId
+				cost
+			}
+		}
 	}
 
 `;
@@ -114,6 +128,19 @@ export const GetProductListing = gql`
 				}
 			}
 			}
+		}
+	}
+`;
+
+
+export const GetBlogsList = gql`
+	query GetBlogs {
+		blogs(where: {isDeleted: {_eq: false}}, order_by: {id: asc}) {
+			summary
+			title
+			id
+			createdAt
+			imageUrl
 		}
 	}
 `;

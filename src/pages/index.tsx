@@ -2,13 +2,15 @@ import Head from "next/head";
 import React from "react";
 import {initializeApollo} from "../apollo";
 import Header from "../Components/Header";
-import {GetBannerData, GetDealOfTheDay, GetHeaderData, GetProductListing} from "../../queries/homeQuery";
-import {Banner_Type, Category, Deal_Of_The_Day, ProductType, Store_Locations} from "../generated/graphql";
+import {GetBannerData, GetBlogsList, GetDealOfTheDay, GetHeaderData, GetProductListing} from "../../queries/homeQuery";
+import {Banner_Type, Blogs, Category, Deal_Of_The_Day, ProductType, Store_Locations} from "../generated/graphql";
 import Banner from "../Components/Banner";
 import Deal from "../Components/Deal";
 import PromotedBanner from "../Components/PromotedBanner";
 import ProductListing from "../Components/ProductListing";
 import FeaturedProduct from "../Components/FeaturedProduct";
+import BlogList from "../Components/BlogList";
+import Footer from "../Components/Footer";
 
 interface HomeProps {
 	categories: Category[];
@@ -18,12 +20,13 @@ interface HomeProps {
 	promotedBanners: Banner_Type[];
 	featuredProducts: ProductType[];
 	newProducts: ProductType[];
-
+	featuredProduct: Banner_Type[];
 	dealOfTheDay: Deal_Of_The_Day;
+	blogs: Blogs[];
 }
 
 const Home: React.FC<HomeProps> = (props: HomeProps) => {
-	const {categories, storeLocations, shopCollection, highlyUsed, dealOfTheDay, promotedBanners, featuredProducts, newProducts} = props;
+	const {categories, storeLocations, shopCollection, highlyUsed, dealOfTheDay, promotedBanners, featuredProducts, newProducts, featuredProduct, blogs} = props;
 
 	return (
 		<>
@@ -44,8 +47,11 @@ const Home: React.FC<HomeProps> = (props: HomeProps) => {
 				<PromotedBanner promotedBanner={promotedBanners} />
 				<PersonalizedListing />
 				<ProductListing featuredProducts={featuredProducts} newProducts={newProducts} />
-				<FeaturedProduct />
+				<FeaturedProduct featuredProduct={featuredProduct} />
+				<BlogList blogs={blogs} />
+				<InstagramSlider />
 			</main>
+			<Footer />
 		</>
 	);
 };
@@ -96,6 +102,42 @@ const PersonalizedListing: React.FC = () => {
 	);
 };
 
+const InstagramSlider: React.FC = () => {
+	return (
+		<div className="instagram-slider-area mb-100">
+			<div className="container">
+				<div className="row align-items-center">
+					<div className="col-lg-8 order-2 order-lg-1">
+						{/*=============================================
+              =            instagram image slider         =
+              =============================================*/}
+						<div className="instagram-image-slider-area">
+							{/*=======  instagram image container  =======*/}
+							<div className="instagram-image-slider-container">
+								<div className="instagram-feed-thumb">
+									<div id="instafeed" className="instagram-carousel" data-userid={429141287} data-accesstoken="6665768655.1677ed0.313e6c96807c45d8900b4f680650dee5"></div>
+								</div>
+							</div>
+							{/*=======  End of instagram image container  =======*/}
+						</div>
+						{/*=====  End of instagram image slider  ======*/}
+					</div>
+					<div className="col-lg-4 order-1 order-lg-2">
+						{/*=======  instagram intro  =======*/}
+						<div className="instagram-section-intro pl-50 pl-lg-50 pl-md-0 pl-sm-0 pl-xs-0 pl-xxs-0 mb-0 mb-lg-0 mb-md-50 mb-sm-50 mb-xs-50 mb-xxs-50">
+							<p>
+								<a href="#">@indams_community</a>
+							</p>
+							<h3>Follow us on Instagram</h3>
+						</div>
+						{/*=======  End of instagram intro  =======*/}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
 export async function getStaticProps() {
 	const apolloClient = initializeApollo();
 
@@ -106,7 +148,7 @@ export async function getStaticProps() {
 	});
 
 	const {
-		data: {shopCollection, highlyUsed, promotedBanners},
+		data: {shopCollection, highlyUsed, promotedBanners, featuredProduct},
 	} = await apolloClient.query({
 		query: GetBannerData,
 	});
@@ -123,6 +165,12 @@ export async function getStaticProps() {
 		query: GetProductListing,
 	});
 
+	const {
+		data: {blogs},
+	} = await apolloClient.query({
+		query: GetBlogsList,
+	});
+
 	return {
 		props: {
 			initialApolloState: apolloClient.cache.extract(),
@@ -134,6 +182,8 @@ export async function getStaticProps() {
 			dealOfTheDay: deal_of_the_day[0],
 			newProducts,
 			featuredProducts,
+			featuredProduct,
+			blogs,
 		},
 	};
 }

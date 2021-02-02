@@ -1,6 +1,19 @@
 import React from "react";
+import {Banner_Type} from "../generated/graphql";
 
-const FeaturedProduct = () => {
+interface FeaturedProductProps {
+	featuredProduct: Banner_Type[];
+}
+
+const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductProps) => {
+	const {
+		featuredProduct: [featuredProducts],
+	} = props;
+
+	const featuredProduct = featuredProducts.banners[0];
+
+	console.log(featuredProduct);
+
 	return (
 		<div className="cabinet-revslider-area mt-50 mt-md-30 mt-sm-30 mb-100 mb-md-80 mb-sm-80">
 			<div className="container wide">
@@ -15,7 +28,6 @@ const FeaturedProduct = () => {
 							{/* START REVOLUTION SLIDER 5.4.7 fullwidth mode */}
 							<div id="rev_slider_6_1" className="rev_slider fullwidthabanner" style={{display: "none"}} data-version="5.4.7">
 								<ul>
-									{" "}
 									{/* SLIDE  */}
 									<li
 										data-index="rs-14"
@@ -98,7 +110,7 @@ const FeaturedProduct = () => {
 											data-paddingbottom="[0,0,0,0]"
 											data-paddingleft="[0,0,0,0]"
 											style={{zIndex: 6}}>
-											<img src="/images/test/09.png" alt="" data-ww="['788auto','762px','593px','422px']" data-hh="['402px','325px','253px','180px']" data-no-retina />{" "}
+											<img src={featuredProduct.image ?? ""} alt="" data-ww="['788auto','762px','593px','422px']" data-hh="['402px','325px','253px','180px']" data-no-retina />{" "}
 										</div>
 										{/* LAYER NR. 3 */}
 										<div
@@ -185,7 +197,7 @@ const FeaturedProduct = () => {
 												letterSpacing: "1px",
 												fontFamily: "Work Sans",
 											}}>
-											ONLY{" "}
+											&nbsp;ONLY{" "}
 										</div>
 										{/* LAYER NR. 6 */}
 										<div
@@ -216,11 +228,11 @@ const FeaturedProduct = () => {
 												letterSpacing: "1px",
 												fontFamily: "Work Sans",
 											}}>
-											₹999{" "}
+											{featuredProduct.cost}
 										</div>
 										{/* LAYER NR. 7 */}
 										<div
-											className="tp-caption   tp-resizeme"
+											className="tp-caption   tp-resizeme "
 											id="slide-14-layer-9"
 											data-x="['left','left','left','left']"
 											data-hoffset="['287','93','89','21']"
@@ -247,7 +259,7 @@ const FeaturedProduct = () => {
 												letterSpacing: "2px",
 												fontFamily: "Work Sans",
 											}}>
-											FEATURED PRODUCT{" "}
+											{featuredProduct.title}
 										</div>
 										{/* LAYER NR. 8 */}
 										<div
@@ -275,13 +287,13 @@ const FeaturedProduct = () => {
 												whiteSpace: "nowrap",
 												fontSize: "48px",
 												lineHeight: "64px",
+												width: "5rem",
 												fontWeight: 400,
 												color: "#333333",
 												letterSpacing: "0px",
 												fontFamily: "Work Sans",
 											}}>
-											Product Type <br />
-											collection{" "}
+											<SplitWordToSentence word={featuredProduct.heading ?? ""} />
 										</div>
 										{/* LAYER NR. 9 */}
 										<div
@@ -313,9 +325,7 @@ const FeaturedProduct = () => {
 												letterSpacing: "0.5px",
 												fontFamily: "Work Sans",
 											}}>
-											Lorem ipsum dolor sit amet, consectetur cing elit. Suspe ndisse
-											<br /> suscipit sagittis leo estibulum issim Lorem ipsum dolor sit amet,
-											<br /> consectetur cing elit.{" "}
+											{featuredProduct.description}
 										</div>
 										{/* LAYER NR. 10 */}
 										<div
@@ -351,9 +361,8 @@ const FeaturedProduct = () => {
 											}}>
 											<i className="fa fa-shopping-cart" aria-hidden="true" />
 											<a className="revslider-button" href="shop-left-sidebar.html">
-												{" "}
-												ONLY ₹999
-											</a>{" "}
+												ONLY {featuredProduct.cost}
+											</a>
 										</div>
 									</li>
 								</ul>
@@ -369,3 +378,14 @@ const FeaturedProduct = () => {
 };
 
 export default FeaturedProduct;
+
+const SplitWordToSentence: React.FC<{word: string}> = (props) => {
+	const {word} = props;
+	return (
+		<span className="name">
+			{word.split(" ")[0]} {word.split(" ")[1]}
+			<br />
+			{word.split(" ").slice(2).join(" ")}
+		</span>
+	);
+};
