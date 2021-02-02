@@ -33,7 +33,7 @@ const Home: React.FC<HomeProps> = (props: HomeProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>IndoAmericanHS-Test</title>
+				<title>IndoAmerican </title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />

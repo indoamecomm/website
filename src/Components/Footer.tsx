@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const Footer = () => {
@@ -30,7 +31,9 @@ const Footer = () => {
 							<nav>
 								<ul>
 									<li>
-										<a href="about.html">About us</a>
+										<Link href="/about">
+											<a>About us</a>
+										</Link>
 									</li>
 									<li>
 										<a href="store-location.html">Store location</a>
