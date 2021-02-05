@@ -5,7 +5,6 @@ import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
 import {Category, Faq_Titles, Store_Locations} from "../../generated/graphql";
-import Link from "next/link";
 import {GetFaqTitles} from "../../../queries/faqQuery";
 import BreadCrumb from "../../Components/BreadCrumb";
 
