@@ -1,5 +1,5 @@
 import React from "react";
-import {Deal_Of_The_Day} from "../generated/graphql";
+import {Deal_Of_The_Day} from "../../generated/graphql";
 
 const Deal: React.FC<{dealOfTheDay: Deal_Of_The_Day}> = (props) => {
 	const {dealOfTheDay} = props;

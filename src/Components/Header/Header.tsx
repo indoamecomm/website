@@ -1,5 +1,6 @@
+import Link from "next/link";
 import React from "react";
-import {Category, Store_Locations} from "../generated/graphql";
+import {Category, Store_Locations} from "../../generated/graphql";
 import Cart from "./Cart";
 import Wishlist from "./Wishlist";
 
@@ -92,7 +93,9 @@ const Header: React.FC<HeaderProps> = (props) => {
 								<nav className="site-nav center-menu">
 									<ul>
 										<li>
-											<a href="index-test.html">Home</a>
+											<Link href="/">
+												<a>Home</a>
+											</Link>
 										</li>
 										<li className="menu-item-has-children">
 											<a>Products</a>

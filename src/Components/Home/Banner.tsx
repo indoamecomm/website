@@ -1,5 +1,5 @@
 import React from "react";
-import {Banner_Type} from "../generated/graphql";
+import {Banner_Type} from "../../generated/graphql";
 
 interface BannerProps {
 	shopCollection: Banner_Type[];

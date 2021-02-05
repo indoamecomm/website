@@ -1,15 +1,15 @@
 import Head from "next/head";
 import React from "react";
 import {initializeApollo} from "../apollo";
-import Header from "../Components/Header";
+import Header from "../Components/Header/Header";
 import {GetBannerData, GetBlogsList, GetDealOfTheDay, GetHeaderData, GetProductListing} from "../../queries/homeQuery";
 import {Banner_Type, Blogs, Category, Deal_Of_The_Day, ProductType, Store_Locations} from "../generated/graphql";
-import Banner from "../Components/Banner";
-import Deal from "../Components/Deal";
-import PromotedBanner from "../Components/PromotedBanner";
-import ProductListing from "../Components/ProductListing";
-import FeaturedProduct from "../Components/FeaturedProduct";
-import BlogList from "../Components/BlogList";
+import Banner from "../Components/Home/Banner";
+import Deal from "../Components/Home/Deal";
+import PromotedBanner from "../Components/Home/PromotedBanner";
+import ProductListing from "../Components/Home/ProductListing";
+import FeaturedProduct from "../Components/Home/FeaturedProduct";
+import BlogList from "../Components/Home/BlogList";
 import Footer from "../Components/Footer";
 
 interface HomeProps {

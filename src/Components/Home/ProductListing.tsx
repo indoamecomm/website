@@ -1,5 +1,5 @@
 import React from "react";
-import {ProductType} from "../generated/graphql";
+import {ProductType} from "../../generated/graphql";
 
 interface ProductListingProps {
 	featuredProducts: ProductType[];

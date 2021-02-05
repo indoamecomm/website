@@ -3,10 +3,11 @@ import React from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
-import Header from "../../Components/Header";
+import Header from "../../Components/Header/Header";
 import {Category, Faq_Titles, Store_Locations} from "../../generated/graphql";
 import Link from "next/link";
 import {GetFaqTitles} from "../../../queries/faqQuery";
+import BreadCrumb from "../../Components/BreadCrumb";
 
 interface FaqsProps {
 	categories: Category[];
@@ -30,29 +31,8 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
-				<div className="breadcrumb-area breadcrumb-bg-1 pt-50 pb-70 mb-100">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12">
-								<h1 className="breadcrumb-title">F.A.Q</h1>
-								{/*=======  breadcrumb list  =======*/}
-								<ul className="breadcrumb-list">
-									<li className="breadcrumb-list__item">
-										<Link href="/">
-											<a>HOME</a>
-										</Link>
-									</li>
-									<li className="breadcrumb-list__item breadcrumb-list__item--active">F.A.Q</li>
-								</ul>
-								{/*=======  End of breadcrumb list  =======*/}
-							</div>
-						</div>
-					</div>
-				</div>
-				{/*=======  End of breadcrumb area =======*/}
-				{/*=============================================
-    =            page content         =
-    =============================================*/}
+				<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} finalName={"FAQ"} title={"F.A.Q"} links={[{link: "/", name: "HOME"}]} />
+
 				<div className="faq-area">
 					<div className="container">
 						<div className="row">

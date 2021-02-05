@@ -1,6 +1,6 @@
 import {format} from "date-fns";
 import React from "react";
-import {Blogs} from "../generated/graphql";
+import {Blogs} from "../../generated/graphql";
 
 interface BlogsListProps {
 	blogs: Blogs[];

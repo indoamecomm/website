@@ -3,9 +3,9 @@ import React from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
-import Header from "../../Components/Header";
+import Header from "../../Components/Header/Header";
 import {Category, Store_Locations} from "../../generated/graphql";
-import Link from "next/link";
+import BreadCrumb from "../../Components/BreadCrumb";
 
 interface HeaderProps {
 	categories: Category[];
@@ -28,26 +28,8 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<div className="breadcrumb-area breadcrumb-bg-1 pt-50 pb-70 mb-100">
-						<div className="container">
-							<div className="row">
-								<div className="col-lg-12">
-									<h1 className="breadcrumb-title">About Us</h1>
-									{/*=======  breadcrumb list  =======*/}
-									<ul className="breadcrumb-list">
-										<li className="breadcrumb-list__item">
-											<Link href="/">
-												<a>HOME</a>
-											</Link>
-										</li>
-										<li className="breadcrumb-list__item breadcrumb-list__item--active">About Us</li>
-									</ul>
-									{/*=======  End of breadcrumb list  =======*/}
-								</div>
-							</div>
-						</div>
-					</div>
-					{/*=======  End of breadcrumb area =======*/}
+					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"About Us"} finalName={"ABOUT US"} links={[{link: "/", name: "HOME"}]} />
+
 					{/*=============================================
 	=            section title  container      =
 	=============================================*/}
