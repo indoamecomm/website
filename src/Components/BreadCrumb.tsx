@@ -1,8 +1,12 @@
 import Link from "next/link";
 import React from "react";
 
+interface linkType {
+	link: string;
+	name: string;
+}
 interface BreadCrumbProps {
-	links: [{link: string; name: string}];
+	links: linkType[];
 	finalName: string;
 	backgroundImage: string;
 	title: string;

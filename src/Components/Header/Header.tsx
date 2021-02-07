@@ -70,9 +70,11 @@ const Header: React.FC<HeaderProps> = (props) => {
 								</div>
 
 								<div className="single-icon user-login">
-									<a href="my-account.html">
-										<i className="ion-android-person"></i>
-									</a>
+									<Link href="/account">
+										<a>
+											<i className="ion-android-person"></i>
+										</a>
+									</Link>
 								</div>
 								<div className="single-icon wishlist">
 									<a id="offcanvas-wishlist-icon">
