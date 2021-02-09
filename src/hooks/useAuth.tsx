@@ -47,9 +47,10 @@ const useAuthProvider = () => {
 		} = await apolloClient.query({
 			query: GetUserByFirebaseUUID,
 			variables: {
-				firebaseUUID: firebaseUser.uid,
+				email: firebaseUser.email,
 			},
 		});
+
 		return users;
 	};
 
@@ -85,7 +86,9 @@ const useAuthProvider = () => {
 		return auth
 			.signInWithEmailAndPassword(email, password)
 			.then(async (response) => {
+
 				if (response.user) {
+					console.log(response.user)
 					const users = await getUserAdditionalData(response.user);
 					console.log(users);
 					if (users.length === 0) {

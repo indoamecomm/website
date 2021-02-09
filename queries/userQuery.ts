@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 
 
 export const GetUserByFirebaseUUID = gql`
-	query GetUserByFirebaseUUID($firebaseUUID: String) {
-		users(where: {firebaseUUID: {_eq: $firebaseUUID}, isDeleted: {_eq: false}}) {
+	query GetUserByFirebaseUUID($email: String) {
+		users(where: {email: {_eq: $email}, isDeleted: {_eq: false}}) {
 			id
 			email
 			firebaseUUID
