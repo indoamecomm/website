@@ -23,8 +23,8 @@ const BreadCrumb: React.FC<BreadCrumbProps> = (props) => {
 						<h1 className="breadcrumb-title">{title}</h1>
 						{/*=======  breadcrumb list  =======*/}
 						<ul className="breadcrumb-list">
-							{links.map(({link, name}) => (
-								<li className="breadcrumb-list__item">
+							{links.map(({link, name}, index) => (
+								<li className="breadcrumb-list__item" key={index}>
 									<Link href={link}>
 										<a>{name}</a>
 									</Link>

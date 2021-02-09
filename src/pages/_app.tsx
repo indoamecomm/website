@@ -15,6 +15,7 @@ import "../../public/revolution/custom-setting.css";
 import {useApollo} from "../apollo";
 import React from "react";
 import {ApolloProvider} from "@apollo/client";
+import {AuthProvider} from "../hooks/useAuth";
 
 // import "../styles/css/plugins.css";
 
@@ -22,9 +23,11 @@ function MyApp({Component, pageProps}: any) {
 	const client = useApollo(pageProps.initialApolloState);
 
 	return (
-		<ApolloProvider client={client}>
-			<Component {...pageProps} />
-		</ApolloProvider>
+		<AuthProvider>
+			<ApolloProvider client={client}>
+				<Component {...pageProps} />
+			</ApolloProvider>
+		</AuthProvider>
 	);
 }
 

@@ -6,6 +6,15 @@ import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
 import {Category, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
+import {useAuth} from "../../hooks/useAuth";
+import {useEffect} from "react";
+import {GetAccountDetails, UpdateUserAccountDetails} from "../../../queries/userQuery";
+import {useState} from "react";
+import {format} from "date-fns";
+import {useMutation} from "@apollo/client";
+import toast, {Toaster} from "react-hot-toast";
+import Spinner from "../../Components/Utils/Spinner";
+import {useRouter} from "next/router";
 
 interface HeaderProps {
 	categories: Category[];
@@ -40,8 +49,95 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 export default index;
 
 const Account: React.FC = () => {
+	const {user, changePassword: changePass, signOut} = useAuth();
+	const apolloClient = initializeApollo();
+	const [orders, setOrders] = useState<any[] | null>(null);
+	const [addresses, setAddresses] = useState<any | null>(null);
+	const [firstName, setFirstName] = useState<string>("");
+	const [lastName, setLastName] = useState<string>("");
+	const [email, setEmail] = useState<string>("");
+	const [currentPassword, setCurrentPassword] = useState<string>("");
+	const [newPassword, setNewPassword] = useState<string>("");
+	const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+	const [updateUserAccount] = useMutation(UpdateUserAccountDetails);
+	const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
+
+	const [passwordLoading, setPasswordLoading] = useState<boolean>(false);
+	const router = useRouter();
+	const updateUser = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setDetailsLoading(true);
+
+		updateUserAccount({
+			variables: {
+				userId: user.id,
+				firstName,
+				lastName,
+			},
+		})
+			.then(({data: {update_users}}) => {
+				setDetailsLoading(false);
+
+				if (update_users.affected_rows > 0) {
+					toast.success("Details Update Successfully");
+					console.log("Update Successful");
+				}
+			})
+			.catch((error) => {
+				setDetailsLoading(false);
+
+				console.log(error);
+				toast.error(error.message);
+			});
+	};
+
+	const changePassword = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		if (newPassword === confirmPassword) {
+			setPasswordLoading(true);
+			changePass({email, password: currentPassword, newPassword}).then((data: any) => {
+				setPasswordLoading(false);
+
+				if (data.error) {
+					return toast.error(data.error.message);
+				}
+				return toast.success("Passwords Updated Successfully");
+			});
+		} else {
+			toast.error("Passwords do not match");
+		}
+	};
+
+	useEffect(() => {
+		if (user) {
+			apolloClient
+				.query({
+					query: GetAccountDetails,
+					variables: {
+						userId: user.id,
+					},
+				})
+				.then(({data: {orders, addresses, users}}) => {
+					setOrders(orders);
+					setAddresses(addresses[0]);
+					setFirstName(users[0].firstName);
+					setLastName(users[0].lastName);
+					setEmail(users[0].email);
+				});
+		}
+	}, [user]);
+
+	const logout = async () => {
+		await signOut();
+		await router.push("/login");
+	};
+
 	return (
 		<div className="my-account-area mb-130 mb-md-70 mb-sm-70 mb-xs-70 mb-xxs-70">
+			<Toaster position="bottom-center" />
+
 			<div className="container">
 				<div className="row">
 					<div className="col-lg-12">
@@ -64,7 +160,7 @@ const Account: React.FC = () => {
 									<a href="#account-info" data-toggle="tab">
 										Account Details
 									</a>
-									<a href="shop-customer-login.html"> Logout</a>
+									<a onClick={logout}> Logout</a>
 								</div>
 							</div>
 							{/* My Account Tab Menu End */}
@@ -77,12 +173,11 @@ const Account: React.FC = () => {
 											<h3>Dashboard</h3>
 											<div className="welcome">
 												<p>
-													Hello, <strong>UserName</strong> (If Not <strong>UserName !</strong>
-													<a href="shop-customer-login.html" className="logout">
+													Hello,{" "}
+													<strong>
 														{" "}
-														Logout
-													</a>
-													)
+														{user && user.firstName} {user && user.lastName}
+													</strong>
 												</p>
 											</div>
 											<p className="mb-0">
@@ -100,7 +195,7 @@ const Account: React.FC = () => {
 												<table className="table table-bordered">
 													<thead className="thead-light">
 														<tr>
-															<th>Order</th>
+															<th>Order Id</th>
 															<th>Date</th>
 															<th>Status</th>
 															<th>Total</th>
@@ -108,39 +203,20 @@ const Account: React.FC = () => {
 														</tr>
 													</thead>
 													<tbody>
-														<tr>
-															<td>1</td>
-															<td>Aug 22, 2020</td>
-															<td>Pending</td>
-															<td>₹3000</td>
-															<td>
-																<a href="shop-cart.html" className="check-btn sqr-btn ">
-																	View
-																</a>
-															</td>
-														</tr>
-														<tr>
-															<td>2</td>
-															<td>July 22, 2020</td>
-															<td>Approved</td>
-															<td>₹200</td>
-															<td>
-																<a href="shop-cart.html" className="check-btn sqr-btn ">
-																	View
-																</a>
-															</td>
-														</tr>
-														<tr>
-															<td>3</td>
-															<td>June 12, 2020</td>
-															<td>On Hold</td>
-															<td>₹990</td>
-															<td>
-																<a href="shop-cart.html" className="check-btn sqr-btn ">
-																	View
-																</a>
-															</td>
-														</tr>
+														{orders &&
+															orders.map((order) => (
+																<tr key={order.id}>
+																	<td>{order.id}</td>
+																	<td>{format(new Date(order.createdAt), "MMM d, y")}</td>
+																	<td>{order.order_status.name}</td>
+																	<td>₹{order.totalAmount}</td>
+																	<td>
+																		<a href="#" className="check-btn sqr-btn ">
+																			View
+																		</a>
+																	</td>
+																</tr>
+															))}
 													</tbody>
 												</table>
 											</div>
@@ -199,16 +275,21 @@ const Account: React.FC = () => {
 									<div className="tab-pane fade" id="address-edit" role="tabpanel">
 										<div className="myaccount-content">
 											<h3>Billing Address</h3>
-											<address>
-												<p>
-													<strong>Alex Tuntuni</strong>
-												</p>
-												<p>
-													1355 Market St, Suite 900 <br />
-													San Francisco, CA 94103
-												</p>
-												<p>Mobile: (123) 456-7890</p>
-											</address>
+											{addresses ? (
+												<address>
+													<p>
+														<strong>{addresses.name}</strong>
+													</p>
+													<p>
+														{addresses.lineOne}, <br />
+														{addresses.lineTwo}, <br />
+														{addresses.town} {addresses.state}, <br />
+														{addresses.zipcode}
+													</p>
+												</address>
+											) : (
+												<p>No Address added yet</p>
+											)}
 											<a href="#" className="check-btn sqr-btn ">
 												<i className="fa fa-edit" /> Edit Address
 											</a>
@@ -219,14 +300,14 @@ const Account: React.FC = () => {
 										<div className="myaccount-content">
 											<h3>Account Details</h3>
 											<div className="account-details-form">
-												<form action="#">
+												<form onSubmit={updateUser}>
 													<div className="row">
 														<div className="col-lg-6">
 															<div className="single-input-item">
 																<label htmlFor="first-name" className="required">
 																	First Name
 																</label>
-																<input type="text" id="first-name" />
+																<input type="text" id="first-name" name="first name" value={firstName} onChange={(event) => setFirstName(event.target.value)} />
 															</div>
 														</div>
 														<div className="col-lg-6">
@@ -234,29 +315,43 @@ const Account: React.FC = () => {
 																<label htmlFor="last-name" className="required">
 																	Last Name
 																</label>
-																<input type="text" id="last-name" />
+																<input type="text" id="last-name" name="last name" value={lastName} onChange={(event) => setLastName(event.target.value)} />
 															</div>
 														</div>
 													</div>
-													<div className="single-input-item">
-														<label htmlFor="display-name" className="required">
-															Display Name
+
+													<div className="single-input-item" style={{cursor: "not-allowed", opacity: 0.7}}>
+														<label htmlFor="email" className="required" style={{cursor: "disabled"}}>
+															Email Address
 														</label>
-														<input type="text" id="display-name" />
+														<input type="email" id="email" value={email} disabled={true} />
 													</div>
-													<div className="single-input-item">
-														<label htmlFor="email" className="required">
-															Email Addres
-														</label>
-														<input type="email" id="email" />
-													</div>
+													{!detailsLoading ? (
+														<div className="single-input-item mb-4">
+															<button className="check-btn sqr-btn" type="submit">
+																Save Changes
+															</button>
+														</div>
+													) : (
+														<div className="single-input-item mb-4 ml-4">
+															<Spinner width="30px" height="30px" />
+														</div>
+													)}
+												</form>
+												<form className="mt-2" style={{marginTop: "3em"}} onSubmit={changePassword}>
 													<fieldset>
 														<legend>Password change</legend>
 														<div className="single-input-item">
 															<label htmlFor="current-pwd" className="required">
 																Current Password
 															</label>
-															<input type="password" id="current-pwd" />
+															<input
+																type="password"
+																id="current-pwd"
+																name="current password"
+																value={currentPassword}
+																onChange={(event) => setCurrentPassword(event.target.value)}
+															/>
 														</div>
 														<div className="row">
 															<div className="col-lg-6">
@@ -264,7 +359,13 @@ const Account: React.FC = () => {
 																	<label htmlFor="new-pwd" className="required">
 																		New Password
 																	</label>
-																	<input type="password" id="new-pwd" />
+																	<input
+																		type="password"
+																		id="new-pwd"
+																		name="new password"
+																		value={newPassword}
+																		onChange={(event) => setNewPassword(event.target.value)}
+																	/>
 																</div>
 															</div>
 															<div className="col-lg-6">
@@ -272,14 +373,28 @@ const Account: React.FC = () => {
 																	<label htmlFor="confirm-pwd" className="required">
 																		Confirm Password
 																	</label>
-																	<input type="password" id="confirm-pwd" />
+																	<input
+																		type="password"
+																		id="confirm-pwd"
+																		name="confirm password"
+																		value={confirmPassword}
+																		onChange={(event) => setConfirmPassword(event.target.value)}
+																	/>
 																</div>
 															</div>
 														</div>
 													</fieldset>
-													<div className="single-input-item">
-														<button className="check-btn sqr-btn ">Save Changes</button>
-													</div>
+													{!passwordLoading ? (
+														<div className="single-input-item mb-4">
+															<button className="check-btn sqr-btn" type="submit">
+																Change Password
+															</button>
+														</div>
+													) : (
+														<div className="single-input-item mb-4 ml-4">
+															<Spinner width="30px" height="30px" />
+														</div>
+													)}
 												</form>
 											</div>
 										</div>
