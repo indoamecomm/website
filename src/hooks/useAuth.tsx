@@ -136,6 +136,7 @@ const useAuthProvider = () => {
 	};
 
 	const signOut = async () => {
+		setUser(null);
 		return auth.signOut();
 	};
 	return {

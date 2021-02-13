@@ -67,7 +67,7 @@ const Instruction: React.FC<{instructionTitle: Instruction_Titles; index: number
 									</tr>
 							  ))
 							: instructionTitle.instructions.map((instruction) => (
-									<div className="single-review">
+									<div className="single-review" key={instruction.id}>
 										<div className="single-review__content">
 											{/*=======  username and date  =======*/}
 											<a href={instruction.mediaUrl ?? "#"} target="_blank">

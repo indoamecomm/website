@@ -47,7 +47,7 @@ const BlogList: React.FC<BlogsListProps> = ({blogs}) => {
 							{"breakpoint":479, "settings": {"slidesToShow": 1, "arrows": false} }
 						]'>
 									{blogs.map((blog) => (
-										<Blog blog={blog} />
+										<Blog blog={blog} key={blog.id} />
 									))}
 								</div>
 							</div>

@@ -1,6 +1,10 @@
 import Link from "next/link";
-import React from "react";
+import React, {useEffect} from "react";
+import {useState} from "react";
+import {GetUserTotalCartCount, GetUserTotalWishlistCount} from "../../../queries/userQuery";
+import {initializeApollo} from "../../apollo";
 import {Category, Store_Locations} from "../../generated/graphql";
+import {useAuth} from "../../hooks/useAuth";
 import Cart from "./Cart";
 import Wishlist from "./Wishlist";
 
@@ -11,8 +15,54 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = (props) => {
 	const {categories, storeLocations} = props;
+	const [cartCount, setCartCount] = useState<number>(0);
+	const [wishlistCount, setWishlistCount] = useState<number>(0);
+
+	const {user} = useAuth();
+
+	const apolloClient = initializeApollo();
+
+	const checkCartExist = async () => {
+		const data = await apolloClient.subscribe({
+			query: GetUserTotalCartCount,
+			variables: {
+				userId: user.id,
+			},
+		});
+
+		if (data) {
+			data.subscribe(({data: {cart_aggregate}}) => {
+				setCartCount(cart_aggregate.aggregate.count);
+			});
+			// setCartItems(data.data.cart);
+		}
+	};
+
+	const checkWishlistExist = async () => {
+		const data = await apolloClient.subscribe({
+			query: GetUserTotalWishlistCount,
+			variables: {
+				userId: user.id,
+			},
+		});
+
+		if (data) {
+			data.subscribe(({data: {wishlists_aggregate}}) => {
+				setWishlistCount(wishlists_aggregate.aggregate.count);
+			});
+			// setCartItems(data.data.cart);
+		}
+	};
+
+	useEffect(() => {
+		if (user) {
+			checkCartExist();
+			checkWishlistExist();
+		}
+	}, [user]);
 
 	return (
+		
 		<header className="header header-box-topbar header-sticky">
 			<Wishlist />
 			<Cart />
@@ -70,7 +120,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 								</div>
 
 								<div className="single-icon user-login">
-									<Link href="/account">
+									<Link href={user ? "/account" : "/login"}>
 										<a>
 											<i className="ion-android-person"></i>
 										</a>
@@ -79,13 +129,13 @@ const Header: React.FC<HeaderProps> = (props) => {
 								<div className="single-icon wishlist">
 									<a id="offcanvas-wishlist-icon">
 										<i className="ion-android-favorite-outline" />
-										<span className="count">2</span>
+										<span className="count">{wishlistCount}</span>
 									</a>
 								</div>
 								<div className="single-icon cart">
 									<a id="offcanvas-cart-icon">
 										<i className="ion-ios-cart" />
-										<span className="count">3</span>
+										<span className="count">{cartCount}</span>
 									</a>
 								</div>
 							</div>
@@ -394,12 +444,14 @@ const HeaderCategoryCard: React.FC<HeaderCategoryCardProps> = (props: HeaderCate
 				{category.subCategories && category.subCategories.length > 0 ? (
 					category.subCategories?.map((subCategory) => (
 						<li key={subCategory?.id}>
-							<a href="vegetable-seeds.html">{subCategory?.name}</a>
+							<Link href={`/category/${subCategory?.id}`}>
+								<a>{subCategory?.name}</a>
+							</Link>
 						</li>
 					))
 				) : (
 					<li>
-						<a href="vegetable-seeds.html">Coming soon</a>
+						<a>Coming soon</a>
 					</li>
 				)}
 			</ul>
@@ -424,12 +476,12 @@ const HeaderStoreLocations: React.FC<HeaderStoreLocationProps> = (props: HeaderS
 				{storeLocations && storeLocations.length > 0 ? (
 					storeLocations.map((storeLocation) => (
 						<li key={storeLocation?.id}>
-							<a href="vegetable-seeds.html">{storeLocation?.name}</a>
+							<a>{storeLocation?.name}</a>
 						</li>
 					))
 				) : (
 					<li>
-						<a href="vegetable-seeds.html">Coming soon</a>
+						<a>Coming soon</a>
 					</li>
 				)}
 			</ul>

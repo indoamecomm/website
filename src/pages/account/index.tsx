@@ -33,6 +33,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
+				
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>

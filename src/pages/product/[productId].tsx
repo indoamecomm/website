@@ -36,6 +36,31 @@ const index: React.FC<ProductProps> = (props: ProductProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
+				<link href="/revolution/css/settings.css" rel="stylesheet" />
+				<link href="/revolution/css/navigation.css" rel="stylesheet" />
+				<link href="/revolution/custom-setting.css" rel="stylesheet" />
+				<link href="/css/themify-icons.css" rel="stylesheet" />
+				<link href="/css/plugins.css" rel="stylesheet" />
+				<link href="/css/helper.css" rel="stylesheet" />
+				<link href="/css/main.css" rel="stylesheet" />
+
+				<script defer src="/js/vendor/modernizr-2.8.3.min.js"></script>
+				<script defer src="/js/vendor/jquery.min.js"></script>
+				<script defer src="/js/popper.min.js"></script>
+				<script defer src="/js/bootstrap.min.js"></script>
+				<script defer src="/js/plugins.js"></script>
+
+				<script defer src="/js/main.js"></script>
+				<script defer src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
+				<script defer src="/revolution/js/jquery.themepunch.tools.min.js"></script>
+				<script defer src="/revolution/revolution-active.js"></script>
+
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>

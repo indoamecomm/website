@@ -1,11 +1,127 @@
+import {useMutation} from "@apollo/client";
+import Link from "next/link";
 import React from "react";
+import {useEffect} from "react";
+import {useState} from "react";
+import toast, {Toaster} from "react-hot-toast";
+import {InsertToUserCart, InsertWishlist} from "../../../queries/productQuery";
+import {GetUserCartCount, GetUserWishlistCount} from "../../../queries/userQuery";
+import {initializeApollo} from "../../apollo";
 import {Product_Type} from "../../generated/graphql";
+import {useAuth} from "../../hooks/useAuth";
+import Spinner from "../Utils/Spinner";
 
 const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; subCategory: string}> = (props) => {
 	const {productType, leftOrient, subCategory} = props;
+	const apolloClient = initializeApollo();
+
+	const [loading, setLoading] = useState<boolean>(false);
+	const [wishlistLoading, setWishlistLoading] = useState<boolean>(false);
+
+	const [cartExists, setCartExists] = useState<boolean>(false);
+	const [wishlistExists, setWishlistExists] = useState<boolean>(false);
+
+	const {user} = useAuth();
+	const [count, setCount] = useState<number>(1);
+
+	const [insertToUserCart] = useMutation(InsertToUserCart);
+	const [insertWishlist] = useMutation(InsertWishlist);
+
+	const checkCartExist = async () => {
+		const data = await apolloClient.subscribe({
+			query: GetUserCartCount,
+			variables: {
+				userId: user.id,
+				productTypeId: productType.id,
+			},
+		});
+
+		if (data) {
+			data.subscribe(({data: {users_aggregate}}) => {
+				setCartExists(users_aggregate.aggregate.count > 0);
+			});
+			// setCartItems(data.data.cart);
+		}
+	};
+
+	const checkWishlistExist = async () => {
+		const data = await apolloClient.subscribe({
+			query: GetUserWishlistCount,
+			variables: {
+				userId: user.id,
+				productTypeId: productType.id,
+			},
+		});
+
+		if (data) {
+			data.subscribe(({data: {users_aggregate}}) => {
+				console.log(users_aggregate.aggregate.count > 0, "Product Type ", productType.name);
+				setWishlistExists(users_aggregate.aggregate.count > 0);
+			});
+			// setCartItems(data.data.cart);
+		}
+	};
+
+	useEffect(() => {
+		if (user) {
+			checkCartExist();
+			checkWishlistExist();
+		}
+	}, [user]);
+
+	const addToCart = async () => {
+		try {
+			setLoading(true);
+
+			const {
+				data: {insert_cart},
+			} = await insertToUserCart({
+				variables: {
+					userId: user.id,
+					productTypeId: productType.id,
+					count,
+				},
+			});
+			setLoading(false);
+
+			if (insert_cart && insert_cart.affected_rows > 0) {
+				toast.success("Product Added to your cart successfully");
+			} else {
+				toast.error("Some unknown error occurred");
+			}
+		} catch (error) {
+			toast.error(error.message);
+		}
+	};
+
+	const addToWishlist = async () => {
+		try {
+			setWishlistLoading(true);
+
+			const {
+				data: {insert_wishlists},
+			} = await insertWishlist({
+				variables: {
+					userId: user.id,
+					productTypeId: productType.id,
+				},
+			});
+			setWishlistLoading(false);
+
+			if (insert_wishlists && insert_wishlists.affected_rows > 0) {
+				toast.success("Product Added to your wishlist successfully");
+			} else {
+				toast.error("Some unknown error occurred");
+			}
+		} catch (error) {
+			toast.error(error.message);
+		}
+	};
 
 	return (
 		<div className="shop-product">
+			<Toaster position="bottom-center" />
+
 			<div className="row pb-100">
 				<div className={`col-lg-6 ${leftOrient ? "order-lg-2" : "order-lg-1"}`}>
 					{/*=======  shop product description  =======*/}
@@ -66,17 +182,34 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 							<div className="shop-product__block__title">Quantity</div>
 							<div className="shop-product__block__value">
 								<div className="pro-qty d-inline-block mx-0 pt-0">
-									<input type="text" defaultValue={1} />
+									<a className="dec qty-btn" onClick={() => setCount((oldCount) => (oldCount - 1 > 0 ? oldCount - 1 : 1))}>
+										-
+									</a>
+									<input type="text" value={count} onChange={(event) => setCount(parseInt(event.target.value))} />
+									<a className="inc qty-btn" onClick={() => setCount((oldCount) => oldCount + 1)}>
+										+
+									</a>
 								</div>
 							</div>
 						</div>
 						{/*=======  End of shop product quantity block  =======*/}
 						{/*=======  shop product buttons  =======*/}
 						<div className="shop-product__buttons mb-40">
-							<a className="lezada-button lezada-button--medium" href="#">
-								{" "}
-								+ add to cart
-							</a>
+							{!loading ? (
+								cartExists ? (
+									<Link href="/cart">
+										<a className="lezada-button lezada-button--medium">Go to Cart</a>
+									</Link>
+								) : (
+									<button className="lezada-button lezada-button--medium" type="button" onClick={addToCart}>
+										+ add to cart
+									</button>
+								)
+							) : (
+								<div className="d-flex justify-content-center w-50">
+									<Spinner width="40px" height="40px" />
+								</div>
+							)}
 						</div>
 						{/*=======  End of shop product buttons  =======*/}
 						{/*=======  other info table  =======*/}
@@ -122,19 +255,25 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 					<div className="shop-product__big-image-gallery-wrapper mb-30">
 						{/*=======  shop product gallery icons  =======*/}
 						<div className="shop-product-rightside-icons">
-							<span className="wishlist-icon">
-								<a
-									href="#"
-									data-tippy="Add to wishlist"
-									data-tippy-placement="left"
-									data-tippy-inertia="true"
-									data-tippy-animation="shift-away"
-									data-tippy-delay={50}
-									data-tippy-arrow="true"
-									data-tippy-theme="sharpborder">
-									<i className="ion-android-favorite-outline" />
-								</a>
-							</span>
+							{wishlistLoading ? (
+								<span className="wishlist-icon">
+									<Spinner width="10px" height="10px" />
+								</span>
+							) : (
+								<span className="wishlist-icon">
+									<a
+										onClick={addToWishlist}
+										// data-tippy={!wishlistExists ? "Add to wishlists dude" : "Remove from wishlist"}
+										data-tippy-placement="left"
+										data-tippy-inertia="true"
+										data-tippy-animation="shift-away"
+										data-tippy-delay={50}
+										data-tippy-arrow="true"
+										data-tippy-theme="sharpborder">
+										{wishlistExists ? <i className="ion-android-favorite" /> : <i className="ion-android-favorite-outline" />}
+									</a>
+								</span>
+							)}
 							<span className="enlarge-icon">
 								<a
 									className="btn-zoom-popup"

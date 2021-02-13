@@ -32,7 +32,7 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 					]'>
 				{/*=======  single slider  =======*/}
 				{productTypes.map((productType) => (
-					<div className="decor-single-slider">
+					<div className="decor-single-slider" key={productType.id}>
 						<div className="decor-single-slider-content">
 							{/*=======  slider image  =======*/}
 							<div className="slider-image">

@@ -15,6 +15,7 @@ export const GetProductDetailsById = gql`
 				name
 			}
 			productTypes {
+				id
 				SKU
 				deal_of_the_days(where: {enable: {_eq: true}}) {
 					discount
@@ -73,6 +74,105 @@ export const GetRecommendations = gql`
 					name
 				}
 			}
+		}
+	}
+`;
+
+
+export const GetProductsByCategoryId = gql`
+	query GetProductsBySubCategoryId($subCategoryId: Int!, $seasonId: bigint, $orderObject: [product_order_by!], $searchString: String) {
+		product(order_by: $orderObject, where: {subCategoryId: {_eq: $subCategoryId}, isDeleted: {_eq: false}, productTypes: {product_seasons: {seasonId: {_eq: $seasonId}}}, name: {_ilike: $searchString }}) {
+			imageUrl
+			hoverImageUrl
+			name
+			description
+			id
+			productTypes_aggregate {
+			aggregate {
+				max {
+				discountedPrice
+				originalPrice
+				}
+				min {
+				originalPrice
+				discountedPrice
+				}
+			}
+			}
+		}
+	}
+
+`;
+
+
+export const GetCategories = gql`
+	query GetCategoriesForProducts {
+		categories {
+			id
+			name
+			sub_categories {
+			id
+			name
+			products_aggregate {
+				aggregate {
+				count
+				}
+			}
+			products {
+				id
+				name
+			}
+			}
+		}
+	}
+`;
+
+
+export const GetSubCategories = gql`
+	query GetSubCategories {
+		sub_categories(order_by: {id: asc}) {
+			id
+			name
+		}
+	}
+`;
+
+
+export const GetSubCategoriesDetails = gql`
+	query GetSubCategoriesDetails($subCategoryId: Int!) {
+		sub_categories(order_by: {id: asc}, where: {id: {_eq: $subCategoryId}}) {
+			id
+			name
+			coverImageUrl
+		}
+	}
+`;
+
+
+export const GetSeasons = gql`
+	query GetSeasons {
+		seasons(order_by: { id: asc }, where: { isDeleted: { _eq: false } }) {
+			id
+			name
+		}
+	}
+`;
+
+
+
+
+export const InsertToUserCart = gql`
+	mutation InsertToUserCart($userId:  bigint!, $productTypeId: Int!, $count: Int!) {
+		insert_cart(objects: {userId: $userId, productTypeId: $productTypeId, count: $count}) {
+			affected_rows
+		}
+	}
+`;
+
+export const InsertWishlist = gql`
+	mutation InsertWishlist($userId: bigint!, $productTypeId: Int!) {
+		insert_wishlists(objects: {userId: $userId, productTypeId: $productTypeId}) {
+			affected_rows
 		}
 	}
 `;

@@ -179,8 +179,8 @@
 				}
 
 				&:hover {
-					color: #c61932;
-					border-color: #c61932;
+					color: $primary-web;
+					border-color: $primary-web;
 				}
 
 				@media #{$tablet-device} {

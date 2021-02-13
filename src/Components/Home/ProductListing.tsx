@@ -8,7 +8,6 @@ interface ProductListingProps {
 
 const ProductListing: React.FC<ProductListingProps> = (props: ProductListingProps) => {
 	const {featuredProducts, newProducts} = props;
-	console.log(featuredProducts, newProducts);
 	return (
 		<div className="product-widget-slider-container mb-100">
 			<div className="container">
@@ -137,7 +136,6 @@ export default ProductListing;
 
 const Product: React.FC<{productType: ProductType}> = (props) => {
 	const {productType} = props;
-	console.log(productType);
 
 	return (
 		<div className="single-widget-product-wrapper">

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client'
+import { ApolloClient, InMemoryCache, NormalizedCacheObject, split } from '@apollo/client'
+import { getMainDefinition } from '@apollo/client/utilities';
 
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
@@ -7,16 +8,50 @@ const createIsomorphLink = () => {
 	// if (typeof window === 'undefined') {
 
 	// } else {
+
+	const { WebSocketLink } = require('apollo-link-ws');
+
+
+	const wsLink = process.browser
+		? new WebSocketLink({
+			uri: 'wss://indoam.herokuapp.com/v1/graphql',
+			options: {
+				reconnect: true,
+				timeout: 10000,
+				connectionParams: () => ({
+					headers: {
+						"x-hasura-admin-secret": "indoame@321"
+					}
+				})
+			},
+		}) : null;
+
 	const { HttpLink } = require('@apollo/client/link/http')
-	return new HttpLink({
+	const httpLink = new HttpLink({
 		uri: 'https://indoam.herokuapp.com/v1/graphql',
 		credentials: 'same-origin',
 		headers: {
 			"x-hasura-admin-secret": "indoame@321"
 		}
 	})
+
+	const link = process.browser ? split(
+		({ query }) => {
+			const definition = getMainDefinition(query);
+			return (
+				definition.kind === 'OperationDefinition' &&
+				definition.operation === 'subscription'
+			);
+		},
+		wsLink,
+		httpLink
+	) : httpLink;
+
+	return link
+
 	// }
 }
+
 
 function createApolloClient() {
 	return new ApolloClient({
