@@ -8,6 +8,17 @@ import {Cart} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
 import Spinner from "../Utils/Spinner";
 
+export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number => {
+	let subTotal: number = 0;
+
+	cartItems.forEach((cart) => {
+		subTotal += (cart.product_type.discountedPrice ?? 0) * cart.count;
+	});
+
+	subTotal = subTotal - subTotal * (couponValue / 100);
+
+	return subTotal;
+};
 const CartItems: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
@@ -35,16 +46,6 @@ const CartItems: React.FC = () => {
 			getUserCartItem();
 		}
 	}, [user]);
-
-	const getSubTotal = (cartItems: Cart[]): number => {
-		let subTotal: number = 0;
-
-		cartItems.forEach((cart) => {
-			subTotal += (cart.product_type.discountedPrice ?? 0) * cart.count;
-		});
-
-		return subTotal;
-	};
 
 	return (
 		<div className="cart-overlay" id="cart-overlay">

@@ -190,6 +190,73 @@ export const InsertToUserCartFromWishlist = gql`
 	}
 `;
 
+export const GetUserCartDetails = gql`
+	query GetUserCartDetails($userId: bigint!) {
+		users(where: { id: { _eq: $userId } }) {
+			carts {
+				count
+				id
+				productTypeId
+				product_type {
+					id
+					name
+					discountedPrice
+					deal_of_the_days {
+						discount
+					}
+				}
+			}
+			addresses(where: { isDeleted: { _eq: false } }) {
+				id
+				name
+				lineOne
+				lineTwo
+				name
+				zipcode
+				town
+				state
+			}
+			email
+			firstName
+			lastName
+			id
+			phoneNumber
+		}
+	}
+
+`;
+
+
+
+export const CreateOrder = gql`
+	mutation CreateOrder($addressId: Int!, $currency: String!, $userId: Int!, $productTypes: [ProductTypePair!]!) {
+		createOrder(input: { addressId: $addressId, currency: $currency, productTypeIds: $productTypes, userId: $userId }) {
+			order {
+				id
+			}
+			razorpayOrderId
+		}
+	}
+
+`;
+
+
+export const CheckCouponValidity  = gql`
+	query CheckCouponValidity($couponName: String!) {
+		coupons_aggregate(where: {isValid: {_eq: true}, code: {_eq: $couponName}}) {
+			aggregate {
+			count
+			}
+			nodes {
+			id
+			value
+			}
+		}
+	}
+
+`;
+
+
 
 
 
