@@ -16,8 +16,7 @@ const Footer = () => {
 						{/*=======  copyright text  =======*/}
 						<div className="copyright-text">
 							<p>
-								{" "}
-								© 2019 Indo American Hybrid Seeds. <span>All Rights Reserved</span>
+								© 2021 Indo American Hybrid Seeds. <span>All Rights Reserved</span>
 							</p>
 						</div>
 						{/*=======  End of copyright text  =======*/}
@@ -39,12 +38,14 @@ const Footer = () => {
 										<a href="store-location.html">Store location</a>
 									</li>
 									<li>
-										<Link href="/faqs">
-											<a>FAQs</a>
+										<Link href="/support">
+											<a>Support</a>
 										</Link>
 									</li>
 									<li>
-										<a href="shop-order-tracking.html">Orders tracking</a>
+										<Link href="/orderTracking">
+											<a>Orders tracking</a>
+										</Link>
 									</li>
 								</ul>
 							</nav>
@@ -66,7 +67,9 @@ const Footer = () => {
 										<a href="#">Privacy Policy</a>
 									</li>
 									<li>
-										<a href="faq.html">FAQs</a>
+										<Link href="/faqs">
+											<a>FAQs</a>
+										</Link>
 									</li>
 								</ul>
 							</nav>
@@ -82,19 +85,17 @@ const Footer = () => {
 							<nav>
 								<ul>
 									<li>
-										<a href="//instagram.com">
+										<a href="https://www.instagram.com" target="_blank">
 											<i className="fa fa-instagram" /> Instagram
 										</a>
 									</li>
 									<li>
-										<a href="https://www.facebook.com/indamseeds/?fref=ts">
-											{" "}
+										<a href="https://www.facebook.com/indamseeds/?fref=ts" target="_blank">
 											<i className="fa fa-facebook" /> Facebook
 										</a>
 									</li>
 									<li>
-										<a href="//youtube.com">
-											{" "}
+										<a href="https://www.youtube.com" target="_blank">
 											<i className="fa fa-youtube" /> Youtube
 										</a>
 									</li>

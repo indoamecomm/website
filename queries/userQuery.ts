@@ -295,6 +295,24 @@ export const UpdateAddress = gql`
 
 
 
+export const VerifyPayment = gql`
+	mutation VerifyPayment($orderId: Int!, $razorpayOrderId: String!, $razorpayPaymentId: String!, $razorpaySignature: String!) {
+	verifyPayment(input: { orderId: $orderId, razorPayOrderId: $razorpayOrderId, razorPayPaymentId: $razorpayPaymentId, razorPaySignature: $razorpaySignature }) {
+		code
+		message
+	}
+}
+`;
+
+export const DeleteUserCart = gql`
+	mutation DeleteUserCart($userId: bigint!) {
+		delete_cart(where: { userId: { _eq: $userId } }) {
+			affected_rows
+		}
+	}
+`;
+
+
 
 
 

@@ -24,11 +24,38 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
+				<link rel="icon" href="/images/favicon.ico" />
+				<link href="/revolution/css/settings.css" rel="stylesheet" />
+				<link href="/revolution/css/navigation.css" rel="stylesheet" />
+				<link href="/revolution/custom-setting.css" rel="stylesheet" />
+				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+				<script src="/js/vendor/jquery.min.js"></script>
+				<script src="/js/popper.min.js"></script>
+				<script src="/js/bootstrap.min.js"></script>
+
+				<script src="/js/plugins.js"></script>
+				<script src="/js/main.js"></script>
+
+				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
+				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
+				<script src="/revolution/revolution-active.js"></script>
+
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"Customer Support"} finalName={"CUSTOMER SUPPORT"} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
+						title={"Customer Support"}
+						finalName={"CUSTOMER SUPPORT"}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 					<Support />
 				</div>
 			</main>
@@ -170,10 +197,21 @@ const Support: React.FC = () => {
 											<input type="text" placeholder="Subject" name="contactSubject" id="contactSubject" />
 										</div>
 										<div className="col-lg-12 mb-40">
-											<textarea cols={30} rows={10} placeholder="Message" name="contactMessage" id="contactMessage" defaultValue={""} />
+											<textarea
+												cols={30}
+												rows={10}
+												placeholder="Message"
+												name="contactMessage"
+												id="contactMessage"
+												defaultValue={""}
+											/>
 										</div>
 										<div className="col-lg-12 text-center">
-											<button type="submit" value="submit" id="submit" className="lezada-button lezada-button--medium">
+											<button
+												type="submit"
+												value="submit"
+												id="submit"
+												className="lezada-button lezada-button--medium">
 												submit
 											</button>
 										</div>

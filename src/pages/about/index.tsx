@@ -24,6 +24,7 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
+				<link rel="icon" href="/images/favicon.ico" />
 				<link href="/revolution/css/settings.css" rel="stylesheet" />
 				<link href="/revolution/css/navigation.css" rel="stylesheet" />
 				<link href="/revolution/custom-setting.css" rel="stylesheet" />
@@ -31,6 +32,7 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<script src="/js/vendor/jquery.min.js"></script>
 				<script src="/js/popper.min.js"></script>
 				<script src="/js/bootstrap.min.js"></script>
+
 				<script src="/js/plugins.js"></script>
 				<script src="/js/main.js"></script>
 

@@ -24,11 +24,37 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
+				<link href="/revolution/css/settings.css" rel="stylesheet" />
+				<link href="/revolution/css/navigation.css" rel="stylesheet" />
+				<link href="/revolution/custom-setting.css" rel="stylesheet" />
+				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+				<script src="/js/vendor/jquery.min.js"></script>
+				<script src="/js/popper.min.js"></script>
+				<script src="/js/bootstrap.min.js"></script>
+
+				<script src="/js/plugins.js"></script>
+				<script src="/js/main.js"></script>
+
+				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
+				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
+				<script src="/revolution/revolution-active.js"></script>
+
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"Order Tracking"} finalName={"ORDER TRACKING"} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
+						title={"Order Tracking"}
+						finalName={"ORDER TRACKING"}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 					<OrderTracking />
 				</div>
 			</main>
@@ -48,8 +74,8 @@ const OrderTracking = () => {
 						{/*=======  order tracking box  =======*/}
 						<div className="order-tracking-box pt-50 pr-50 pb-50 pl-50  pt-xxs-40 pr-xxs-20 pb-xxs-40 pl-xxs-20">
 							<p className="info-text mb-20">
-								To track your order please enter your Order ID in the box below and press the "Track" button. This was given to you on your receipt and in the confirmation email you
-								should have received.
+								To track your order please enter your Order ID in the box below and press the "Track" button. This was given
+								to you on your receipt and in the confirmation email you should have received.
 							</p>
 							{/*=======  order-tracking form  =======*/}
 							<div className="lezada-form order-tracking-form">

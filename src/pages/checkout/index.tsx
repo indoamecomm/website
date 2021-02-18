@@ -8,7 +8,7 @@ import {Address, Cart, Category, Store_Locations, User} from "../../generated/gr
 import BreadCrumb from "../../Components/BreadCrumb";
 import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
-import {CheckCouponValidity, CreateOrder, GetUserCartDetails} from "../../../queries/userQuery";
+import {CheckCouponValidity, CreateOrder, DeleteUserCart, GetUserCartDetails, VerifyPayment} from "../../../queries/userQuery";
 import {useState} from "react";
 import {getSubTotal} from "../../Components/Header/Cart";
 import {useMutation} from "@apollo/client";
@@ -18,6 +18,7 @@ import Spinner from "../../Components/Utils/Spinner";
 import {AddressEdit} from "../account";
 // import ReactTooltip from "react-tooltip";
 import dynamic from "next/dynamic";
+import {useRouter} from "next/router";
 
 interface HeaderProps {
 	categories: Category[];
@@ -41,12 +42,14 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
 				<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-				<script defer src="/js/vendor/modernizr-2.8.3.min.js"></script>
-				<script defer src="/js/vendor/jquery.min.js"></script>
-				<script defer src="/js/popper.min.js"></script>
-				<script defer src="/js/bootstrap.min.js"></script>
-				<script defer src="/js/plugins.js"></script>
+				<link rel="icon" href="/images/favicon.ico" />
+				<link href="/revolution/css/settings.css" rel="stylesheet" />
+				<link href="/revolution/css/navigation.css" rel="stylesheet" />
+				<link href="/revolution/custom-setting.css" rel="stylesheet" />
+				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+				<script src="/js/vendor/jquery.min.js"></script>
+				<script src="/js/popper.min.js"></script>
+				<script src="/js/bootstrap.min.js"></script>
 
 				<script defer src="/js/main.js"></script>
 			</Head>
@@ -63,6 +66,19 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				</div>
 			</main>
 			<Footer />
+			<script src="/js/plugins.js"></script>
+			<script src="/js/main.js"></script>
+
+			<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
+			<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
+			<script src="/revolution/revolution-active.js"></script>
+
+			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 		</>
 	);
 };
@@ -77,6 +93,9 @@ const Checkout: React.FC = () => {
 	const apolloClient = initializeApollo();
 
 	const [placeOrderMutation] = useMutation(CreateOrder);
+	const [verifyOrder] = useMutation(VerifyPayment);
+	const [deleteCart] = useMutation(DeleteUserCart);
+
 	const [loading, setLoading] = useState<boolean>(false);
 	const [couponLoading, setCouponLoading] = useState<boolean>(false);
 
@@ -86,6 +105,8 @@ const Checkout: React.FC = () => {
 	const [couponName, setCouponName] = useState<string>("");
 	const [activeCoupon, setActiveCoupon] = useState<any>(null);
 	const [refetch, setRefetch] = useState<number>(1);
+
+	const router = useRouter();
 
 	const getUserCartItem = async () => {
 		setQueryLoading(true);
@@ -130,7 +151,9 @@ const Checkout: React.FC = () => {
 				};
 			});
 
-			const {data} = await placeOrderMutation({
+			const {
+				data: {createOrder},
+			} = await placeOrderMutation({
 				variables: {
 					addressId: activeAddress ? activeAddress.id : null,
 					userId: user.id,
@@ -139,21 +162,39 @@ const Checkout: React.FC = () => {
 				},
 			});
 
-			console.log(data);
-			if (data) {
-				setLoading(false);
+			if (createOrder) {
 				const options = {
 					key: "rzp_test_LlLmyaSARCe7Dw", // Enter the Key ID generated from the Dashboard
 					currency: "INR",
-					name: "Acme Corp",
+					name: "Indoamerican",
+					amount: "100",
 					description: "Test Transaction",
 					image: "https://example.com/your_logo",
-					order_id: data.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-					handler: function (response) {
-						console.log(response.razorpay_payment_id);
-						console.log(response.razorpay_order_id);
-						console.log(response.razorpay_signature);
-						toast.success("Order Successfully Placed");
+					order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+					handler: async (response) => {
+						const {
+							data: {code, message},
+						} = await verifyOrder({
+							variables: {
+								razorpayOrderId: createOrder.razorpayOrderId,
+								razorpayPaymentId: response.razorpay_payment_id,
+								razorpaySignature: response.razorpay_signature,
+								orderId: createOrder.order.id,
+							},
+						});
+						if (code === 500 || code === 401) {
+							toast.error("Some error occurred please try again," + message);
+						} else {
+							await deleteCart({
+								variables: {
+									userId: user.id,
+								},
+							});
+							setLoading(false);
+
+							router.push("/account");
+							toast.success("Order Successfully Placed");
+						}
 					},
 					prefill: {
 						name: user.name,
@@ -172,12 +213,10 @@ const Checkout: React.FC = () => {
 				paymentObject.open();
 			} else {
 				setLoading(false);
-
 				toast.error("Some unknown error occurred");
 			}
 		} catch (error) {
 			setLoading(false);
-
 			toast.error(error.message);
 		}
 	};
@@ -368,7 +407,7 @@ const CheckoutAddress: React.FC<{
 			setAddressList({addresses: address});
 			setActiveAddress(address[0]);
 		}
-	}, [address, refetch]);
+	}, [address]);
 
 	return (
 		<>

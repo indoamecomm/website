@@ -26,7 +26,18 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = (props: HomeProps) => {
-	const {categories, storeLocations, shopCollection, highlyUsed, dealOfTheDay, promotedBanners, featuredProducts, newProducts, featuredProduct, blogs} = props;
+	const {
+		categories,
+		storeLocations,
+		shopCollection,
+		highlyUsed,
+		dealOfTheDay,
+		promotedBanners,
+		featuredProducts,
+		newProducts,
+		featuredProduct,
+		blogs,
+	} = props;
 
 	return (
 		<>
@@ -140,7 +151,11 @@ const InstagramSlider: React.FC = () => {
 							{/*=======  instagram image container  =======*/}
 							<div className="instagram-image-slider-container">
 								<div className="instagram-feed-thumb">
-									<div id="instafeed" className="instagram-carousel" data-userid={429141287} data-accesstoken="6665768655.1677ed0.313e6c96807c45d8900b4f680650dee5"></div>
+									<div
+										id="instafeed"
+										className="instagram-carousel"
+										data-userid={429141287}
+										data-accesstoken="6665768655.1677ed0.313e6c96807c45d8900b4f680650dee5"></div>
 								</div>
 							</div>
 							{/*=======  End of instagram image container  =======*/}

@@ -56,7 +56,12 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Header categories={categoriesHeader as Category[]} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={subCategory.coverImageUrl} title={subCategory.name} finalName={subCategory.name} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={subCategory.coverImageUrl}
+						title={subCategory.name}
+						finalName={subCategory.name}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 					<CategoryMain products={products} categories={categories} subCategory={subCategory} seasons={seasons} />
 				</div>
 			</main>

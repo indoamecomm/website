@@ -114,9 +114,11 @@ const Header: React.FC<HeaderProps> = (props) => {
 						<div className="logo-with-offcanvas">
 							{/*=======  logo   =======*/}
 							<div className="logo">
-								<a href="index.html">
-									<img src="/images/logo.png" className="img-fluid" alt="" />
-								</a>
+								<Link href="/">
+									<a>
+										<img src="/images/logo.png" className="img-fluid" alt="" />
+									</a>
+								</Link>
 							</div>
 						</div>
 
@@ -193,7 +195,9 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<a className="mega-column-title">The Community</a>
 													<ul className="mega-sub-menu">
 														<li>
-															<a href="about.html">About Us</a>
+															<Link href="/about">
+																<a href="about.html">About Us</a>
+															</Link>
 														</li>
 														<li>
 															<a href="https://indamseeds.com/news.html" target="newwindow">
@@ -210,13 +214,17 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<a className="mega-column-title">Shop Related</a>
 													<ul className="mega-sub-menu">
 														<li>
-															<a href="faq.html">F.A.Q</a>
+															<Link href="/faqs">
+																<a href="faq.html">F.A.Q</a>
+															</Link>
 														</li>
 														<li>
 															<a href="privacy-policy.html">Privacy Policy</a>
 														</li>
 														<li>
-															<a href="support.html">Customer Support</a>
+															<Link href="/support">
+																<a href="support.html">Customer Support</a>
+															</Link>
 														</li>
 													</ul>
 												</li>

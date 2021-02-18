@@ -67,7 +67,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 					/>
 					<WishlistMain />
 				</div>
-			</main>   
+			</main>
 			<Footer />
 		</>
 	);
@@ -82,8 +82,6 @@ const WishlistMain = () => {
 	const [wishlist] = useLocalStorage("wishlist", []);
 
 	const apolloClient = initializeApollo();
-
-
 
 	const getUserWishlists = async () => {
 		if (user) {
