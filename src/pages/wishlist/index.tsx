@@ -67,11 +67,12 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 					/>
 					<WishlistMain />
 				</div>
-			</main>
+			</main>   
 			<Footer />
 		</>
 	);
 };
+//ssss
 export default index;
 
 const WishlistMain = () => {
