@@ -78,7 +78,7 @@ const WishlistMain = () => {
 	const {user} = useAuth();
 
 	const [wishlistItems, setWishlistItems] = useState<Wishlists[]>([]);
-	const [wishlist, setWishlistStore] = useLocalStorage("wishlist", []);
+	const [wishlist] = useLocalStorage("wishlist", []);
 
 	const apolloClient = initializeApollo();
 

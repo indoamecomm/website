@@ -18,6 +18,7 @@ const createIsomorphLink = () => {
 			options: {
 				reconnect: true,
 				timeout: 10000,
+
 				connectionParams: () => ({
 					headers: {
 						"x-hasura-admin-secret": "indoame@321"
@@ -30,9 +31,11 @@ const createIsomorphLink = () => {
 	const httpLink = new HttpLink({
 		uri: 'https://indoam.herokuapp.com/v1/graphql',
 		credentials: 'same-origin',
+		ssrMode: true,
 		headers: {
 			"x-hasura-admin-secret": "indoame@321"
 		}
+
 	})
 
 	const link = process.browser ? split(

@@ -70,7 +70,7 @@ const Login: React.FC = () => {
 
 const LoginForm: React.FC<{setLoginActive: (value: boolean) => void}> = (props) => {
 	const {setLoginActive} = props;
-	const {signIn, user, sendPasswordResetEmail} = useAuth();
+	const {signIn, sendPasswordResetEmail} = useAuth();
 
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");

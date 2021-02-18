@@ -77,7 +77,7 @@ export default index;
 const CartMain: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
-	const [cartStore, setCartStore] = useLocalStorage("cart", []);
+	const [cartStore] = useLocalStorage("cart", []);
 
 	const apolloClient = initializeApollo();
 
@@ -113,8 +113,6 @@ const CartMain: React.FC = () => {
 			setCartItems(newItems);
 		}
 	};
-
-
 
 	useEffect(() => {
 		getUserCartItem();

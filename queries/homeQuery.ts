@@ -29,6 +29,14 @@ export const GetBannerData = gql`
 				image
 				title
 				typeId
+				bannerProducts {
+					productId 
+					productTypeId
+					subCategoryId	
+					product_type {
+						productId
+					}
+				}
 				cost
 			}
 		}
@@ -43,6 +51,14 @@ export const GetBannerData = gql`
 				title
 				typeId
 				cost
+				bannerProducts {
+					productId 
+					productTypeId
+					subCategoryId	
+					product_type {
+						productId
+					}
+				}
 			}
 		}
 		promotedBanners: banner_type(where: {type: {_eq: 3}}, order_by: {id: asc}) {
@@ -56,6 +72,14 @@ export const GetBannerData = gql`
 				title
 				typeId
 				cost
+				bannerProducts {
+					productId 
+					productTypeId
+					subCategoryId	
+					product_type {
+						productId
+					}
+				}
 			}
 		}
   
@@ -70,6 +94,14 @@ export const GetBannerData = gql`
 				title
 				typeId
 				cost
+				bannerProducts {
+					productId 
+					productTypeId
+					subCategoryId	
+					product_type {
+						productId
+					}
+				}
 			}
 		}
 	}
@@ -84,13 +116,12 @@ export const GetDealOfTheDay = gql`
 			expiry
 			id
 			discount
-			product {
-				id
-				name
-			}
+			productId
+			productTypeId
 			product_type {
 				id
 				originalPrice
+				productId
 			}
 		}
 	}
@@ -107,12 +138,13 @@ export const GetProductListing = gql`
 			name
 			originalPrice
 			discountedPrice
+			productId
 			user_ratings_aggregate {
-			aggregate {
-				avg {
-				rating
+				aggregate {
+					avg {
+					rating
+					}
 				}
-			}
 			}
 		}
 		featuredProducts: product_type(where: {isFeatured: {_eq: true}}) {
@@ -121,6 +153,7 @@ export const GetProductListing = gql`
 			name
 			originalPrice
 			discountedPrice
+			productId
 			user_ratings_aggregate {
 			aggregate {
 				avg {

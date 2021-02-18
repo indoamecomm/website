@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import {Deal_Of_The_Day} from "../../generated/graphql";
 
@@ -20,9 +21,12 @@ const Deal: React.FC<{dealOfTheDay: Deal_Of_The_Day}> = (props) => {
 									<div className="countdown-wrapper text-center">
 										<h3>Deal of the day</h3>
 										<div className="deal-countdown" data-countdown={formateDate(dealOfTheDay.expiry)} />
-										<a href="shop-left-sidebar.html" className="lezada-button lezada-button--medium lezada-button--icon--left">
-											<i className="icon-left ion-ios-cart" /> Only ₹ {getDiscountedPrice(dealOfTheDay.discount, dealOfTheDay.product_type?.originalPrice ?? 0)}
-										</a>
+										<Link href={getDealLink(dealOfTheDay)}>
+											<a className="lezada-button lezada-button--medium lezada-button--icon--left">
+												<i className="icon-left ion-ios-cart" /> Only ₹{" "}
+												{getDiscountedPrice(dealOfTheDay.discount, dealOfTheDay.product_type?.originalPrice ?? 0)}
+											</a>
+										</Link>
 									</div>
 								</div>
 							</div>
@@ -38,11 +42,25 @@ export default Deal;
 
 const formateDate = (isoDate: string): string => {
 	const date = new Date(isoDate);
-	console.log(`${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
+	console.log(
+		`${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+	);
 
 	return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 };
 
 export const getDiscountedPrice = (discount: number, originalPrice: number): number => {
 	return originalPrice - originalPrice * (discount / 100);
+};
+
+export const getDealLink = (deal: Deal_Of_The_Day): string => {
+	let link = "";
+
+	if (deal.productTypeId) {
+		link = `/product/${deal.product_type?.productId}`;
+	} else if (deal.productId) {
+		link = `/product/${deal.productId}`;
+	}
+
+	return link;
 };

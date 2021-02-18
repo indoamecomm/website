@@ -1,5 +1,7 @@
+import Link from "next/link";
 import React from "react";
 import {Banner_Type} from "../../generated/graphql";
+import {getBannerLink} from "./Banner";
 
 interface FeaturedProductProps {
 	featuredProduct: Banner_Type[];
@@ -85,8 +87,17 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 											data-paddingright="[0,0,0,0]"
 											data-paddingbottom="[0,0,0,0]"
 											data-paddingleft="[0,0,0,0]"
-											style={{zIndex: 5, backgroundColor: "rgb(236,244,246)", borderRadius: "280px 280px 280px 280px"}}>
-											<div className="rs-looped rs-pulse" data-easing data-speed={5} data-zoomstart="0.8" data-zoomend="1.1">
+											style={{
+												zIndex: 5,
+												backgroundColor: "rgb(236,244,246)",
+												borderRadius: "280px 280px 280px 280px",
+											}}>
+											<div
+												className="rs-looped rs-pulse"
+												data-easing
+												data-speed={5}
+												data-zoomstart="0.8"
+												data-zoomend="1.1">
 												{" "}
 											</div>
 										</div>
@@ -110,7 +121,13 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 											data-paddingbottom="[0,0,0,0]"
 											data-paddingleft="[0,0,0,0]"
 											style={{zIndex: 6}}>
-											<img src={featuredProduct.image ?? ""} alt="" data-ww="['788auto','762px','593px','422px']" data-hh="['402px','325px','253px','180px']" data-no-retina />{" "}
+											<img
+												src={featuredProduct.image ?? ""}
+												alt=""
+												data-ww="['788auto','762px','593px','422px']"
+												data-hh="['402px','325px','253px','180px']"
+												data-no-retina
+											/>{" "}
 										</div>
 										{/* LAYER NR. 3 */}
 										<div
@@ -360,9 +377,9 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 												cursor: "pointer",
 											}}>
 											<i className="fa fa-shopping-cart" aria-hidden="true" />
-											<a className="revslider-button" href="shop-left-sidebar.html">
-												ONLY {featuredProduct.cost}
-											</a>
+											<Link href={getBannerLink(featuredProduct.bannerProducts[0])}>
+												<a className="revslider-button">&nbsp; ONLY {featuredProduct.cost}</a>
+											</Link>
 										</div>
 									</li>
 								</ul>

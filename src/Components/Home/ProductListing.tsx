@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import {ProductType} from "../../generated/graphql";
 
@@ -142,16 +143,20 @@ const Product: React.FC<{productType: ProductType}> = (props) => {
 			<div className="single-widget-product">
 				{/*=======  image  =======*/}
 				<div className="single-widget-product__image">
-					<a href="shop-product-basic.html">
-						<img src={productType.imageUrl} className="img-fluid" alt={productType.name} />
-					</a>
+					<Link href={`/product/${productType.productId}`}>
+						<a>
+							<img src={productType.imageUrl} className="img-fluid" alt={productType.name} />
+						</a>
+					</Link>
 				</div>
 				{/*=======  End of image  =======*/}
 				{/*=======  content  =======*/}
 				<div className="single-widget-product__content">
 					<div className="single-widget-product__content__top">
 						<h3 className="product-title">
-							<a href="shop-product-basic.html">{productType.name}</a>
+							<Link href={`/product/${productType.productId}`}>
+								<a>{productType.name}</a>
+							</Link>
 						</h3>
 						<div className="price">
 							{productType.discountedPrice && <span className="main-price discounted">₹{productType.discountedPrice}</span>}

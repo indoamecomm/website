@@ -16,6 +16,8 @@ import toast, {Toaster} from "react-hot-toast";
 import Modal from "react-modal";
 import Spinner from "../../Components/Utils/Spinner";
 import {AddressEdit} from "../account";
+// import ReactTooltip from "react-tooltip";
+import dynamic from "next/dynamic";
 
 interface HeaderProps {
 	categories: Category[];
@@ -94,10 +96,14 @@ const Checkout: React.FC = () => {
 			variables: {
 				userId: user.id,
 			},
+			fetchPolicy: "network-only",
 		});
 		if (users && users.length > 0) {
 			setUserDetails(users[0]);
 			setCart(users[0].carts);
+			// if (users[0].addresses.length > 0) {
+			// 	setActiveAddress(users[0].addresses[0]);
+			// }
 		}
 		setQueryLoading(false);
 	};
@@ -107,6 +113,10 @@ const Checkout: React.FC = () => {
 			getUserCartItem();
 		}
 	}, [user, refetch]);
+
+	useEffect(() => {
+		console.log(refetch);
+	}, [refetch]);
 
 	const placeOrder = async (event: React.FormEvent<HTMLFormElement>) => {
 		console.log("place order called");
@@ -206,11 +216,12 @@ const Checkout: React.FC = () => {
 			setCouponLoading(false);
 		}
 	};
+	const ReactTooltip = dynamic(() => import("react-tooltip"), {ssr: false});
 
 	return (
 		<div className="checkout-page-area mb-130">
 			<Toaster position="bottom-center" />
-
+			<ReactTooltip id="main" place={"left"} type={"dark"} effect="solid" uuid="mytt" multiline={true} />
 			<div className="container">
 				<div className="row">
 					<div className="col-12">
@@ -262,7 +273,12 @@ const Checkout: React.FC = () => {
 											{/* Payment Method */}
 											{!loading ? (
 												<div className="col-12">
-													<button className="lezada-button lezada-button--medium mt-30" type="submit">
+													<button
+														data-for={!activeAddress && "main"}
+														style={!activeAddress ? {opacity: 0.7} : {opacity: 1}}
+														className="lezada-button lezada-button--medium mt-30"
+														data-tip={"Please add address"}
+														type="submit">
 														Place order
 													</button>
 												</div>
@@ -348,10 +364,11 @@ const CheckoutAddress: React.FC<{
 
 	useEffect(() => {
 		if (address && address.length > 0) {
+			console.log(address);
 			setAddressList({addresses: address});
 			setActiveAddress(address[0]);
 		}
-	}, [address]);
+	}, [address, refetch]);
 
 	return (
 		<>
@@ -494,7 +511,7 @@ const CheckoutCart: React.FC<{cart: Cart[]; activeCoupon: any}> = (props) => {
 						</li>
 					))}
 					{activeCoupon && (
-						<li key={"activeCouponjjjs"}>
+						<li key={"activeCoupon"}>
 							Coupon Applied
 							<span>-{activeCoupon.value}%</span>
 						</li>

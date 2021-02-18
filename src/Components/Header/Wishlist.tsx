@@ -16,7 +16,7 @@ const Wishlist = () => {
 
 	const apolloClient = initializeApollo();
 
-	const [wishlist, setWishlistStore] = useLocalStorage("wishlist", []);
+	const [wishlist] = useLocalStorage("wishlist", []);
 
 	const getUserWishlists = async () => {
 		if (user) {
@@ -50,8 +50,6 @@ const Wishlist = () => {
 			setWishlistItems(newItems);
 		}
 	};
-
-
 
 	useEffect(() => {
 		getUserWishlists();

@@ -1,5 +1,6 @@
+import Link from "next/link";
 import React from "react";
-import {Banner_Type} from "../../generated/graphql";
+import {Banner_Product, Banner_Type} from "../../generated/graphql";
 
 interface BannerProps {
 	shopCollection: Banner_Type[];
@@ -28,9 +29,19 @@ const Banner: React.FC<BannerProps> = (props) => {
 								className="rev_slider_wrapper fullwidthbanner-container"
 								data-alias="homepage-13"
 								data-source="gallery"
-								style={{margin: "0px auto", background: "transparent", padding: "0px", marginTop: "0px", marginBottom: "0px"}}>
+								style={{
+									margin: "0px auto",
+									background: "transparent",
+									padding: "0px",
+									marginTop: "0px",
+									marginBottom: "0px",
+								}}>
 								{/* START REVOLUTION SLIDER 5.4.7 auto mode */}
-								<div id="rev_slider_13_1" className="rev_slider fullwidthabanner" style={{display: "none"}} data-version="5.4.7">
+								<div
+									id="rev_slider_13_1"
+									className="rev_slider fullwidthabanner"
+									style={{display: "none"}}
+									data-version="5.4.7">
 									<ul>
 										<li
 											data-index="rs-33"
@@ -174,9 +185,9 @@ const Banner: React.FC<BannerProps> = (props) => {
 													WebkitBoxSizing: "border-box",
 													cursor: "pointer",
 												}}>
-												<a className="revslider-button-red" href="shop-left-sidebar.html">
-													{shopCollection1.title}
-												</a>
+												<Link href={getBannerLink(shopCollection1.bannerProducts[0])}>
+													<a className="revslider-button-red">{shopCollection1.title}</a>
+												</Link>
 											</div>
 										</li>
 										{/* SLIDE  */}
@@ -323,9 +334,9 @@ const Banner: React.FC<BannerProps> = (props) => {
 													WebkitBoxSizing: "border-box",
 													cursor: "pointer",
 												}}>
-												<a className="revslider-button-red" href="shop-left-sidebar.html">
-													{shopCollection2.heading}
-												</a>
+												<Link href={getBannerLink(shopCollection2.bannerProducts[0])}>
+													<a className="revslider-button-red">{shopCollection2.title}</a>
+												</Link>
 											</div>
 										</li>
 										{/* SLIDE  */}
@@ -472,9 +483,9 @@ const Banner: React.FC<BannerProps> = (props) => {
 													WebkitBoxSizing: "border-box",
 													cursor: "pointer",
 												}}>
-												<a className="revslider-button-red" href="shop-left-sidebar.html">
-													{shopCollection3.heading}
-												</a>
+												<Link href={getBannerLink(shopCollection3.bannerProducts[0])}>
+													<a className="revslider-button-red">{shopCollection3.title}</a>
+												</Link>
 											</div>
 										</li>
 									</ul>
@@ -490,26 +501,39 @@ const Banner: React.FC<BannerProps> = (props) => {
 							<div className="col-lg-12 mb-40">
 								{/*=======  hover zoom banner  =======*/}
 								<div className="single-banner single-banner--hoverzoom">
-									<a href="shop-left-sidebar.html">
-										<img src={highlyUsed1.image as string} className="img-fluid" alt={highlyUsed1.title as string} />
-										<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
-											<SplitWordToSentence word={highlyUsed2.title as string} />
-											<span className="price">&#8377; {highlyUsed1.cost}</span>
-										</span>
-									</a>
+									<Link href={getBannerLink(highlyUsed1.bannerProducts[0])}>
+										<a>
+											<img
+												src={highlyUsed1.image as string}
+												className="img-fluid"
+												alt={highlyUsed1.title as string}
+											/>
+											<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
+												<SplitWordToSentence word={highlyUsed2.title as string} />
+												<span className="price">&#8377; {highlyUsed1.cost}</span>
+											</span>
+										</a>
+									</Link>
 								</div>
 								{/*=======  End of hover zoom banner  =======*/}
 							</div>
 							<div className="col-lg-12">
 								{/*=======  hover zoom banner  =======*/}
 								<div className="single-banner single-banner--hoverzoom">
-									<a href="shop-left-sidebar.html">
-										<img src={highlyUsed2.image as string} className="img-fluid" alt={highlyUsed2.title as string} />
-										<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
-											<SplitWordToSentence word={highlyUsed2.title as string} />
-											<span className="price">&#8377; {highlyUsed2.cost}</span>
-										</span>
-									</a>
+									<Link href={getBannerLink(highlyUsed2.bannerProducts[0])}>
+										<a>
+											{" "}
+											<img
+												src={highlyUsed2.image as string}
+												className="img-fluid"
+												alt={highlyUsed2.title as string}
+											/>
+											<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
+												<SplitWordToSentence word={highlyUsed2.title as string} />
+												<span className="price">&#8377; {highlyUsed2.cost}</span>
+											</span>
+										</a>
+									</Link>
 								</div>
 								{/*=======  End of hover zoom banner  =======*/}
 							</div>
@@ -523,10 +547,6 @@ const Banner: React.FC<BannerProps> = (props) => {
 
 export default Banner;
 
-
-
-
-
 const SplitWordToSentence: React.FC<{word: string}> = (props) => {
 	const {word} = props;
 	return (
@@ -536,4 +556,18 @@ const SplitWordToSentence: React.FC<{word: string}> = (props) => {
 			{word.split(" ").slice(2).join(" ")}
 		</span>
 	);
+};
+
+export const getBannerLink = (bannerProduct: Banner_Product): string => {
+	let link = "";
+
+	if (bannerProduct.productTypeId) {
+		link = `/product/${bannerProduct.product_type?.productId}`;
+	} else if (bannerProduct.productId) {
+		link = `/product/${bannerProduct.productId}`;
+	} else if (bannerProduct.subCategoryId) {
+		link = `/category/${bannerProduct.subCategoryId}`;
+	}
+
+	return link;
 };

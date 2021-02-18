@@ -1,5 +1,7 @@
+import Link from "next/link";
 import React from "react";
 import {Banner_Type} from "../../generated/graphql";
+import {getBannerLink} from "./Banner";
 
 interface PromotedBannerProps {
 	promotedBanner: Banner_Type[];
@@ -17,11 +19,14 @@ const PromotedBanner: React.FC<PromotedBannerProps> = (props) => {
 					<div className="col-md-6 mb-30">
 						{/*=======  single banner  =======*/}
 						<div className="single-banner single-banner--hoverborder">
-							<a className="banner-link" href="shop-left-sidebar.html" />
+							<Link href={getBannerLink(promotedBanner1.bannerProducts[0])}>
+								<a className="banner-link" />
+							</Link>
 							<img src={promotedBanner1?.image ?? undefined} className="img-fluid" alt="" />
 							<div className="banner-content banner-content--black-left">
 								<p>
-									<span className="big-text">{promotedBanner1.title}</span> <span className="small-text d-block">{promotedBanner1.heading}</span>
+									<span className="big-text">{promotedBanner1.title}</span>{" "}
+									<span className="small-text d-block">{promotedBanner1.heading}</span>
 								</p>
 							</div>
 						</div>
@@ -30,11 +35,15 @@ const PromotedBanner: React.FC<PromotedBannerProps> = (props) => {
 					<div className="col-md-6 mb-30">
 						{/*=======  single banner  =======*/}
 						<div className="single-banner single-banner--hoverborder">
-							<a className="banner-link" href="shop-left-sidebar.html" />
+							<Link href={getBannerLink(promotedBanner2.bannerProducts[0])}>
+								<a className="banner-link" />
+							</Link>
+
 							<img src={promotedBanner2?.image ?? undefined} className="img-fluid" alt="" />
 							<div className="banner-content banner-content--black-left">
 								<p>
-									<span className="big-text">{promotedBanner2.title}</span> <span className="small-text d-block">{promotedBanner2.heading}</span>
+									<span className="big-text">{promotedBanner2.title}</span>{" "}
+									<span className="small-text d-block">{promotedBanner2.heading}</span>
 								</p>
 							</div>
 						</div>

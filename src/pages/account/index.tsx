@@ -581,7 +581,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 					},
 				});
 				if (data.update_addresses.affected_rows > 0) {
-					setRefetch && setRefetch(() => (refetch ? refetch : 0) + 1);
+					setRefetch && setRefetch((refetch ? refetch : 1) + 1);
 					//@ts-ignore
 					setData(null);
 					toast.success("Address Inserted Successfully");
