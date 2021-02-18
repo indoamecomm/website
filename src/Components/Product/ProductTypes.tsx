@@ -9,6 +9,7 @@ import {GetUserCartCount, GetUserWishlistCount} from "../../../queries/userQuery
 import {initializeApollo} from "../../apollo";
 import {Product_Type} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
+import {useLocalStorage} from "../../hooks/useLocalStorage";
 import Spinner from "../Utils/Spinner";
 
 const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; subCategory: string}> = (props) => {
@@ -26,68 +27,88 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 
 	const [insertToUserCart] = useMutation(InsertToUserCart);
 	const [insertWishlist] = useMutation(InsertWishlist);
+	const [wishlist, setWishlist] = useLocalStorage("wishlist", []);
+	const [cartStore, setCartStore] = useLocalStorage("cart", []);
 
 	const checkCartExist = async () => {
-		const data = await apolloClient.subscribe({
-			query: GetUserCartCount,
-			variables: {
-				userId: user.id,
-				productTypeId: productType.id,
-			},
-		});
-
-		if (data) {
-			data.subscribe(({data: {users_aggregate}}) => {
-				setCartExists(users_aggregate.aggregate.count > 0);
+		if (user) {
+			const data = await apolloClient.subscribe({
+				query: GetUserCartCount,
+				variables: {
+					userId: user.id,
+					productTypeId: productType.id,
+				},
 			});
-			// setCartItems(data.data.cart);
+
+			if (data) {
+				data.subscribe(({data: {users_aggregate}}) => {
+					setCartExists(users_aggregate.aggregate.count > 0);
+				});
+				// setCartItems(data.data.cart);
+			}
+		} else {
+			console.log(cartStore, checkIfJsonDuplicates(cartStore, productType.id, "productTypeId"));
+			setCartExists(checkIfJsonDuplicates(cartStore, productType.id, "productTypeId"));
 		}
 	};
 
 	const checkWishlistExist = async () => {
-		const data = await apolloClient.subscribe({
-			query: GetUserWishlistCount,
-			variables: {
-				userId: user.id,
-				productTypeId: productType.id,
-			},
-		});
-
-		if (data) {
-			data.subscribe(({data: {users_aggregate}}) => {
-				console.log(users_aggregate.aggregate.count > 0, "Product Type ", productType.name);
-				setWishlistExists(users_aggregate.aggregate.count > 0);
+		if (user) {
+			const data = await apolloClient.subscribe({
+				query: GetUserWishlistCount,
+				variables: {
+					userId: user.id,
+					productTypeId: productType.id,
+				},
 			});
-			// setCartItems(data.data.cart);
+
+			if (data) {
+				data.subscribe(({data: {users_aggregate}}) => {
+					console.log(users_aggregate.aggregate.count > 0, "Product Type ", productType.name);
+					setWishlistExists(users_aggregate.aggregate.count > 0);
+				});
+				// setCartItems(data.data.cart);
+			}
+		} else {
+			setWishlistExists(wishlist.includes(productType.id));
 		}
 	};
 
 	useEffect(() => {
-		if (user) {
-			checkCartExist();
-			checkWishlistExist();
-		}
-	}, [user]);
+		checkCartExist();
+		checkWishlistExist();
+	}, [user, cartStore, wishlist]);
 
 	const addToCart = async () => {
 		try {
-			setLoading(true);
+			if (user) {
+				setLoading(true);
 
-			const {
-				data: {insert_cart},
-			} = await insertToUserCart({
-				variables: {
-					userId: user.id,
-					productTypeId: productType.id,
-					count,
-				},
-			});
-			setLoading(false);
+				const {
+					data: {insert_cart},
+				} = await insertToUserCart({
+					variables: {
+						userId: user.id,
+						productTypeId: productType.id,
+						count,
+					},
+				});
+				setLoading(false);
 
-			if (insert_cart && insert_cart.affected_rows > 0) {
-				toast.success("Product Added to your cart successfully");
+				if (insert_cart && insert_cart.affected_rows > 0) {
+					toast.success("Product Added to your cart successfully");
+				} else {
+					toast.error("Some unknown error occurred");
+				}
 			} else {
-				toast.error("Some unknown error occurred");
+				let newCartStore: any = [...cartStore];
+				if (checkIfJsonDuplicates(newCartStore, productType.id, "productTypeId")) {
+					newCartStore = newCartStore.filter((item) => item.productTypeId !== productType.id);
+				} else {
+					newCartStore.push({productTypeId: productType.id, count});
+				}
+				newCartStore = new Set(newCartStore);
+				setCartStore([...newCartStore]);
 			}
 		} catch (error) {
 			toast.error(error.message);
@@ -96,22 +117,34 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 
 	const addToWishlist = async () => {
 		try {
-			setWishlistLoading(true);
+			if (user) {
+				setWishlistLoading(true);
 
-			const {
-				data: {insert_wishlists},
-			} = await insertWishlist({
-				variables: {
-					userId: user.id,
-					productTypeId: productType.id,
-				},
-			});
-			setWishlistLoading(false);
+				const {
+					data: {insert_wishlists},
+				} = await insertWishlist({
+					variables: {
+						userId: user.id,
+						productTypeId: productType.id,
+					},
+				});
+				setWishlistLoading(false);
 
-			if (insert_wishlists && insert_wishlists.affected_rows > 0) {
-				toast.success("Product Added to your wishlist successfully");
+				if (insert_wishlists && insert_wishlists.affected_rows > 0) {
+					toast.success("Product Added to your wishlist successfully");
+				} else {
+					toast.error("Some unknown error occurred");
+				}
 			} else {
-				toast.error("Some unknown error occurred");
+				console.log("Here", wishlist);
+				let newWishlist: any = [...wishlist];
+				if (newWishlist.includes(productType.id)) {
+					newWishlist = newWishlist.filter((item) => item !== productType.id);
+				} else {
+					newWishlist.push(productType.id);
+				}
+				newWishlist = new Set(newWishlist);
+				setWishlist([...newWishlist]);
 			}
 		} catch (error) {
 			toast.error(error.message);
@@ -135,8 +168,10 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 							<h2>{productType.name}</h2>
 						</div>
 						<div className="shop-product__price mb-30">
-							{productType.originalPrice && <span className="main-price discounted">&#8377; {productType.originalPrice}</span>}
-							<span className="discounted-price">&#8377; {productType.discountedPrice}</span>
+							{productType.originalPrice && (
+								<span className="main-price discounted">&#8377; {productType.originalPrice}</span>
+							)}
+							<span className="discounted-price">&#8377; {getDiscountedPrice(productType)}</span>
 						</div>
 						<div className="shop-product__short-desc mb-50">
 							{productType.plant && (
@@ -170,7 +205,9 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 								<>
 									<strong>Season</strong>
 									<br />
-									<span style={{textTransform: "capitalize"}}>{productType.product_seasons.map((season) => season.season.name).join(" | ")}</span>
+									<span style={{textTransform: "capitalize"}}>
+										{productType.product_seasons.map((season) => season.season.name).join(" | ")}
+									</span>
 									<br />
 									<br />
 								</>
@@ -178,20 +215,24 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 						</div>
 						{/*=======  End of other info table  =======*/}
 						{/*=======  shop product quantity block  =======*/}
-						<div className="shop-product__block shop-product__block--quantity mb-40">
-							<div className="shop-product__block__title">Quantity</div>
-							<div className="shop-product__block__value">
-								<div className="pro-qty d-inline-block mx-0 pt-0">
-									<a className="dec qty-btn" onClick={() => setCount((oldCount) => (oldCount - 1 > 0 ? oldCount - 1 : 1))}>
-										-
-									</a>
-									<input type="text" value={count} onChange={(event) => setCount(parseInt(event.target.value))} />
-									<a className="inc qty-btn" onClick={() => setCount((oldCount) => oldCount + 1)}>
-										+
-									</a>
+						{!cartExists && (
+							<div className="shop-product__block shop-product__block--quantity mb-40">
+								<div className="shop-product__block__title">Quantity</div>
+								<div className="shop-product__block__value">
+									<div className="pro-qty d-inline-block mx-0 pt-0">
+										<a
+											className="dec qty-btn"
+											onClick={() => setCount((oldCount) => (oldCount - 1 > 0 ? oldCount - 1 : 1))}>
+											-
+										</a>
+										<input type="text" value={count} onChange={(event) => setCount(parseInt(event.target.value))} />
+										<a className="inc qty-btn" onClick={() => setCount((oldCount) => oldCount + 1)}>
+											+
+										</a>
+									</div>
 								</div>
 							</div>
-						</div>
+						)}
 						{/*=======  End of shop product quantity block  =======*/}
 						{/*=======  shop product buttons  =======*/}
 						<div className="shop-product__buttons mb-40">
@@ -270,7 +311,11 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 										data-tippy-delay={50}
 										data-tippy-arrow="true"
 										data-tippy-theme="sharpborder">
-										{wishlistExists ? <i className="ion-android-favorite" /> : <i className="ion-android-favorite-outline" />}
+										{wishlistExists ? (
+											<i className="ion-android-favorite" />
+										) : (
+											<i className="ion-android-favorite-outline" />
+										)}
 									</a>
 								</span>
 							)}
@@ -306,3 +351,19 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 };
 
 export default ProductTypes;
+
+export const checkIfJsonDuplicates = (jsonObject: any[], checkElement: string | number, checkField: string | number): boolean => {
+	for (let i = 0; i < jsonObject.length; i++) {
+		if (jsonObject[i][checkField] === checkElement) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
+const getDiscountedPrice = (productType: Product_Type): number => {
+	let discountPrice = productType.discountedPrice ?? 0;
+
+	return discountPrice;
+};

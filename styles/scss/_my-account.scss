@@ -96,10 +96,28 @@
 	}
 	h3 {
 		font-size: 20px;
-		border-bottom: 1px dashed #ccc;
+		border-bottom: 1px dashed $primary-web;
 		padding-bottom: 10px;
 		margin-bottom: 25px;
 		font-weight: 600;
+		color: $primary-web;
+	}
+	h4 {
+		font-size: 0;
+		padding-bottom: 0;
+		border-bottom: 1px dashed $primary-web;
+		margin-bottom: 25px;
+		font-weight: 600;
+		line-height: 0;
+		color: $primary-web;
+	}
+
+	h2 {
+		font-size: 20px;
+		padding-bottom: 0;
+		margin-bottom: 0;
+		font-weight: 0;
+		color: $primary-web;
 	}
 	.welcome {
 		a {

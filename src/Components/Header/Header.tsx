@@ -5,6 +5,7 @@ import {GetUserTotalCartCount, GetUserTotalWishlistCount} from "../../../queries
 import {initializeApollo} from "../../apollo";
 import {Category, Store_Locations} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
+import {useLocalStorage} from "../../hooks/useLocalStorage";
 import Cart from "./Cart";
 import Wishlist from "./Wishlist";
 
@@ -16,6 +17,9 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = (props) => {
 	const {categories, storeLocations} = props;
 	const [cartCount, setCartCount] = useState<number>(0);
+	const [wishlistStore] = useLocalStorage("wishlist", []);
+	const [cartStore] = useLocalStorage("cart", []);
+
 	const [wishlistCount, setWishlistCount] = useState<number>(0);
 
 	const {user} = useAuth();
@@ -37,6 +41,10 @@ const Header: React.FC<HeaderProps> = (props) => {
 			// setCartItems(data.data.cart);
 		}
 	};
+	useEffect(() => {
+		setWishlistCount(wishlistStore && wishlistStore.length > 0 ? wishlistStore.length : 0);
+		setCartCount(cartStore && cartStore.length > 0 ? cartStore.length : 0);
+	}, [wishlistStore, cartStore]);
 
 	const checkWishlistExist = async () => {
 		const data = await apolloClient.subscribe({
@@ -62,7 +70,6 @@ const Header: React.FC<HeaderProps> = (props) => {
 	}, [user]);
 
 	return (
-		
 		<header className="header header-box-topbar header-sticky">
 			<Wishlist />
 			<Cart />

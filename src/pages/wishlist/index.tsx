@@ -13,6 +13,9 @@ import {useAuth} from "../../hooks/useAuth";
 import {useMutation} from "@apollo/client";
 import Spinner from "../../Components/Utils/Spinner";
 import Link from "next/link";
+import {GetProductTypesById} from "../../../queries/productQuery";
+import {useLocalStorage} from "../../hooks/useLocalStorage";
+import {checkIfJsonDuplicates} from "../../Components/Product/ProductTypes";
 
 interface HeaderProps {
 	categories: Category[];
@@ -56,7 +59,12 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"Wishlist"} finalName={"WISHLIST"} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
+						title={"Wishlist"}
+						finalName={"WISHLIST"}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 					<WishlistMain />
 				</div>
 			</main>
@@ -70,30 +78,48 @@ const WishlistMain = () => {
 	const {user} = useAuth();
 
 	const [wishlistItems, setWishlistItems] = useState<Wishlists[]>([]);
+	const [wishlist, setWishlistStore] = useLocalStorage("wishlist", []);
 
 	const apolloClient = initializeApollo();
 
-	const getUserWishlists = async () => {
-		const data = await apolloClient.subscribe({
-			query: GetUserWishlist,
-			variables: {
-				userId: user.id,
-			},
-		});
 
-		if (data) {
-			data.subscribe(({data: {wishlists}}) => {
-				setWishlistItems(wishlists);
+
+	const getUserWishlists = async () => {
+		if (user) {
+			const data = await apolloClient.subscribe({
+				query: GetUserWishlist,
+				variables: {
+					userId: user.id,
+				},
 			});
-			// setCartItems(data.data.cart);
+
+			if (data) {
+				data.subscribe(({data: {wishlists}}) => {
+					setWishlistItems(wishlists);
+				});
+				// setCartItems(data.data.cart);
+			}
+		} else {
+			const {
+				data: {product_type},
+			} = await apolloClient.query({
+				query: GetProductTypesById,
+				variables: {
+					productTypeArray: wishlist ?? [],
+				},
+			});
+			console.log(product_type);
+			const newItems = product_type.map((product) => ({
+				id: product.id,
+				product_type: JSON.parse(JSON.stringify(product)),
+			}));
+			setWishlistItems(newItems);
 		}
 	};
 
 	useEffect(() => {
-		if (user) {
-			getUserWishlists();
-		}
-	}, [user]);
+		getUserWishlists();
+	}, [user, wishlist]);
 
 	return (
 		<div className="shopping-cart-area mb-130">
@@ -141,24 +167,42 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 	const [count, setCount] = useState<number>(1);
 	const [deleteWishlist] = useMutation(DeleteWishlist);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [wishlistStore, setWishlistStore] = useLocalStorage("wishlist", []);
+	const [cartStore, setCartStore] = useLocalStorage("cart", []);
 
 	const addToCart = async () => {
 		try {
-			setCartLoading(true);
-			const {data} = await addToCartFromWishlist({
-				variables: {
-					wishlistId: wishlist.id,
-					count,
-					userId: user.id,
-					productTypeId: wishlist.product_type.id,
-				},
-			});
-			setCartLoading(false);
+			if (user) {
+				setCartLoading(true);
+				const {data} = await addToCartFromWishlist({
+					variables: {
+						wishlistId: wishlist.id,
+						count,
+						userId: user.id,
+						productTypeId: wishlist.product_type.id,
+					},
+				});
+				setCartLoading(false);
 
-			if (data && data.insert_cart.affected_rows > 0 && data.delete_wishlists.affected_rows > 0) {
-				toast.success("Item added from wishlist to cart successfully");
+				if (data && data.insert_cart.affected_rows > 0 && data.delete_wishlists.affected_rows > 0) {
+					toast.success("Item added from wishlist to cart successfully");
+				} else {
+					toast.error("Some unknown error occurred");
+				}
 			} else {
-				toast.error("Some unknown error occurred");
+				let newCartStore: any = [...cartStore];
+				if (checkIfJsonDuplicates(newCartStore, wishlist.product_type.id, "productTypeId")) {
+					newCartStore = newCartStore.filter((item) => item.productTypeId !== wishlist.product_type.id);
+				} else {
+					newCartStore.push({productTypeId: wishlist.product_type.id, count});
+				}
+				newCartStore = new Set(newCartStore);
+				setCartStore([...newCartStore]);
+
+				let newWishlist: any = [...wishlistStore];
+				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
+				newWishlist = new Set(newWishlist);
+				setWishlistStore([...newWishlist]);
 			}
 		} catch (error) {
 			setCartLoading(false);
@@ -168,20 +212,27 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 
 	const deleteWishlistItem = async () => {
 		try {
-			setLoading(true);
-			const {
-				data: {delete_wishlists},
-			} = await deleteWishlist({
-				variables: {
-					wishlistId: wishlist.id,
-				},
-			});
-			setLoading(false);
+			if (user) {
+				setLoading(true);
+				const {
+					data: {delete_wishlists},
+				} = await deleteWishlist({
+					variables: {
+						wishlistId: wishlist.id,
+					},
+				});
+				setLoading(false);
 
-			if (delete_wishlists && delete_wishlists.affected_rows > 0) {
-				toast.success(" Item removed from wishlist successfully");
+				if (delete_wishlists && delete_wishlists.affected_rows > 0) {
+					toast.success(" Item removed from wishlist successfully");
+				} else {
+					toast.error("Some unknown error occurred");
+				}
 			} else {
-				toast.error("Some unknown error occurred");
+				let newWishlist: any = [...wishlistStore];
+				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
+				newWishlist = new Set(newWishlist);
+				setWishlistStore([...newWishlist]);
 			}
 		} catch (error) {
 			setLoading(false);

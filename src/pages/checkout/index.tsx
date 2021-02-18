@@ -15,6 +15,7 @@ import {useMutation} from "@apollo/client";
 import toast, {Toaster} from "react-hot-toast";
 import Modal from "react-modal";
 import Spinner from "../../Components/Utils/Spinner";
+import {AddressEdit} from "../account";
 
 interface HeaderProps {
 	categories: Category[];
@@ -50,7 +51,12 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"Checkout"} finalName={"CHECKOUT"} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
+						title={"Checkout"}
+						finalName={"CHECKOUT"}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 					<Checkout />
 				</div>
 			</main>
@@ -65,7 +71,6 @@ const Checkout: React.FC = () => {
 	const {user} = useAuth();
 	const [cart, setCart] = useState<Cart[]>([]);
 	const [userDetails, setUserDetails] = useState<User>();
-	const [address, setAddress] = useState<Address[]>([]);
 
 	const apolloClient = initializeApollo();
 
@@ -78,6 +83,7 @@ const Checkout: React.FC = () => {
 
 	const [couponName, setCouponName] = useState<string>("");
 	const [activeCoupon, setActiveCoupon] = useState<any>(null);
+	const [refetch, setRefetch] = useState<number>(1);
 
 	const getUserCartItem = async () => {
 		setQueryLoading(true);
@@ -89,10 +95,9 @@ const Checkout: React.FC = () => {
 				userId: user.id,
 			},
 		});
-		if (users) {
+		if (users && users.length > 0) {
 			setUserDetails(users[0]);
 			setCart(users[0].carts);
-			setAddress(users[0].addresses);
 		}
 		setQueryLoading(false);
 	};
@@ -101,9 +106,10 @@ const Checkout: React.FC = () => {
 		if (user) {
 			getUserCartItem();
 		}
-	}, [user]);
+	}, [user, refetch]);
 
 	const placeOrder = async (event: React.FormEvent<HTMLFormElement>) => {
+		console.log("place order called");
 		try {
 			event.preventDefault();
 			setLoading(true);
@@ -210,7 +216,7 @@ const Checkout: React.FC = () => {
 					<div className="col-12">
 						<div className="lezada-form">
 							{/* Checkout Form s*/}
-							<form className="checkout-form" onSubmit={placeOrder}>
+							<form className="checkout-form" onSubmit={activeAddress ? placeOrder : undefined}>
 								<div className="row row-40">
 									{!queryLoading ? (
 										<CheckoutUserForm
@@ -218,6 +224,8 @@ const Checkout: React.FC = () => {
 											address={userDetails && userDetails.addresses ? userDetails.addresses : null}
 											activeAddress={activeAddress}
 											setActiveAddress={setActiveAddress}
+											setRefetch={setRefetch}
+											refetch={refetch}
 										/>
 									) : (
 										<div className="col-lg-7 mb-20 d-flex justify-content-center">
@@ -230,12 +238,21 @@ const Checkout: React.FC = () => {
 
 											<CheckoutCart cart={cart} activeCoupon={activeCoupon} />
 											<div className="col-6">
-												<input type="text" placeholder="Coupon" value={couponName} onChange={(event) => setCouponName(event.target.value)} />
+												<input
+													type="text"
+													placeholder="Coupon"
+													value={couponName}
+													onChange={(event) => setCouponName(event.target.value)}
+												/>
 											</div>
 
 											<div className="col-4">
 												{!couponLoading ? (
-													<button className="lezada-button lezada-button--medium" type="button" onClick={checkCoupon} disabled={couponName.length < 5}>
+													<button
+														className="lezada-button lezada-button--medium"
+														type="button"
+														onClick={checkCoupon}
+														disabled={couponName.length < 5}>
 														Apply
 													</button>
 												) : (
@@ -266,8 +283,15 @@ const Checkout: React.FC = () => {
 	);
 };
 
-const CheckoutUserForm: React.FC<{user: User | undefined; address: Address[] | any; activeAddress: any; setActiveAddress: (value: any) => void}> = (props) => {
-	const {user, address, activeAddress, setActiveAddress} = props;
+const CheckoutUserForm: React.FC<{
+	user: User | undefined;
+	address: Address[] | any;
+	activeAddress: any;
+	setActiveAddress: (value: any) => void;
+	refetch: number;
+	setRefetch: (value: any) => void;
+}> = (props) => {
+	const {user, address, activeAddress, setActiveAddress, refetch, setRefetch} = props;
 
 	return (
 		<div className="col-lg-7 mb-20">
@@ -292,18 +316,34 @@ const CheckoutUserForm: React.FC<{user: User | undefined; address: Address[] | a
 						<label>Phone no</label>
 						<p>{user?.phoneNumber}</p>
 					</div>
-					<CheckoutAddress address={address} activeAddress={activeAddress} setActiveAddress={setActiveAddress} />
+					<CheckoutAddress
+						address={address}
+						activeAddress={activeAddress}
+						setActiveAddress={setActiveAddress}
+						user={user}
+						setRefetch={setRefetch}
+						refetch={refetch}
+					/>
 				</div>
 			</div>
 		</div>
 	);
 };
 
-const CheckoutAddress: React.FC<{address: any; activeAddress: Address; setActiveAddress: (value: any) => void}> = (props) => {
-	const {address, activeAddress, setActiveAddress} = props;
+const CheckoutAddress: React.FC<{
+	address: any;
+	activeAddress: Address;
+	setActiveAddress: (value: any) => void;
+	user: any;
+	refetch: number;
+	setRefetch: (value: any) => void;
+}> = (props) => {
+	const {address, activeAddress, setActiveAddress, user, refetch, setRefetch} = props;
+	const [openAddressModal, setOpenAddressModal] = useState<boolean>(false);
 
 	const [addressListModal, setAddressListModal] = useState<boolean>(false);
 	const [addressList, setAddressList] = useState<any>(false);
+
 	// const [activeAddress, setActiveAddress] = useState<Address | null>(null);
 
 	useEffect(() => {
@@ -315,28 +355,57 @@ const CheckoutAddress: React.FC<{address: any; activeAddress: Address; setActive
 
 	return (
 		<>
-			<div className="col-12 mb-20">
-				<AddressListModal open={addressListModal} setOpen={setAddressListModal} data={addressList} setData={setAddressList} onClickAddress={setActiveAddress} activeAddress={activeAddress} />
-				<label>Address</label>
-				<p>{activeAddress?.lineOne}</p>
-				<p>{activeAddress?.lineTwo}</p>
-			</div>
-			<div className="col-md-6 col-12 mb-20">
-				<label>Town/City</label>
-				<p>{activeAddress?.town}</p>
-			</div>
-			<div className="col-md-6 col-12 mb-20">
-				<label>State</label>
-				<p>{activeAddress?.state}</p>
-			</div>
-			<div className="col-md-6 col-12 mb-20">
-				<label>Zip Code</label>
-				<p>{activeAddress?.zipcode}</p>
-			</div>
+			<AddressListModal
+				open={addressListModal}
+				setOpen={setAddressListModal}
+				data={addressList}
+				setData={setAddressList}
+				onClickAddress={setActiveAddress}
+				activeAddress={activeAddress}
+			/>
+
+			<AddressEdit
+				open={openAddressModal}
+				setOpen={setOpenAddressModal}
+				userId={user && user.id}
+				setRefetch={setRefetch}
+				refetch={refetch}
+			/>
+			{activeAddress && (
+				<>
+					<div className="col-12 mb-20">
+						<label>Address</label>
+						<p>{activeAddress?.lineOne}</p>
+						<p>{activeAddress?.lineTwo}</p>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>Town/City</label>
+						<p>{activeAddress?.town}</p>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>State</label>
+						<p>{activeAddress?.state}</p>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>Zip Code</label>
+						<p>{activeAddress?.zipcode}</p>
+					</div>
+				</>
+			)}
 			<div className=" col-12 mb-20">
-				<button className="lezada-button lezada-button--medium mt-30" type="button" onClick={() => setAddressListModal(true)}>
-					Use different address ?
-				</button>
+				{activeAddress ? (
+					<button className="lezada-button lezada-button--medium mt-30" type="button" onClick={() => setAddressListModal(true)}>
+						Use different address ?
+					</button>
+				) : (
+					<button
+						className="lezada-button lezada-button--medium mt-30"
+						type="button"
+						role="button"
+						onClick={() => setOpenAddressModal(true)}>
+						Add Address
+					</button>
+				)}
 			</div>
 		</>
 	);
@@ -375,9 +444,14 @@ const AddressListModal: React.FC<ModalProps> = (props) => {
 							data.addresses.map((activeAddress) => (
 								<div
 									key={activeAddress.id}
-									className={`address__container ${activeAddress.id === selectedAddress.id ? "address__container-active" : ""}`}
-									//@ts-ignore
-									onClick={() => onClickAddress(activeAddress ? activeAddress : "")}>
+									className={`address__container ${
+										activeAddress.id === selectedAddress.id ? "address__container-active" : ""
+									}`}
+									onClick={() => {
+										//@ts-ignore
+										onClickAddress(activeAddress ? activeAddress : "");
+										setOpen(false);
+									}}>
 									<div className="col-12">
 										<p className="address__name">{activeAddress?.name}</p>
 									</div>
@@ -414,20 +488,17 @@ const CheckoutCart: React.FC<{cart: Cart[]; activeCoupon: any}> = (props) => {
 				</h4>
 				<ul>
 					{cart.map((cartItem) => (
-						<>
-							<li key={cartItem.id}>
-								{cartItem.product_type.name} X {cartItem.count}
-								<span>₹{cartItem.count * (cartItem.product_type.discountedPrice ?? 0)}</span>
-							</li>
-
-							{activeCoupon && (
-								<li key={"activeCoupon"}>
-									Coupon Applied
-									<span>-{activeCoupon.value}%</span>
-								</li>
-							)}
-						</>
+						<li key={cartItem.id}>
+							{cartItem.product_type.name} X {cartItem.count}
+							<span>₹{cartItem.count * (cartItem.product_type.discountedPrice ?? 0)}</span>
+						</li>
 					))}
+					{activeCoupon && (
+						<li key={"activeCouponjjjs"}>
+							Coupon Applied
+							<span>-{activeCoupon.value}%</span>
+						</li>
+					)}
 				</ul>
 				<p>
 					Sub Total <span>₹{getSubTotal(cart, activeCoupon && activeCoupon.value)}</span>

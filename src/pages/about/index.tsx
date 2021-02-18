@@ -24,11 +24,36 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
+				<link href="/revolution/css/settings.css" rel="stylesheet" />
+				<link href="/revolution/css/navigation.css" rel="stylesheet" />
+				<link href="/revolution/custom-setting.css" rel="stylesheet" />
+				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+				<script src="/js/vendor/jquery.min.js"></script>
+				<script src="/js/popper.min.js"></script>
+				<script src="/js/bootstrap.min.js"></script>
+				<script src="/js/plugins.js"></script>
+				<script src="/js/main.js"></script>
+
+				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
+				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
+				<script src="/revolution/revolution-active.js"></script>
+
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"About Us"} finalName={"ABOUT US"} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
+						title={"About Us"}
+						finalName={"ABOUT US"}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 
 					{/*=============================================
 	=            section title  container      =
@@ -42,8 +67,9 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 										<p className="subtitle subtitle--deep">WHO WE ARE</p>
 										<h1>Indo American Hybrid Seeds</h1>
 										<p className="subtitle">
-											Indo-American Hybrid Seeds (India) Pvt. Ltd. came into being on the 4th of November, 1965. Established by our Chairman Padmashree Dr. Manmohan Attavar, its
-											primary focus was supplying seeds of the highest quality to the American market.
+											Indo-American Hybrid Seeds (India) Pvt. Ltd. came into being on the 4th of November, 1965.
+											Established by our Chairman Padmashree Dr. Manmohan Attavar, its primary focus was supplying
+											seeds of the highest quality to the American market.
 										</p>
 									</div>
 									{/*=======  End of section title  =======*/}
@@ -81,19 +107,23 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 									<div className="lezada-widget lezada-widget--about mb-35">
 										<h2 className="widget-title mb-25">OUR PROCESS</h2>
 										<p className="widget-content">
-											we take you through our method; the Journey of a Seed at I AHS. In a brief manner, you can see the steps to our meticulously planned process and be further
-											assured that only seeds of the best quality reach you.
+											we take you through our method; the Journey of a Seed at I AHS. In a brief manner, you can see
+											the steps to our meticulously planned process and be further assured that only seeds of the best
+											quality reach you.
 										</p>
 									</div>
 									<div className="lezada-widget lezada-widget--about mb-35">
 										<h2 className="widget-title mb-25">RESEARCH AND DEVELOPMENT</h2>
-										<p className="widget-content">Our highly focused R&amp;D team develops products based on farmer requirements in different parts of the country.</p>
+										<p className="widget-content">
+											Our highly focused R&amp;D team develops products based on farmer requirements in different
+											parts of the country.
+										</p>
 									</div>
 									<div className="lezada-widget lezada-widget--about">
 										<h2 className="widget-title mb-25">GARDEN CENTER</h2>
 										<p className="widget-content">
-											The IAHS Garden Centre has been a trusted source of plants for over 40 years. We possess a wide variety of exotic ornamentals, flowering and foliage plants,
-											as well as cacti and succulents.
+											The IAHS Garden Centre has been a trusted source of plants for over 40 years. We possess a wide
+											variety of exotic ornamentals, flowering and foliage plants, as well as cacti and succulents.
 										</p>
 									</div>
 								</div>
@@ -101,10 +131,14 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 									{/*=======  about page content  =======*/}
 									<div className="about-page-text">
 										<p className=" mb-35">
-											Over the years, through precise research and development IAHS has developed wide range of products that are engineered to suit various agro-climatic
-											conditions, thus enabling us to cater to domestic as well as international markets.
+											Over the years, through precise research and development IAHS has developed wide range of
+											products that are engineered to suit various agro-climatic conditions, thus enabling us to cater
+											to domestic as well as international markets.
 										</p>
-										<a href="https://indamseeds.com/about_us.html" className="lezada-button lezada-button--medium lezada-button--icon--left" target="newwindow">
+										<a
+											href="https://indamseeds.com/about_us.html"
+											className="lezada-button lezada-button--medium lezada-button--icon--left"
+											target="newwindow">
 											{" "}
 											<i className="icon-left ion-plus" /> visit website
 										</a>
@@ -155,7 +189,8 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 										<div className="col">
 											<div className="testimonial-item multi-testimonial-single-item">
 												<div className="multi-testimonial-single-item__text">
-													I can say your dedication is second to none. I like the fact that you are strongly proud of your work in every way.
+													I can say your dedication is second to none. I like the fact that you are strongly proud
+													of your work in every way.
 												</div>
 												<div className="multi-testimonial-single-item__author-info">
 													<div className="content">
@@ -170,7 +205,8 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 										<div className="col">
 											<div className="testimonial-item multi-testimonial-single-item">
 												<div className="multi-testimonial-single-item__text">
-													This has already been my fifth-time purchasing their products. I have been highly satisfied with their work.
+													This has already been my fifth-time purchasing their products. I have been highly
+													satisfied with their work.
 												</div>
 												<div className="multi-testimonial-single-item__author-info">
 													<div className="content">
@@ -184,7 +220,9 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 										{/*=======  single testimonial  =======*/}
 										<div className="col">
 											<div className="testimonial-item multi-testimonial-single-item">
-												<div className="multi-testimonial-single-item__text">There's nothing would satisfy me much more than beautiful seeds for my garderner.</div>
+												<div className="multi-testimonial-single-item__text">
+													There's nothing would satisfy me much more than beautiful seeds for my garderner.
+												</div>
 												<div className="multi-testimonial-single-item__author-info">
 													<div className="content">
 														<p className="name">Florence Pittman</p>
@@ -198,7 +236,8 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 										<div className="col">
 											<div className="testimonial-item multi-testimonial-single-item">
 												<div className="multi-testimonial-single-item__text">
-													Five-star for good customer support. They have the ability to resolve any issue in less than the time for a coffee cup.
+													Five-star for good customer support. They have the ability to resolve any issue in less
+													than the time for a coffee cup.
 												</div>
 												<div className="multi-testimonial-single-item__author-info">
 													<div className="content">

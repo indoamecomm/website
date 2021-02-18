@@ -8,13 +8,14 @@ import {Category, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
 import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
-import {GetAccountDetails, UpdateUserAccountDetails} from "../../../queries/userQuery";
+import {GetAccountDetails, InsertAddress, UpdateAddress, UpdateUserAccountDetails} from "../../../queries/userQuery";
 import {useState} from "react";
 import {format} from "date-fns";
 import {useMutation} from "@apollo/client";
 import toast, {Toaster} from "react-hot-toast";
 import Spinner from "../../Components/Utils/Spinner";
 import {useRouter} from "next/router";
+import Modal from "react-modal";
 
 interface HeaderProps {
 	categories: Category[];
@@ -23,6 +24,11 @@ interface HeaderProps {
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	const {categories, storeLocations} = props;
+	useEffect(() => {
+		const rootEl: any = document.getElementById("root");
+
+		Modal.setAppElement(rootEl);
+	}, []);
 
 	return (
 		<>
@@ -33,12 +39,21 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
-				
+				<link href="/css/bootstrap.min.css" rel="stylesheet" />
+				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+				<script src="/js/vendor/jquery.min.js"></script>
+				<script src="/js/popper.min.js"></script>
+				<script src="/js/bootstrap.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"My Account"} finalName={"MY ACCOUNT"} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
+						title={"My Account"}
+						finalName={"MY ACCOUNT"}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 					<Account />
 				</div>
 			</main>
@@ -60,11 +75,16 @@ const Account: React.FC = () => {
 	const [currentPassword, setCurrentPassword] = useState<string>("");
 	const [newPassword, setNewPassword] = useState<string>("");
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
-
 	const [updateUserAccount] = useMutation(UpdateUserAccountDetails);
 	const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
-
 	const [passwordLoading, setPasswordLoading] = useState<boolean>(false);
+	const [openAddressModal, setOpenAddressModal] = useState<boolean>(false);
+	const [logoutModal, setLogoutModal] = useState<boolean>(false);
+
+	const [addressEditData, setAddressEditData] = useState<any>();
+	const [refetch, setRefetch] = useState<number>(0);
+	const [queryLoading, setQueryLoading] = useState<boolean>(false);
+
 	const router = useRouter();
 	const updateUser = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -83,6 +103,7 @@ const Account: React.FC = () => {
 				if (update_users.affected_rows > 0) {
 					toast.success("Details Update Successfully");
 					console.log("Update Successful");
+					setRefetch(() => refetch + 1);
 				}
 			})
 			.catch((error) => {
@@ -112,6 +133,8 @@ const Account: React.FC = () => {
 	};
 
 	useEffect(() => {
+		console.log("Use effect called");
+		setQueryLoading(true);
 		if (user) {
 			apolloClient
 				.query({
@@ -119,16 +142,18 @@ const Account: React.FC = () => {
 					variables: {
 						userId: user.id,
 					},
+					fetchPolicy: "network-only",
 				})
 				.then(({data: {orders, addresses, users}}) => {
 					setOrders(orders);
-					setAddresses(addresses[0]);
+					setAddresses(addresses);
 					setFirstName(users[0].firstName);
 					setLastName(users[0].lastName);
 					setEmail(users[0].email);
+					setQueryLoading(false);
 				});
 		}
-	}, [user]);
+	}, [user, refetch]);
 
 	const logout = async () => {
 		await signOut();
@@ -138,7 +163,16 @@ const Account: React.FC = () => {
 	return (
 		<div className="my-account-area mb-130 mb-md-70 mb-sm-70 mb-xs-70 mb-xxs-70">
 			<Toaster position="bottom-center" />
-
+			<AddressEdit
+				open={openAddressModal}
+				setOpen={setOpenAddressModal}
+				data={addressEditData}
+				setData={setAddressEditData}
+				userId={user && user.id}
+				setRefetch={setRefetch}
+				refetch={refetch}
+			/>
+			<LogoutModal open={logoutModal} setOpen={setLogoutModal} setData={logout} />
 			<div className="container">
 				<div className="row">
 					<div className="col-lg-12">
@@ -154,14 +188,13 @@ const Account: React.FC = () => {
 									<a href="#download" data-toggle="tab">
 										Download
 									</a>
-
 									<a href="#address-edit" data-toggle="tab">
 										address
 									</a>
 									<a href="#account-info" data-toggle="tab">
 										Account Details
 									</a>
-									<a onClick={logout}> Logout</a>
+									<a onClick={() => setLogoutModal(true)}> Logout</a>
 								</div>
 							</div>
 							{/* My Account Tab Menu End */}
@@ -174,16 +207,15 @@ const Account: React.FC = () => {
 											<h3>Dashboard</h3>
 											<div className="welcome">
 												<p>
-													Hello,{" "}
+													Hello, &nbsp;
 													<strong>
-														{" "}
 														{user && user.firstName} {user && user.lastName}
 													</strong>
 												</p>
 											</div>
 											<p className="mb-0">
-												From your account dashboard. you can easily check &amp; view your recent orders, manage your shipping and billing addresses and edit your password and
-												account details.
+												From your account dashboard. you can easily check &amp; view your recent orders, manage your
+												shipping and billing addresses and edit your password and account details.
 											</p>
 										</div>
 									</div>
@@ -193,19 +225,20 @@ const Account: React.FC = () => {
 										<div className="myaccount-content">
 											<h3>Orders</h3>
 											<div className="myaccount-table table-responsive text-center">
-												<table className="table table-bordered">
-													<thead className="thead-light">
-														<tr>
-															<th>Order Id</th>
-															<th>Date</th>
-															<th>Status</th>
-															<th>Total</th>
-															<th>Action</th>
-														</tr>
-													</thead>
-													<tbody>
-														{orders &&
-															orders.map((order) => (
+												{orders && orders.length > 0 ? (
+													<table className="table table-bordered">
+														<thead className="thead-light">
+															<tr>
+																<th>Order Id</th>
+																<th>Date</th>
+																<th>Status</th>
+																<th>Total</th>
+																<th>Action</th>
+															</tr>
+														</thead>
+
+														<tbody>
+															{orders.map((order) => (
 																<tr key={order.id}>
 																	<td>{order.id}</td>
 																	<td>{format(new Date(order.createdAt), "MMM d, y")}</td>
@@ -218,8 +251,11 @@ const Account: React.FC = () => {
 																	</td>
 																</tr>
 															))}
-													</tbody>
-												</table>
+														</tbody>
+													</table>
+												) : (
+													<p>No orders yet</p>
+												)}
 											</div>
 										</div>
 									</div>
@@ -275,25 +311,50 @@ const Account: React.FC = () => {
 									{/* Single Tab Content End */}
 									<div className="tab-pane fade" id="address-edit" role="tabpanel">
 										<div className="myaccount-content">
-											<h3>Billing Address</h3>
-											{addresses ? (
-												<address>
-													<p>
-														<strong>{addresses.name}</strong>
-													</p>
-													<p>
-														{addresses.lineOne}, <br />
-														{addresses.lineTwo}, <br />
-														{addresses.town} {addresses.state}, <br />
-														{addresses.zipcode}
-													</p>
-												</address>
+											<div className="d-flex justify-content-between">
+												<h2>Addresses</h2>
+												<a
+													className="button-outline"
+													onClick={() => {
+														setOpenAddressModal(true);
+													}}>
+													add Address
+												</a>
+											</div>
+											<h4>&nbsp;</h4>
+											{!queryLoading ? (
+												<>
+													{addresses && addresses.length > 0 ? (
+														addresses.map((address) => (
+															<address key={address.id}>
+																<div className="d-flex justify-content-between pb-0 mb-0">
+																	<p>
+																		<strong>{address.name}</strong>
+																	</p>
+																	<a
+																		className="button-outline"
+																		onClick={() => {
+																			setAddressEditData(address);
+																			setOpenAddressModal(true);
+																		}}>
+																		edit
+																	</a>
+																</div>
+																<p>
+																	{address.lineOne}, <br />
+																	{address.lineTwo}, <br />
+																	{address.town} {address.state}, <br />
+																	{address.zipcode}
+																</p>
+															</address>
+														))
+													) : (
+														<p>No Address added yet</p>
+													)}
+												</>
 											) : (
-												<p>No Address added yet</p>
+												<Spinner width="50px" height="50px" />
 											)}
-											<a href="#" className="check-btn sqr-btn ">
-												<i className="fa fa-edit" /> Edit Address
-											</a>
 										</div>
 									</div>
 									{/* Single Tab Content Start */}
@@ -308,7 +369,13 @@ const Account: React.FC = () => {
 																<label htmlFor="first-name" className="required">
 																	First Name
 																</label>
-																<input type="text" id="first-name" name="first name" value={firstName} onChange={(event) => setFirstName(event.target.value)} />
+																<input
+																	type="text"
+																	id="first-name"
+																	name="first name"
+																	value={firstName}
+																	onChange={(event) => setFirstName(event.target.value)}
+																/>
 															</div>
 														</div>
 														<div className="col-lg-6">
@@ -316,7 +383,13 @@ const Account: React.FC = () => {
 																<label htmlFor="last-name" className="required">
 																	Last Name
 																</label>
-																<input type="text" id="last-name" name="last name" value={lastName} onChange={(event) => setLastName(event.target.value)} />
+																<input
+																	type="text"
+																	id="last-name"
+																	name="last name"
+																	value={lastName}
+																	onChange={(event) => setLastName(event.target.value)}
+																/>
 															</div>
 														</div>
 													</div>
@@ -402,8 +475,7 @@ const Account: React.FC = () => {
 									</div>{" "}
 									{/* Single Tab Content End */}
 								</div>
-							</div>{" "}
-							{/* My Account Tab Content End */}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -429,3 +501,238 @@ export async function getStaticProps() {
 		},
 	};
 }
+interface ModalProps {
+	open: boolean;
+	setOpen: (value: boolean) => void;
+	data?: any;
+	setData?: any;
+	userId?: number;
+	setRefetch?: (value: any) => void;
+	refetch?: number;
+}
+export const AddressEdit: React.FC<ModalProps> = (props) => {
+	const {open, setOpen, data: address, setData, userId, setRefetch, refetch} = props;
+	const [lineOne, setLineOne] = useState<string>("");
+	const [lineTwo, setLineTwo] = useState<string>("");
+	const [name, setName] = useState<string>("");
+	const [state, setState] = useState<string>("");
+	const [zip, setZip] = useState<string>("");
+	const [town, setTown] = useState<string>("");
+	const [loading, setLoading] = useState<boolean>(false);
+	const [addAddress] = useMutation(InsertAddress);
+	const [editAddress] = useMutation(UpdateAddress);
+
+	useEffect(() => {
+		if (address) {
+			setLineOne(address.lineOne);
+			setLineTwo(address.lineTwo);
+			setName(address.name);
+			setState(address.state);
+			setTown(address.town);
+			setZip(address.zipcode);
+		}
+	}, [address]);
+
+	const clearState = () => {
+		setLineOne("");
+		setLineTwo("");
+		setName("");
+		setState("");
+		setTown("");
+		setZip("");
+
+		setOpen(false);
+	};
+	const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+		try {
+			event.preventDefault();
+			setLoading(true);
+			if (!address) {
+				const {data} = await addAddress({
+					variables: {
+						lineOne,
+						lineTwo,
+						name,
+						state,
+						town,
+						userId,
+						zipCode: zip,
+					},
+				});
+				if (data.insert_addresses.affected_rows > 0) {
+					setRefetch && setRefetch(() => (refetch ? refetch : 0) + 1);
+
+					toast.success("Address Inserted Successfully");
+					clearState();
+					//@ts-ignore
+				} else {
+					toast.error("Some unknown error occurred");
+				}
+			} else {
+				const {data} = await editAddress({
+					variables: {
+						lineOne,
+						lineTwo,
+						name,
+						state,
+						town,
+						zipCode: zip,
+						addressId: address.id,
+					},
+				});
+				if (data.update_addresses.affected_rows > 0) {
+					setRefetch && setRefetch(() => (refetch ? refetch : 0) + 1);
+					//@ts-ignore
+					setData(null);
+					toast.success("Address Inserted Successfully");
+					clearState();
+				} else {
+					toast.error("Some unknown error occurred");
+				}
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return (
+		<Modal overlayClassName="overlay" className="modal__main modal-edit__address" isOpen={open}>
+			<div className="d-flex flex-column">
+				<div className="close">
+					<h2 className="modal__title">{address ? "Edit Address" : "Add Address"}</h2>
+					<img
+						src="images/website/cross.svg"
+						alt="Close"
+						className="close-img"
+						onClick={() => {
+							clearState();
+							setOpen(false);
+						}}
+					/>
+				</div>
+				<div>
+					<div className="modal__content lezada-form">
+						<form onSubmit={submit}>
+							<div className="row modal__content" style={{margin: "auto", width: "40rem"}}>
+								<div className="col-lg-6 mb-50">
+									<input
+										style={{width: "100%"}}
+										type="text"
+										placeholder="Name"
+										required
+										value={name}
+										name="Address name"
+										onChange={(event) => setName(event.target.value)}
+									/>
+								</div>
+								<div className="col-lg-6 mb-30">
+									<input
+										style={{width: "100%"}}
+										type="text"
+										placeholder="City"
+										required
+										value={town}
+										name="city"
+										onChange={(event) => setTown(event.target.value)}
+									/>
+								</div>
+								<div className="col-lg-12 mb-50">
+									<input
+										style={{width: "100%"}}
+										type="text"
+										placeholder="Line One"
+										required
+										value={lineOne}
+										name="Line One"
+										onChange={(event) => setLineOne(event.target.value)}
+									/>
+								</div>
+								<div className="col-lg-12 mb-30">
+									<input
+										style={{width: "100%"}}
+										type="text"
+										placeholder="Line Two"
+										required
+										value={lineTwo}
+										name="Line Two"
+										onChange={(event) => setLineTwo(event.target.value)}
+									/>
+								</div>
+
+								<div className="col-lg-6 mb-50">
+									<input
+										style={{width: "100%"}}
+										type="text"
+										placeholder="State"
+										required
+										value={state}
+										name="state"
+										onChange={(event) => setState(event.target.value)}
+									/>
+								</div>
+								<div className="col-lg-6 mb-30">
+									<input
+										type="text"
+										style={{width: "100%"}}
+										placeholder="Zip code"
+										required
+										value={zip}
+										name="city"
+										onChange={(event) => setZip(event.target.value)}
+									/>
+								</div>
+
+								<div className="col-lg-12 text-center">
+									{!loading ? (
+										<button className="lezada-button lezada-button--medium mt-20" type="submit">
+											{address ? "Edit" : "Save"}
+										</button>
+									) : (
+										<Spinner width="40px" height="40px" />
+									)}
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</Modal>
+	);
+};
+
+const LogoutModal: React.FC<ModalProps> = (props) => {
+	const {open, setOpen, setData} = props;
+
+	return (
+		<Modal overlayClassName="overlay" className="modal__main modal-logout" isOpen={open}>
+			<div className="close">
+				<h2 className="modal__title">Logout ?</h2>
+				<img
+					src="images/website/cross.svg"
+					alt="Close"
+					className="close-img"
+					onClick={() => {
+						setOpen(false);
+					}}
+				/>
+			</div>
+			<div className="modal__content">
+				<h1 className="modal__header">Are you sure you want to logout</h1>
+				<div className="row text-center">
+					<button
+						className="lezada-button lezada-button--medium mt-20 mx-auto"
+						type="button"
+						onClick={() => {
+							//@ts-ignore
+							setData(null);
+							setOpen(false);
+						}}>
+						Yes
+					</button>
+				</div>
+			</div>
+		</Modal>
+	);
+};

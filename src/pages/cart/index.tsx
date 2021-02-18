@@ -13,6 +13,8 @@ import {Cart} from "../../generated/graphql";
 import {useMutation} from "@apollo/client";
 import Link from "next/link";
 import Spinner from "../../Components/Utils/Spinner";
+import {useLocalStorage} from "../../hooks/useLocalStorage";
+import {GetProductTypesById} from "../../../queries/productQuery";
 
 interface HeaderProps {
 	categories: Category[];
@@ -34,29 +36,34 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<link href="/revolution/css/settings.css" rel="stylesheet" />
 				<link href="/revolution/css/navigation.css" rel="stylesheet" />
 				<link href="/revolution/custom-setting.css" rel="stylesheet" />
-				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
-				<script src="/js/vendor/jquery.min.js"></script>
-				<script src="/js/popper.min.js"></script>
-				<script src="/js/bootstrap.min.js"></script>
+				<script defer src="/js/vendor/modernizr-2.8.3.min.js"></script>
+				<script defer src="/js/vendor/jquery.min.js"></script>
+				<script defer src="/js/popper.min.js"></script>
+				<script defer src="/js/bootstrap.min.js"></script>
 
-				<script src="/js/plugins.js"></script>
-				<script src="/js/main.js"></script>
+				<script defer src="/js/plugins.js"></script>
+				<script defer src="/js/main.js"></script>
 
-				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
-				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
-				<script src="/revolution/revolution-active.js"></script>
+				<script defer src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
+				<script defer src="/revolution/js/jquery.themepunch.tools.min.js"></script>
+				<script defer src="/revolution/revolution-active.js"></script>
 
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+				<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>
-					<BreadCrumb backgroundImage={"/images/breadcrumb-bg/01.jpg"} title={"Shopping Cart"} finalName={"SHOPPING CART"} links={[{link: "/", name: "HOME"}]} />
+					<BreadCrumb
+						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
+						title={"Shopping Cart"}
+						finalName={"SHOPPING CART"}
+						links={[{link: "/", name: "HOME"}]}
+					/>
 					<CartMain />
 				</div>
 			</main>
@@ -70,30 +77,48 @@ export default index;
 const CartMain: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
+	const [cartStore, setCartStore] = useLocalStorage("cart", []);
 
 	const apolloClient = initializeApollo();
 
 	const getUserCartItem = async () => {
-		const data = await apolloClient.subscribe({
-			query: GetUserCartSubscription,
-			variables: {
-				userId: user.id,
-			},
-		});
-
-		if (data) {
-			data.subscribe(({data: {cart}}) => {
-				setCartItems(cart);
+		if (user) {
+			const data = await apolloClient.subscribe({
+				query: GetUserCartSubscription,
+				variables: {
+					userId: user.id,
+				},
 			});
-			// setCartItems(data.data.cart);
+
+			if (data) {
+				data.subscribe(({data: {cart}}) => {
+					setCartItems(cart);
+				});
+				// setCartItems(data.data.cart);
+			}
+		} else {
+			const {
+				data: {product_type},
+			} = await apolloClient.query({
+				query: GetProductTypesById,
+				variables: {
+					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+				},
+			});
+			const newItems = product_type.map((product, index) => ({
+				id: `${product.id}${index}`,
+				count: cartStore[index].count,
+				product_type: JSON.parse(JSON.stringify(product)),
+			}));
+			setCartItems(newItems);
 		}
 	};
 
+
+
 	useEffect(() => {
-		if (user) {
-			getUserCartItem();
-		}
-	}, [user]);
+		getUserCartItem();
+	}, [user, cartStore]);
 
 	const getSubTotal = (cartItems: Cart[]): number => {
 		let subTotal: number = 0;
@@ -182,7 +207,7 @@ const CartMain: React.FC = () => {
 								</div>
 								{/*=======  End of coupon area  =======*/}
 							</div>
-							<div className="col-xl-4 offset-xl-8 col-lg-5 offset-lg-7">
+							{/* <div className="col-xl-4 offset-xl-8 col-lg-5 offset-lg-7">
 								<div className="cart-calculation-area">
 									<h2 className="mb-40">Cart totals</h2>
 									<table className="cart-calculation-table mb-30">
@@ -203,7 +228,7 @@ const CartMain: React.FC = () => {
 										</a>
 									</div>
 								</div>
-							</div>
+							</div> */}
 						</>
 					)}
 				</div>
@@ -217,23 +242,40 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 	const [count, setCount] = useState<number>(cart.count ?? 1);
 	const [updateCartCount] = useMutation(UpdateCart);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [cartStore, setCartStore] = useLocalStorage("cart", []);
+	const {user} = useAuth();
 
 	const [deleteCartById] = useMutation(DeleteCartById);
 
 	const updateCart = async () => {
 		try {
-			const {
-				data: {update_cart},
-			} = await updateCartCount({
-				variables: {
-					cartId: cart.id,
-					count,
-				},
-			});
-			if (update_cart.affected_rows > 0) {
-				toast.success("Cart Item updated successfully");
+			if (user) {
+				const {
+					data: {update_cart},
+				} = await updateCartCount({
+					variables: {
+						cartId: cart.id,
+						count,
+					},
+				});
+				if (update_cart.affected_rows > 0) {
+					toast.success("Cart Item updated successfully");
+				} else {
+					toast.error("Some unknown error occurred");
+				}
 			} else {
-				toast.error("Some unknown error occurred");
+				let newCartStore: any = [...cartStore];
+				newCartStore = newCartStore.map((item) => {
+					if (item.productTypeId !== cart.product_type.id) {
+						return {
+							productTypeId: item.productTypeId,
+							count,
+						};
+					} else {
+						return item;
+					}
+				});
+				setCartStore([...newCartStore]);
 			}
 		} catch (error) {
 			toast.success(error.message);
@@ -242,20 +284,27 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 
 	const onDelete = async () => {
 		try {
-			setLoading(true);
-			const {
-				data: {delete_cart},
-			} = await deleteCartById({
-				variables: {
-					cartId: cart.id,
-				},
-			});
-			setLoading(false);
+			if (user) {
+				setLoading(true);
+				const {
+					data: {delete_cart},
+				} = await deleteCartById({
+					variables: {
+						cartId: cart.id,
+					},
+				});
+				setLoading(false);
 
-			if (delete_cart && delete_cart.affected_rows > 0) {
-				toast.success("Cart item deleted successfully");
+				if (delete_cart && delete_cart.affected_rows > 0) {
+					toast.success("Cart item deleted successfully");
+				} else {
+					toast.error("Some unknown error occurred");
+				}
 			} else {
-				toast.error("Some unknown error occurred");
+				let newCartStore: any = [...cartStore];
+				newCartStore = newCartStore.filter((item) => item.productTypeId !== cart.product_type.id);
+				setCartStore([...newCartStore]);
+				toast.success("Cart item deleted successfully");
 			}
 		} catch (error) {
 			setLoading(false);

@@ -2,10 +2,12 @@ import {useMutation} from "@apollo/client";
 import Link from "next/link";
 import React, {useEffect, useState} from "react";
 import toast from "react-hot-toast";
+import {GetProductTypesById} from "../../../queries/productQuery";
 import {DeleteCartById, GetUserCartSubscription} from "../../../queries/userQuery";
 import {initializeApollo} from "../../apollo";
 import {Cart} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
+import {useLocalStorage} from "../../hooks/useLocalStorage";
 import Spinner from "../Utils/Spinner";
 
 export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number => {
@@ -22,30 +24,47 @@ export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number 
 const CartItems: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
+	const [cartStore] = useLocalStorage("cart", []);
 
 	const apolloClient = initializeApollo();
 
 	const getUserCartItem = async () => {
-		const data = await apolloClient.subscribe({
-			query: GetUserCartSubscription,
-			variables: {
-				userId: user.id,
-			},
-		});
-
-		if (data) {
-			data.subscribe(({data: {cart}}) => {
-				setCartItems(cart);
+		if (user) {
+			const data = await apolloClient.subscribe({
+				query: GetUserCartSubscription,
+				variables: {
+					userId: user.id,
+				},
 			});
-			// setCartItems(data.data.cart);
+
+			if (data) {
+				data.subscribe(({data: {cart}}) => {
+					setCartItems(cart);
+				});
+				// setCartItems(data.data.cart);
+			}
+		} else {
+			console.log(cartStore, cartStore.map((element) => element.productTypeId));
+			const {
+				data: {product_type},
+			} = await apolloClient.query({
+				query: GetProductTypesById,
+				variables: {
+					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+				},
+			});
+			const newItems = product_type.map((product, index) => ({
+				id: `${product.id}${index}`,
+				count: cartStore[index].count,
+				product_type: JSON.parse(JSON.stringify(product)),
+			}));
+			setCartItems(newItems);
 		}
 	};
 
 	useEffect(() => {
-		if (user) {
-			getUserCartItem();
-		}
-	}, [user]);
+		getUserCartItem();
+	}, [cartStore]);
 
 	return (
 		<div className="cart-overlay" id="cart-overlay">
@@ -94,23 +113,33 @@ const CartItem: React.FC<{cart: Cart}> = (props) => {
 
 	const [deleteCartById] = useMutation(DeleteCartById);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [cartStore, setCartStore] = useLocalStorage("cart", []);
+
+	const {user} = useAuth();
 
 	const deleteCart = async () => {
 		try {
-			setLoading(true);
-			const {
-				data: {delete_cart},
-			} = await deleteCartById({
-				variables: {
-					cartId: cart.id,
-				},
-			});
-			setLoading(false);
+			if (user) {
+				setLoading(true);
+				const {
+					data: {delete_cart},
+				} = await deleteCartById({
+					variables: {
+						cartId: cart.id,
+					},
+				});
+				setLoading(false);
 
-			if (delete_cart && delete_cart.affected_rows > 0) {
-				toast.success("Cart item deleted successfully");
+				if (delete_cart && delete_cart.affected_rows > 0) {
+					toast.success("Cart item deleted successfully");
+				} else {
+					toast.error("Some unknown error occurred");
+				}
 			} else {
-				toast.error("Some unknown error occurred");
+				let newCartStore: any = [...cartStore];
+				newCartStore = newCartStore.filter((item) => item.productTypeId !== cart.product_type.id);
+				setCartStore([...newCartStore]);
+				toast.success("Cart item deleted successfully");
 			}
 		} catch (error) {
 			setLoading(false);
@@ -146,7 +175,8 @@ const CartItem: React.FC<{cart: Cart}> = (props) => {
 					</Link>
 				</h5>
 				<p>
-					<span className="cart-count">{cart.count} x </span> <span className="discounted-price">₹{cart.product_type.discountedPrice}</span>
+					<span className="cart-count">{cart.count} x </span>{" "}
+					<span className="discounted-price">₹{cart.product_type.discountedPrice}</span>
 				</p>
 			</div>
 		</div>

@@ -80,7 +80,12 @@ const index: React.FC<ProductProps> = (props: ProductProps) => {
 						<div className="row">
 							<div className="col-lg-12">
 								{product.productTypes.map((productType, index) => (
-									<ProductTypes key={productType.id} productType={productType} leftOrient={index % 2 === 0} subCategory={product.sub_category.name} />
+									<ProductTypes
+										key={productType.id}
+										productType={productType}
+										leftOrient={index % 2 === 0}
+										subCategory={product.sub_category.name}
+									/>
 								))}
 
 								<ProductInstruction instructionTitles={product.instruction_titles} />
@@ -138,6 +143,7 @@ export const getStaticProps: GetStaticProps = async ({params}) => {
 		query: GetProductDetailsById,
 		variables: {
 			productId: params ? params.productId : null,
+			expiry: new Date().toISOString(),
 		},
 	});
 

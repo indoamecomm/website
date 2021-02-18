@@ -128,8 +128,8 @@
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
+	margin-bottom: 2em;
 	opacity: 1;
-	height: auto;
 }
 
 .close-img {
@@ -141,16 +141,14 @@
 .modal {
 	&__title {
 		font-size: 1.3rem;
-		font-family: var(--font-medium);
-		margin: 1em 0;
+		margin: 0;
 		text-align: left;
 		color: $primary-web;
 	}
 
 	&__header {
-		color: #1c1c1c;
+		color: $primary-web;
 		font-size: 1.5rem;
-		font-family: var(--font-medium);
 		margin: 0.1em 0;
 		text-align: center;
 	}
@@ -170,11 +168,38 @@
 		min-width: max-content;
 		background-color: #eff8f0;
 	}
+
+	&-edit__address {
+		top: 15%;
+		left: 20%;
+		right: 20%;
+		bottom: 15%;
+		overflow: auto;
+		min-width: max-content;
+		background-color: #eff8f0;
+	}
+
+	&-logout {
+		top: 30%;
+		left: 30%;
+		right: 40%;
+		bottom: 40%;
+		overflow: auto;
+		min-width: max-content;
+		background-color: #eff8f0;
+	}
 }
 
 .checkout {
 	display: flex;
 	flex-direction: column;
+
+	&__title {
+		font-size: 1.3rem;
+		margin: 0 !important;
+		text-align: left;
+		color: $primary-web;
+	}
 	&__address {
 		background-color: #eff8f0;
 		padding: 2em 2em 0;
@@ -228,7 +253,6 @@
 		background-color: #eff8f0;
 		padding: 2em 2em 0;
 		border: 1px solid $primary-web;
-
 		margin-top: 4em;
 	}
 	&__name {

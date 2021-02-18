@@ -10,7 +10,7 @@
 	text-transform: uppercase;
 	display: inline-block;
 	border-radius: 0;
-	border: 1px solid #333;
+	border: 1px solid $primary-web;
 	font-weight: 500;
 	letter-spacing: 1px;
 
@@ -22,6 +22,17 @@
 	&:disabled {
 		opacity: 0.7;
 		cursor: not-allowed;
+	}
+
+	&-outline {
+		background-color: transparent;
+		color: $primary-web !important;
+		border: 1px solid $primary-web;
+
+		&:hover {
+			background-color: $primary-web;
+			color: #fff !important;
+		}
 	}
 
 	/*----------  small button style  ----------*/
@@ -161,3 +172,11 @@
 }
 
 /*=====  End of 08. button  ======*/
+
+.button-outline {
+	cursor: pointer;
+	color: $primary-web !important;
+	font-size: 1.1rem;
+	border-radius: 0;
+	background-color: transparent;
+}

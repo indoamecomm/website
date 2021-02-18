@@ -1,9 +1,7 @@
 import { gql } from "@apollo/client";
 
-
-
 export const GetProductDetailsById = gql`
-	query GetProductDetailsById($productId: bigint!) {
+	query GetProductDetailsById($productId: bigint!, $expiry: timestamptz!) {
 		product(where: {id: {_eq: $productId}}) {
 			id
 			imageUrl
@@ -11,23 +9,35 @@ export const GetProductDetailsById = gql`
 			name
 			nutritiveValue
 			description
+			subCategoryId
 			sub_category {
-				name
+			id
+			name
 			}
 			productTypes {
+			id
+			SKU
+			deal_of_the_days(where: {enable: {_eq: true}}) {
+				discount
 				id
-				SKU
-				deal_of_the_days(where: {enable: {_eq: true}}) {
-					discount
-					id
+				product {
+					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_lt: $expiry}}) {
+						discount
+					}
 				}
-				discountedPrice
-				imageUrl
-				name
-				originalPrice
-				plant
-				remark
-				duration
+			}
+			discountedPrice
+			imageUrl
+			name
+			originalPrice
+			plant
+			remark
+			duration
+			product {
+				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_lt: $expiry}}) {
+				discount
+				}
+			}
 				product_seasons {
 					id
 					season {
@@ -50,6 +60,8 @@ export const GetProductDetailsById = gql`
 			}
 		}
 	}
+
+
 `;
 
 
@@ -176,3 +188,29 @@ export const InsertWishlist = gql`
 		}
 	}
 `;
+
+export const GetProductTypesById = gql`
+	query GetProductTypesById($productTypeArray: [Int!]) {
+		product_type(where: { id: { _in: $productTypeArray } }) {
+			id
+			imageUrl
+			name
+			originalPrice
+			discountedPrice
+			productId
+			product {
+				id
+				name
+				
+				subCategoryId
+				sub_category {
+					id
+					name
+				}
+			}
+		}
+	}
+`;
+
+
+

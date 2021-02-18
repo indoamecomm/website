@@ -3,7 +3,7 @@ import firebase from "firebase/app";
 
 import {useState, useContext, createContext, ReactNode} from "react";
 import {initializeApollo} from "../apollo";
-import {GetUserByFirebaseUUID} from "../../queries/userQuery";
+import {GetUserByFirebaseUUID, UserSignUp as UserSignUpQuery} from "../../queries/userQuery";
 import {User} from "../generated/graphql";
 import {useEffect} from "react";
 const authContext = createContext<any>({user: {}});
@@ -27,21 +27,30 @@ const useAuthProvider = () => {
 		console.log(hasuraUser, "inside Create user", user);
 		return user;
 	};
-	// const signUp = ({name, email, password}: any) => {
-	// 	return auth
-	// 		.createUserWithEmailAndPassword(email, password)
-	// 		.then((response) => {
-	// 			auth.currentUser && auth.currentUser.sendEmailVerification();
-	// 			if (response && response.user) {
-	// 				return createUser(response.user);
-	// 			}
-	// 		})
-	// 		.catch((error) => {
-	// 			return {error};
-	// 		});
-	// };
+	const signUp = async ({firstName, lastName, email, password, phoneNumber}: any) => {
+		const {
+			data: {UserSignUp},
+		} = await apolloClient.mutate({
+			mutation: UserSignUpQuery,
+			variables: {
+				email,
+				firstName,
+				lastName,
+				password,
+				phoneNumber,
+			},
+		});
+
+		if (UserSignUp.Error) {
+			console.log(UserSignUp.Error);
+			throw UserSignUp.Error;
+		} else {
+			return signIn({email, password});
+		}
+	};
 
 	const getUserAdditionalData = async (firebaseUser: firebase.User): Promise<User[]> => {
+		console.log(firebaseUser, firebaseUser.email);
 		const {
 			data: {users},
 		} = await apolloClient.query({
@@ -49,7 +58,10 @@ const useAuthProvider = () => {
 			variables: {
 				email: firebaseUser.email,
 			},
+			fetchPolicy: "network-only",
 		});
+
+		console.log(users);
 
 		return users;
 	};
@@ -86,9 +98,8 @@ const useAuthProvider = () => {
 		return auth
 			.signInWithEmailAndPassword(email, password)
 			.then(async (response) => {
-
 				if (response.user) {
-					console.log(response.user)
+					console.log(response.user);
 					const users = await getUserAdditionalData(response.user);
 					console.log(users);
 					if (users.length === 0) {
@@ -141,11 +152,11 @@ const useAuthProvider = () => {
 	};
 	return {
 		user,
-		// signUp,
 		signIn,
 		setUser,
 		sendPasswordResetEmail,
 		changePassword,
 		signOut,
+		signUp,
 	};
 };

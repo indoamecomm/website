@@ -26,7 +26,8 @@
     "react-hot-toast": "^1.0.2",
     "react-modal": "^3.12.1",
     "sass": "^1.32.0",
-    "subscriptions-transport-ws": "^0.9.18"
+    "subscriptions-transport-ws": "^0.9.18",
+    "use-persisted-state": "^0.3.3"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.20.1",

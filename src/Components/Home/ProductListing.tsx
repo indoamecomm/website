@@ -165,11 +165,11 @@ const Product: React.FC<{productType: ProductType}> = (props) => {
 							<i className="ion-android-star" />
 						</div>
 					</div>
-					<div className="single-widget-product__content__bottom">
+					{/* <div className="single-widget-product__content__bottom">
 						<a className="cart-btn" href="#">
 							Add to cart
 						</a>
-					</div>
+					</div> */}
 				</div>
 				{/*=======  End of content  =======*/}
 			</div>

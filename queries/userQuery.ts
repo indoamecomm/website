@@ -14,6 +14,21 @@ export const GetUserByFirebaseUUID = gql`
 `;
 
 
+export const UserSignUp = gql`
+	mutation UserSignUp($email: String!, $firstName: String!, $lastName: String!,  $password: String!, $phoneNumber:String!) {
+		UserSignUp(input: {email: $email, firstName: $firstName, lastName: $lastName, password: $password, phoneNumber:$phoneNumber}) {
+			Error {
+				code
+				message
+			}
+			User {
+				id
+				email
+			}
+		}
+	}
+`;
+
 export const GetAccountDetails = gql`
 	query GetAccountDetails($userId: bigint!) {
 		orders: orders(where: {userId: {_eq: $userId}}) {
@@ -25,7 +40,7 @@ export const GetAccountDetails = gql`
 			totalAmount
 			createdAt
 		}
-		addresses: addresses(where: {userId: {_eq: $userId}}) {
+		addresses: addresses(where: {userId: {_eq: $userId}}, order_by: {id: asc}) {
 			id
 			lineOne
 			lineTwo
@@ -42,6 +57,7 @@ export const GetAccountDetails = gql`
 			email
 		}
 	}
+
 `;
 
 export const UpdateUserAccountDetails = gql`
@@ -241,7 +257,7 @@ export const CreateOrder = gql`
 `;
 
 
-export const CheckCouponValidity  = gql`
+export const CheckCouponValidity = gql`
 	query CheckCouponValidity($couponName: String!) {
 		coupons_aggregate(where: {isValid: {_eq: true}, code: {_eq: $couponName}}) {
 			aggregate {
@@ -256,6 +272,26 @@ export const CheckCouponValidity  = gql`
 
 `;
 
+
+
+
+export const InsertAddress = gql`
+	mutation InsertAddress($lineOne: String!, $lineTwo: String!, $state: String!, $town: String!, $userId: bigint!, $zipCode: String!, $name: String!) {
+		insert_addresses(objects: {countryId: 1, lineOne: $lineOne, lineTwo:  $lineTwo, state: $state, town: $town, userId: $userId,  name: $name,zipcode: $zipCode}) {
+			affected_rows
+		}
+	}
+`;
+
+
+
+export const UpdateAddress = gql`
+	mutation UpdateAddress($lineOne: String!, $lineTwo: String!, $state: String!, $town: String!, $addressId: bigint!, $zipCode: String!, $name: String!) {
+		update_addresses(_set: { lineOne: $lineOne, lineTwo: $lineTwo, state: $state, town: $town, zipcode: $zipCode, name: $name }, where: { id: { _eq: $addressId } }) {
+			affected_rows
+		}
+	}
+`;
 
 
 
