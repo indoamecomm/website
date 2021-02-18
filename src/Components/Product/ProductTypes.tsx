@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import {useState} from "react";
 import toast, {Toaster} from "react-hot-toast";
 import {InsertToUserCart, InsertWishlist} from "../../../queries/productQuery";
-import {GetUserCartCount, GetUserWishlistCount} from "../../../queries/userQuery";
+import {DeleteWishlistByUserId, GetUserCartCount, GetUserWishlistCount} from "../../../queries/userQuery";
 import {initializeApollo} from "../../apollo";
 import {Product_Type} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
@@ -27,6 +27,8 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 
 	const [insertToUserCart] = useMutation(InsertToUserCart);
 	const [insertWishlist] = useMutation(InsertWishlist);
+	const [deleteWishlist] = useMutation(DeleteWishlistByUserId);
+
 	const [wishlist, setWishlist] = useLocalStorage("wishlist", []);
 	const [cartStore, setCartStore] = useLocalStorage("cart", []);
 
@@ -47,7 +49,6 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 				// setCartItems(data.data.cart);
 			}
 		} else {
-			console.log(cartStore, checkIfJsonDuplicates(cartStore, productType.id, "productTypeId"));
 			setCartExists(checkIfJsonDuplicates(cartStore, productType.id, "productTypeId"));
 		}
 	};
@@ -64,7 +65,6 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 
 			if (data) {
 				data.subscribe(({data: {users_aggregate}}) => {
-					console.log(users_aggregate.aggregate.count > 0, "Product Type ", productType.name);
 					setWishlistExists(users_aggregate.aggregate.count > 0);
 				});
 				// setCartItems(data.data.cart);
@@ -119,24 +119,38 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 		try {
 			if (user) {
 				setWishlistLoading(true);
-
-				const {
-					data: {insert_wishlists},
-				} = await insertWishlist({
-					variables: {
-						userId: user.id,
-						productTypeId: productType.id,
-					},
-				});
-				setWishlistLoading(false);
-
-				if (insert_wishlists && insert_wishlists.affected_rows > 0) {
-					toast.success("Product Added to your wishlist successfully");
+				if (!wishlistExists) {
+					const {
+						data: {insert_wishlists},
+					} = await insertWishlist({
+						variables: {
+							userId: user.id,
+							productTypeId: productType.id,
+						},
+					});
+					console.log(insert_wishlists);
+					if (insert_wishlists && insert_wishlists.affected_rows > 0) {
+						toast.success("Product added to your wishlist successfully");
+					} else {
+						toast.error("Some unknown error occurred");
+					}
 				} else {
-					toast.error("Some unknown error occurred");
+					const {
+						data: {delete_wishlists},
+					} = await deleteWishlist({
+						variables: {
+							userId: user.id,
+							productTypeId: productType.id,
+						},
+					});
+
+					if (delete_wishlists && delete_wishlists.affected_rows > 0) {
+						toast.success("Product removed from your wishlist successfully");
+					} else {
+						toast.error("Some unknown error occurred");
+					}
 				}
 			} else {
-				console.log("Here", wishlist);
 				let newWishlist: any = [...wishlist];
 				if (newWishlist.includes(productType.id)) {
 					newWishlist = newWishlist.filter((item) => item !== productType.id);
@@ -148,6 +162,8 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 			}
 		} catch (error) {
 			toast.error(error.message);
+		} finally {
+			setWishlistLoading(false);
 		}
 	};
 
@@ -362,8 +378,17 @@ export const checkIfJsonDuplicates = (jsonObject: any[], checkElement: string | 
 	return false;
 };
 
-const getDiscountedPrice = (productType: Product_Type): number => {
+export const getDiscountedPrice = (productType: Product_Type): number => {
 	let discountPrice = productType.discountedPrice ?? 0;
+	if (productType.deal_of_the_days && productType.deal_of_the_days.length > 0 && productType.deal_of_the_days[0].enable) {
+		discountPrice = discountPrice - discountPrice * (productType.deal_of_the_days[0].discount / 100);
+	} else if (
+		productType.product.deal_of_the_days &&
+		productType.product.deal_of_the_days.length > 0 &&
+		productType.product.deal_of_the_days[0].enable
+	) {
+		discountPrice = discountPrice - discountPrice * (productType.product.deal_of_the_days[0].discount / 100);
+	}
 
 	return discountPrice;
 };

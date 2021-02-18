@@ -110,8 +110,8 @@ export const GetBannerData = gql`
 
 
 export const GetDealOfTheDay = gql`
-	query GetDealOfTheDay {
-		deal_of_the_day {
+	query GetDealOfTheDay($expiry: timestamptz!) {
+		deal_of_the_day(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
 			enable
 			expiry
 			id
@@ -120,18 +120,26 @@ export const GetDealOfTheDay = gql`
 			productTypeId
 			product_type {
 				id
-				originalPrice
+				discountedPrice
 				productId
+			}
+			product {
+				productTypes_aggregate {
+					aggregate {
+						avg {
+							discountedPrice
+						}
+					}
+				}
 			}
 		}
 	}
-
 `;
 
 
 export const GetProductListing = gql`
 
-	query GetProductListing {
+	query GetProductListing( $expiry: timestamptz!) {
 		newProducts: product_type(order_by: {createdAt: desc}, limit: 9) {
 			id
 			imageUrl
@@ -139,6 +147,16 @@ export const GetProductListing = gql`
 			originalPrice
 			discountedPrice
 			productId
+			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				discount
+				enable
+			}
+			product {
+				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					discount
+					enable
+				}
+			}
 			user_ratings_aggregate {
 				aggregate {
 					avg {
@@ -154,6 +172,16 @@ export const GetProductListing = gql`
 			originalPrice
 			discountedPrice
 			productId
+			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				discount
+				enable
+			}
+			product {
+				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					discount
+					enable
+				}
+			}
 			user_ratings_aggregate {
 			aggregate {
 				avg {

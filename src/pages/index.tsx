@@ -11,6 +11,7 @@ import ProductListing from "../Components/Home/ProductListing";
 import FeaturedProduct from "../Components/Home/FeaturedProduct";
 import BlogList from "../Components/Home/BlogList";
 import Footer from "../Components/Footer";
+import {useAuth} from "../hooks/useAuth";
 
 interface HomeProps {
 	categories: Category[];
@@ -97,6 +98,8 @@ const Home: React.FC<HomeProps> = (props: HomeProps) => {
 export default Home;
 
 const SectionTitle: React.FC = () => {
+	const {user} = useAuth();
+
 	return (
 		<div className="section-title-container mb-40">
 			<div className="container">
@@ -111,7 +114,7 @@ const SectionTitle: React.FC = () => {
 					<div className="col-6 text-right">
 						<div className="section-title__label  section-title__label-style2 section-title__label--right section-title__label-style3--right">
 							<p>
-								WELCOME <br /> STRANGER
+								WELCOME <br /> {user ? user.firstName.toUpperCase() : "STRANGER"}
 							</p>
 						</div>
 					</div>
@@ -166,7 +169,9 @@ const InstagramSlider: React.FC = () => {
 						{/*=======  instagram intro  =======*/}
 						<div className="instagram-section-intro pl-50 pl-lg-50 pl-md-0 pl-sm-0 pl-xs-0 pl-xxs-0 mb-0 mb-lg-0 mb-md-50 mb-sm-50 mb-xs-50 mb-xxs-50">
 							<p>
-								<a href="#">@indams_community</a>
+								<a href="https://www.instagram.com/" target="_blank">
+									@indams_community
+								</a>
 							</p>
 							<h3>Follow us on Instagram</h3>
 						</div>
@@ -197,12 +202,18 @@ export async function getStaticProps() {
 		data: {deal_of_the_day},
 	} = await apolloClient.query({
 		query: GetDealOfTheDay,
+		variables: {
+			expiry: new Date().toISOString(),
+		},
 	});
 
 	const {
 		data: {newProducts, featuredProducts},
 	} = await apolloClient.query({
 		query: GetProductListing,
+		variables: {
+			expiry: new Date().toISOString(),
+		},
 	});
 
 	const {

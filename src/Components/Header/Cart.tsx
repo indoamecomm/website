@@ -8,13 +8,14 @@ import {initializeApollo} from "../../apollo";
 import {Cart} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
 import {useLocalStorage} from "../../hooks/useLocalStorage";
+import {getDiscountedPrice} from "../Product/ProductTypes";
 import Spinner from "../Utils/Spinner";
 
 export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number => {
 	let subTotal: number = 0;
 
 	cartItems.forEach((cart) => {
-		subTotal += (cart.product_type.discountedPrice ?? 0) * cart.count;
+		subTotal += (getDiscountedPrice(cart.product_type) ?? 0) * cart.count;
 	});
 
 	subTotal = subTotal - subTotal * (couponValue / 100);
@@ -34,6 +35,7 @@ const CartItems: React.FC = () => {
 				query: GetUserCartSubscription,
 				variables: {
 					userId: user.id,
+					expiry: new Date().toISOString(),
 				},
 			});
 
@@ -44,13 +46,17 @@ const CartItems: React.FC = () => {
 				// setCartItems(data.data.cart);
 			}
 		} else {
-			console.log(cartStore, cartStore.map((element) => element.productTypeId));
+			console.log(
+				cartStore,
+				cartStore.map((element) => element.productTypeId)
+			);
 			const {
 				data: {product_type},
 			} = await apolloClient.query({
 				query: GetProductTypesById,
 				variables: {
 					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+					expiry: new Date().toISOString(),
 				},
 			});
 			const newItems = product_type.map((product, index) => ({
@@ -176,7 +182,7 @@ const CartItem: React.FC<{cart: Cart}> = (props) => {
 				</h5>
 				<p>
 					<span className="cart-count">{cart.count} x </span>{" "}
-					<span className="discounted-price">₹{cart.product_type.discountedPrice}</span>
+					<span className="discounted-price">₹{getDiscountedPrice(cart.product_type)}</span>
 				</p>
 			</div>
 		</div>

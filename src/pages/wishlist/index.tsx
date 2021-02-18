@@ -15,7 +15,7 @@ import Spinner from "../../Components/Utils/Spinner";
 import Link from "next/link";
 import {GetProductTypesById} from "../../../queries/productQuery";
 import {useLocalStorage} from "../../hooks/useLocalStorage";
-import {checkIfJsonDuplicates} from "../../Components/Product/ProductTypes";
+import {checkIfJsonDuplicates, getDiscountedPrice} from "../../Components/Product/ProductTypes";
 
 interface HeaderProps {
 	categories: Category[];
@@ -89,6 +89,7 @@ const WishlistMain = () => {
 				query: GetUserWishlist,
 				variables: {
 					userId: user.id,
+					expiry: new Date().toISOString(),
 				},
 			});
 
@@ -105,6 +106,7 @@ const WishlistMain = () => {
 				query: GetProductTypesById,
 				variables: {
 					productTypeArray: wishlist ?? [],
+					expiry: new Date().toISOString(),
 				},
 			});
 			console.log(product_type);
@@ -256,7 +258,7 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 				<span className="product-variation">{wishlist.product_type.product.name}</span>
 			</td>
 			<td className="product-price">
-				<span className="price">₹{count * (wishlist.product_type.originalPrice ?? 0)}</span>
+				<span className="price">₹{count * (getDiscountedPrice(wishlist.product_type) ?? 0)}</span>
 			</td>
 			<td className="product-quantity">
 				<div className="pro-qty d-inline-block mx-0">

@@ -17,14 +17,10 @@ export const GetProductDetailsById = gql`
 			productTypes {
 			id
 			SKU
-			deal_of_the_days(where: {enable: {_eq: true}}) {
+			deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
 				discount
 				id
-				product {
-					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_lt: $expiry}}) {
-						discount
-					}
-				}
+				enable
 			}
 			discountedPrice
 			imageUrl
@@ -34,8 +30,9 @@ export const GetProductDetailsById = gql`
 			remark
 			duration
 			product {
-				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_lt: $expiry}}) {
-				discount
+				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					discount
+					enable
 				}
 			}
 				product_seasons {
@@ -75,11 +72,12 @@ export const GetProducts = gql`
 `;
 
 export const GetRecommendations = gql`
-	query GetProductRecommendations {
-		product_type(limit: 5) {
+	query GetProductRecommendations($productId: Int!) {
+		product_type(limit: 5, where: {productId: {_neq: $productId}}) {
 			id
 			name
 			recommendedCoverImage
+			productId
 			product {
 				name
 				sub_category {
@@ -88,17 +86,22 @@ export const GetRecommendations = gql`
 			}
 		}
 	}
+
 `;
 
 
 export const GetProductsByCategoryId = gql`
-	query GetProductsBySubCategoryId($subCategoryId: Int!, $seasonId: bigint, $orderObject: [product_order_by!], $searchString: String) {
+	query GetProductsBySubCategoryId($subCategoryId: Int!, $seasonId: bigint, $orderObject: [product_order_by!], $searchString: String, $expiry: timestamptz!) {
 		product(order_by: $orderObject, where: {subCategoryId: {_eq: $subCategoryId}, isDeleted: {_eq: false}, productTypes: {product_seasons: {seasonId: {_eq: $seasonId}}}, name: {_ilike: $searchString }}) {
 			imageUrl
 			hoverImageUrl
 			name
 			description
 			id
+			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				discount
+				enable
+			}
 			productTypes_aggregate {
 			aggregate {
 				max {
@@ -190,7 +193,7 @@ export const InsertWishlist = gql`
 `;
 
 export const GetProductTypesById = gql`
-	query GetProductTypesById($productTypeArray: [Int!]) {
+	query GetProductTypesById($productTypeArray: [Int!], $expiry: timestamptz!) {
 		product_type(where: { id: { _in: $productTypeArray } }) {
 			id
 			imageUrl
@@ -198,10 +201,17 @@ export const GetProductTypesById = gql`
 			originalPrice
 			discountedPrice
 			productId
+			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				discount
+				enable
+			}
 			product {
 				id
 				name
-				
+				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					discount
+					enable
+				}
 				subCategoryId
 				sub_category {
 					id

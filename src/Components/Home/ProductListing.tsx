@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import {ProductType} from "../../generated/graphql";
+import {getDiscountedPrice} from "../Product/ProductTypes";
 
 interface ProductListingProps {
 	featuredProducts: ProductType[];
@@ -159,8 +160,9 @@ const Product: React.FC<{productType: ProductType}> = (props) => {
 							</Link>
 						</h3>
 						<div className="price">
-							{productType.discountedPrice && <span className="main-price discounted">₹{productType.discountedPrice}</span>}
-							<span className="discounted-price">₹{productType.originalPrice}</span>
+							{productType.originalPrice && <span className="main-price discounted">₹{productType.originalPrice}</span>}
+							{/*@ts-ignore*/}
+							<span className="discounted-price">₹{getDiscountedPrice(productType)}</span>
 						</div>
 						<div className="rating">
 							<i className="ion-android-star" />

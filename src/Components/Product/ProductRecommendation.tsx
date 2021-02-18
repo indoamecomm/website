@@ -45,7 +45,7 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 								<div className="main-title">
 									{productType.product.name} <br /> {productType.name}
 								</div>
-								<Link href={`/product/${productType.product.id}`}>
+								<Link href={`/product/${productType.productId}`}>
 									<a className="lezada-button lezada-button--medium">shop now</a>
 								</Link>
 							</div>

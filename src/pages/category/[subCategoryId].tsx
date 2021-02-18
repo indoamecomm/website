@@ -101,6 +101,7 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 				seasonId,
 				orderObject,
 				searchString: `%${searchString}%`,
+				expiry: new Date().toISOString(),
 			},
 		});
 
@@ -109,8 +110,6 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 	};
 
 	useEffect(() => {
-		console.log(orderObject, "Order Object ");
-
 		getFilteredProducts();
 	}, [seasonId, orderObject, valueChange, searchString]);
 
@@ -149,7 +148,13 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 
 	return (
 		<div className="shop-page-wrapper">
-			<CategoryHeader subCategory={subCategory} seasons={seasons} value={valueChange} setSeasonId={setSeasonId} setValueChange={setValueChange} />
+			<CategoryHeader
+				subCategory={subCategory}
+				seasons={seasons}
+				value={valueChange}
+				setSeasonId={setSeasonId}
+				setValueChange={setValueChange}
+			/>
 
 			<div className="shop-page-content mt-100 mb-100">
 				<div className="container wide">
@@ -292,7 +297,12 @@ const CategorySidebar: React.FC<{categories: Categories[]; searchString: string;
 				{/*=======  search widget  =======*/}
 				<div className="search-widget">
 					<form action="#">
-						<input type="search" placeholder="Search products ..." value={searchString} onChange={(event) => setSearchString(event.target.value)} />
+						<input
+							type="search"
+							placeholder="Search products ..."
+							value={searchString}
+							onChange={(event) => setSearchString(event.target.value)}
+						/>
 						<button type="button">
 							<i className="ion-android-search" />
 						</button>
@@ -574,8 +584,10 @@ export async function getStaticProps({params}) {
 		data: {product},
 	} = await apolloClient.query({
 		query: GetProductsByCategoryId,
+
 		variables: {
 			subCategoryId: params ? params.subCategoryId : null,
+			expiry: new Date().toISOString(),
 		},
 	});
 

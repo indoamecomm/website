@@ -23,8 +23,7 @@ const Deal: React.FC<{dealOfTheDay: Deal_Of_The_Day}> = (props) => {
 										<div className="deal-countdown" data-countdown={formateDate(dealOfTheDay.expiry)} />
 										<Link href={getDealLink(dealOfTheDay)}>
 											<a className="lezada-button lezada-button--medium lezada-button--icon--left">
-												<i className="icon-left ion-ios-cart" /> Only ₹{" "}
-												{getDiscountedPrice(dealOfTheDay.discount, dealOfTheDay.product_type?.originalPrice ?? 0)}
+												<i className="icon-left ion-ios-cart" /> Only ₹ {getDiscountedPrice(dealOfTheDay)}
 											</a>
 										</Link>
 									</div>
@@ -49,8 +48,17 @@ const formateDate = (isoDate: string): string => {
 	return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 };
 
-export const getDiscountedPrice = (discount: number, originalPrice: number): number => {
-	return originalPrice - originalPrice * (discount / 100);
+export const getDiscountedPrice = (deal: Deal_Of_The_Day): number => {
+	const {product_type: productType, product, discount} = deal;
+	let discountPrice = 0;
+	if (productType && productType.discountedPrice) {
+		discountPrice = productType.discountedPrice - productType.discountedPrice * (discount / 100) ?? 0;
+	} else if (product && product.productTypes_aggregate?.aggregate?.avg?.discountedPrice) {
+		const productAveragePrice = product.productTypes_aggregate.aggregate.avg.discountedPrice;
+		discountPrice = productAveragePrice - productAveragePrice * (discount / 100);
+	}
+
+	return discountPrice;
 };
 
 export const getDealLink = (deal: Deal_Of_The_Day): string => {

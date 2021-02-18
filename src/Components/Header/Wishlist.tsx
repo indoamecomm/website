@@ -8,6 +8,7 @@ import {initializeApollo} from "../../apollo";
 import {Wishlists} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
 import {useLocalStorage} from "../../hooks/useLocalStorage";
+import {getDiscountedPrice} from "../Product/ProductTypes";
 import Spinner from "../Utils/Spinner";
 
 const Wishlist = () => {
@@ -24,6 +25,7 @@ const Wishlist = () => {
 				query: GetUserWishlist,
 				variables: {
 					userId: user.id,
+					expiry: new Date().toISOString(),
 				},
 			});
 
@@ -40,6 +42,7 @@ const Wishlist = () => {
 				query: GetProductTypesById,
 				variables: {
 					productTypeArray: [...wishlist] ?? [],
+					expiry: new Date().toISOString(),
 				},
 			});
 			console.log(product_type);
@@ -165,7 +168,7 @@ const WishlistItem: React.FC<{wishlist: Wishlists}> = (props) => {
 						<span className="main-price discounted">₹{wishlist.product_type.originalPrice} </span>
 					)}
 					&nbsp;&nbsp;
-					<span className="discounted-price">₹{wishlist.product_type.discountedPrice}</span>
+					<span className="discounted-price">₹{getDiscountedPrice(wishlist.product_type)}</span>
 				</p>
 			</div>
 		</div>

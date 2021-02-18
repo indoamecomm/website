@@ -69,13 +69,24 @@ export const UpdateUserAccountDetails = gql`
 `;
 
 export const GetUserCart = gql`
-	query GetUserCart($userId: bigint!) {
+	query GetUserCart($userId: bigint!, $expiry: timestamptz!) {
 		cart(where: {userId: {_eq: $userId}}) {
 			id
 			count
 			product_type {
+				deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
+					discount
+					id
+					enable
+				}
 				name
 				discountedPrice
+					product {
+						deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+							discount
+							enable
+						}
+					}
 				imageUrl
 				product {
 					id 
@@ -87,13 +98,24 @@ export const GetUserCart = gql`
 
 
 export const GetUserCartSubscription = gql`
-	subscription GetUserCart($userId: bigint!) {
+	subscription GetUserCart($userId: bigint!, $expiry: timestamptz!) {
 		cart(where: {userId: {_eq: $userId}}) {
 			id
 			count
 			product_type {
+				deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
+					discount
+					id
+					enable
+				}
 				name
 				discountedPrice
+					product {
+						deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+							discount
+							enable
+						}
+					}
 				imageUrl
 				product {
 					id 
@@ -114,18 +136,26 @@ export const DeleteCartById = gql`
 
 
 export const GetUserWishlist = gql`
-	subscription GetUserWishlist($userId: bigint!) {
+	subscription GetUserWishlist($userId: bigint!, $expiry: timestamptz!) {
 		wishlists(where: {userId: {_eq: $userId}}) {
 			id
 			product_type {
 				id
 				name
 				originalPrice
+				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					discount
+					enable
+				}
 				discountedPrice
 				imageUrl
 				product {
 					id
 					name
+					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+						discount
+						enable
+					}
 				}
 			}
 		}
@@ -207,7 +237,7 @@ export const InsertToUserCartFromWishlist = gql`
 `;
 
 export const GetUserCartDetails = gql`
-	query GetUserCartDetails($userId: bigint!) {
+	query GetUserCartDetails($userId: bigint!, $expiry: timestamptz!) {
 		users(where: { id: { _eq: $userId } }) {
 			carts {
 				count
@@ -217,10 +247,18 @@ export const GetUserCartDetails = gql`
 					id
 					name
 					discountedPrice
-					deal_of_the_days {
+					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
 						discount
+						enable
+					}
+					product {
+						deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+							discount
+							enable
+						}
 					}
 				}
+
 			}
 			addresses(where: { isDeleted: { _eq: false } }) {
 				id
@@ -316,3 +354,10 @@ export const DeleteUserCart = gql`
 
 
 
+export const DeleteWishlistByUserId = gql`
+	mutation DeleteWishlistByUserId($userId: bigint!, $productTypeId: Int!) {
+		delete_wishlists(where: {productTypeId: {_eq: $productTypeId}, userId: {_eq: $userId}}) {
+			affected_rows
+		}
+	}
+`;

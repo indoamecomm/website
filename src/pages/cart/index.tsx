@@ -15,6 +15,7 @@ import Link from "next/link";
 import Spinner from "../../Components/Utils/Spinner";
 import {useLocalStorage} from "../../hooks/useLocalStorage";
 import {GetProductTypesById} from "../../../queries/productQuery";
+import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
 
 interface HeaderProps {
 	categories: Category[];
@@ -87,6 +88,7 @@ const CartMain: React.FC = () => {
 				query: GetUserCartSubscription,
 				variables: {
 					userId: user.id,
+					expiry: new Date().toISOString(),
 				},
 			});
 
@@ -103,6 +105,7 @@ const CartMain: React.FC = () => {
 				query: GetProductTypesById,
 				variables: {
 					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+					expiry: new Date().toISOString(),
 				},
 			});
 			const newItems = product_type.map((product, index) => ({
@@ -122,7 +125,7 @@ const CartMain: React.FC = () => {
 		let subTotal: number = 0;
 
 		cartItems.forEach((cart) => {
-			subTotal += (cart.product_type.discountedPrice ?? 0) * cart.count;
+			subTotal += (getDiscountedPrice(cart.product_type) ?? 0) * cart.count;
 		});
 
 		return subTotal;
@@ -205,28 +208,6 @@ const CartMain: React.FC = () => {
 								</div>
 								{/*=======  End of coupon area  =======*/}
 							</div>
-							{/* <div className="col-xl-4 offset-xl-8 col-lg-5 offset-lg-7">
-								<div className="cart-calculation-area">
-									<h2 className="mb-40">Cart totals</h2>
-									<table className="cart-calculation-table mb-30">
-										<tbody>
-											<tr>
-												<th>SUBTOTAL</th>
-												<td className="subtotal">₹100.00</td>
-											</tr>
-											<tr>
-												<th>TOTAL</th>
-												<td className="total">₹100.00</td>
-											</tr>
-										</tbody>
-									</table>
-									<div className="cart-calculation-button text-center">
-										<a href="shop-checkout.html">
-											<button className="lezada-button lezada-button--medium">proceed to checkout</button>
-										</a>
-									</div>
-								</div>
-							</div> */}
 						</>
 					)}
 				</div>
@@ -242,8 +223,8 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [cartStore, setCartStore] = useLocalStorage("cart", []);
 	const {user} = useAuth();
-
 	const [deleteCartById] = useMutation(DeleteCartById);
+	const [firstRender, setFirstRender] = useState<boolean>(false);
 
 	const updateCart = async () => {
 		try {
@@ -312,11 +293,15 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 
 	let timeout;
 	useEffect(() => {
-		clearTimeout(timeout);
-		timeout = setTimeout(() => {
-			updateCart();
-			console.log("After timeout");
-		}, 2000);
+		if (firstRender) {
+			timeout = setTimeout(() => {
+				updateCart();
+				console.log("After timeout");
+			}, 1000);
+		} else {
+			setFirstRender(true);
+		}
+		return () => clearTimeout(timeout);
 	}, [count]);
 
 	return (
@@ -331,7 +316,7 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 				<span className="product-variation">{cart.product_type.product.name}</span>
 			</td>
 			<td className="product-price">
-				<span className="price">₹{cart.product_type.discountedPrice}</span>
+				<span className="price">₹{getDiscountedPrice(cart.product_type)}</span>
 			</td>
 			<td className="product-quantity">
 				<div className="pro-qty d-inline-block mx-0">
@@ -345,7 +330,7 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 				</div>
 			</td>
 			<td className="total-price">
-				<span className="price">₹{count * (cart.product_type.discountedPrice ?? 0)}</span>
+				<span className="price">₹{count * (getDiscountedPrice(cart.product_type) ?? 0)}</span>
 			</td>
 
 			{!loading ? (

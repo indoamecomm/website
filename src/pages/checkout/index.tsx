@@ -19,6 +19,7 @@ import {AddressEdit} from "../account";
 // import ReactTooltip from "react-tooltip";
 import dynamic from "next/dynamic";
 import {useRouter} from "next/router";
+import { getDiscountedPrice } from "../../Components/Product/ProductTypes";
 
 interface HeaderProps {
 	categories: Category[];
@@ -116,6 +117,7 @@ const Checkout: React.FC = () => {
 			query: GetUserCartDetails,
 			variables: {
 				userId: user.id,
+				expiry: new Date().toISOString(),
 			},
 			fetchPolicy: "network-only",
 		});
@@ -546,7 +548,7 @@ const CheckoutCart: React.FC<{cart: Cart[]; activeCoupon: any}> = (props) => {
 					{cart.map((cartItem) => (
 						<li key={cartItem.id}>
 							{cartItem.product_type.name} X {cartItem.count}
-							<span>₹{cartItem.count * (cartItem.product_type.discountedPrice ?? 0)}</span>
+							<span>₹{cartItem.count * (getDiscountedPrice(cartItem.product_type) ?? 0)}</span>
 						</li>
 					))}
 					{activeCoupon && (
