@@ -1,15 +1,17 @@
 import {useMutation} from "@apollo/client";
 import Link from "next/link";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import toast from "react-hot-toast";
 import {GetProductTypesById} from "../../../queries/productQuery";
 import {DeleteCartById, GetUserCartSubscription} from "../../../queries/userQuery";
 import {initializeApollo} from "../../apollo";
 import {Cart} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
-import {useLocalStorage} from "../../hooks/useLocalStorage";
 import {getDiscountedPrice} from "../Product/ProductTypes";
 import Spinner from "../Utils/Spinner";
+import CartContext from "../../Context/cartContext";
+import {useRouter} from "next/router";
+import overlayContext from "../../Context/overlayContext";
 
 export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number => {
 	let subTotal: number = 0;
@@ -25,8 +27,10 @@ export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number 
 const CartItems: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
-	const [cartStore] = useLocalStorage("cart", []);
+	const {cart: cartStore} = useContext(CartContext);
+	const {cartActive, setCartActive} = useContext(overlayContext);
 
+	const router = useRouter();
 	const apolloClient = initializeApollo();
 
 	const getUserCartItem = async () => {
@@ -43,13 +47,8 @@ const CartItems: React.FC = () => {
 				data.subscribe(({data: {cart}}) => {
 					setCartItems(cart);
 				});
-				// setCartItems(data.data.cart);
 			}
 		} else {
-			console.log(
-				cartStore,
-				cartStore.map((element) => element.productTypeId)
-			);
 			const {
 				data: {product_type},
 			} = await apolloClient.query({
@@ -70,14 +69,23 @@ const CartItems: React.FC = () => {
 
 	useEffect(() => {
 		getUserCartItem();
-	}, [cartStore]);
+	}, [cartStore, user]);
+
+	const proceedToCheckout = () => {
+		if (user) {
+			router.push("/checkout");
+		} else {
+			toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
+			router.push("/login?checkout=true");
+		}
+	};
 
 	return (
-		<div className="cart-overlay" id="cart-overlay">
-			<div className="cart-overlay-close inactive" />
+		<div className={`cart-overlay ${cartActive ? "active-cart-overlay" : ""}`} id="cart-overlay">
+			<div className={`cart-overlay-close ${cartActive ? "active" : "inactive"} `} />
 			<div className="cart-overlay-content">
 				{/*=======  close icon  =======*/}
-				<span className="close-icon" id="cart-close-icon">
+				<span className="close-icon" id="cart-close-icon" onClick={() => setCartActive(false)}>
 					<a>
 						<i className="ion-android-close" />
 					</a>
@@ -97,11 +105,10 @@ const CartItems: React.FC = () => {
 							</p>
 							<div className="cart-buttons">
 								<Link href="/cart">
-									<a>view cart</a>
+									<a onClick={() => setCartActive(false)}>view cart</a>
 								</Link>
-								<Link href="/checkout">
-									<a>checkout</a>
-								</Link>
+
+								<a onClick={proceedToCheckout}>checkout</a>
 							</div>
 							{/* <p className="free-shipping-text">Free Shipping on All Orders Over ₹100!</p> */}
 						</div>
@@ -119,7 +126,7 @@ const CartItem: React.FC<{cart: Cart}> = (props) => {
 
 	const [deleteCartById] = useMutation(DeleteCartById);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [cartStore, setCartStore] = useLocalStorage("cart", []);
+	const {cart: cartStore, setCart: setCartStore} = useContext(CartContext);
 
 	const {user} = useAuth();
 

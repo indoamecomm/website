@@ -15,13 +15,13 @@ export const GetProductDetailsById = gql`
 			name
 			}
 			productTypes {
-			id
-			SKU
-			deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
-				discount
 				id
-				enable
-			}
+				SKU
+				deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
+					discount
+					id
+					enable
+				}
 			discountedPrice
 			imageUrl
 			name
@@ -99,20 +99,21 @@ export const GetProductsByCategoryId = gql`
 			description
 			id
 			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				id
 				discount
 				enable
 			}
 			productTypes_aggregate {
-			aggregate {
-				max {
-				discountedPrice
-				originalPrice
+				aggregate {
+					max {
+						discountedPrice
+						originalPrice
+					}
+					min {
+						originalPrice
+						discountedPrice
+					}
 				}
-				min {
-				originalPrice
-				discountedPrice
-				}
-			}
 			}
 		}
 	}
@@ -126,17 +127,17 @@ export const GetCategories = gql`
 			id
 			name
 			sub_categories {
-			id
-			name
-			products_aggregate {
-				aggregate {
-				count
-				}
-			}
-			products {
 				id
 				name
-			}
+				products_aggregate {
+					aggregate {
+					count
+					}
+				}
+				products {
+					id
+					name
+				}
 			}
 		}
 	}
@@ -202,6 +203,7 @@ export const GetProductTypesById = gql`
 			discountedPrice
 			productId
 			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				id
 				discount
 				enable
 			}
@@ -209,6 +211,7 @@ export const GetProductTypesById = gql`
 				id
 				name
 				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					id
 					discount
 					enable
 				}

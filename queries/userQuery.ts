@@ -103,6 +103,7 @@ export const GetUserCartSubscription = gql`
 			id
 			count
 			product_type {
+				id
 				deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
 					discount
 					id
@@ -112,6 +113,7 @@ export const GetUserCartSubscription = gql`
 				discountedPrice
 					product {
 						deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+							id
 							discount
 							enable
 						}
@@ -144,6 +146,7 @@ export const GetUserWishlist = gql`
 				name
 				originalPrice
 				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					id
 					discount
 					enable
 				}
@@ -153,6 +156,7 @@ export const GetUserWishlist = gql`
 					id
 					name
 					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+						id
 						discount
 						enable
 					}
@@ -361,3 +365,18 @@ export const DeleteWishlistByUserId = gql`
 		}
 	}
 `;
+
+
+export const InsertUserCartAndWishlist = gql`
+	mutation InsertUserCartAndWishlist($insertCart: [cart_insert_input!]!, $insertWishlist: [wishlists_insert_input!]!) {
+		insert_cart(objects: $insertCart) {
+			affected_rows
+		}
+		insert_wishlists(objects: $insertWishlist) {
+			affected_rows
+		}
+	}
+# { productTypeId: 10, userId: 0, count: 0 }
+	
+`;
+

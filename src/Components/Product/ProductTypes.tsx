@@ -1,7 +1,7 @@
 import {useMutation} from "@apollo/client";
 import Link from "next/link";
 import React from "react";
-import {useEffect} from "react";
+import {useEffect, useContext} from "react";
 import {useState} from "react";
 import toast, {Toaster} from "react-hot-toast";
 import {InsertToUserCart, InsertWishlist} from "../../../queries/productQuery";
@@ -9,10 +9,16 @@ import {DeleteWishlistByUserId, GetUserCartCount, GetUserWishlistCount} from "..
 import {initializeApollo} from "../../apollo";
 import {Product_Type} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
-import {useLocalStorage} from "../../hooks/useLocalStorage";
+import WishlistContext from "../../Context/wishlistContext";
+// import useLocalStorage from "@rooks/use-localstorage";
 import Spinner from "../Utils/Spinner";
+import CartContext from "../../Context/cartContext";
 
-const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; subCategory: string}> = (props) => {
+const ProductTypes: React.FC<{
+	productType: Product_Type;
+	leftOrient: boolean;
+	subCategory: string;
+}> = (props) => {
 	const {productType, leftOrient, subCategory} = props;
 	const apolloClient = initializeApollo();
 
@@ -28,9 +34,8 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 	const [insertToUserCart] = useMutation(InsertToUserCart);
 	const [insertWishlist] = useMutation(InsertWishlist);
 	const [deleteWishlist] = useMutation(DeleteWishlistByUserId);
-
-	const [wishlist, setWishlist] = useLocalStorage("wishlist", []);
-	const [cartStore, setCartStore] = useLocalStorage("cart", []);
+	const {wishlist, setWishlist} = useContext(WishlistContext);
+	const {cart: cartStore, setCart: setCartStore} = useContext(CartContext);
 
 	const checkCartExist = async () => {
 		if (user) {
@@ -70,14 +75,21 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 				// setCartItems(data.data.cart);
 			}
 		} else {
-			setWishlistExists(wishlist.includes(productType.id));
+			setWishlistExists(wishlist && wishlist.includes(productType.id));
 		}
 	};
 
 	useEffect(() => {
-		checkCartExist();
-		checkWishlistExist();
-	}, [user, cartStore, wishlist]);
+		if (wishlist !== undefined) {
+			checkCartExist();
+		}
+	}, [user, cartStore]);
+
+	useEffect(() => {
+		if (wishlist !== undefined) {
+			checkWishlistExist();
+		}
+	}, [user, wishlist]);
 
 	const addToCart = async () => {
 		try {
@@ -101,14 +113,14 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 					toast.error("Some unknown error occurred");
 				}
 			} else {
-				let newCartStore: any = [...cartStore];
+				console.log(cartStore, "Cart Store");
+				let newCartStore: any[] = [...cartStore];
 				if (checkIfJsonDuplicates(newCartStore, productType.id, "productTypeId")) {
 					newCartStore = newCartStore.filter((item) => item.productTypeId !== productType.id);
 				} else {
 					newCartStore.push({productTypeId: productType.id, count});
 				}
-				newCartStore = new Set(newCartStore);
-				setCartStore([...newCartStore]);
+				setCartStore(newCartStore);
 			}
 		} catch (error) {
 			toast.error(error.message);
@@ -151,14 +163,17 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 					}
 				}
 			} else {
-				let newWishlist: any = [...wishlist];
+				let newWishlist: any[] = [...wishlist];
+
 				if (newWishlist.includes(productType.id)) {
-					newWishlist = newWishlist.filter((item) => item !== productType.id);
+					const index = newWishlist.indexOf(productType.id);
+					if (index > -1) {
+						newWishlist.splice(index, 1);
+					}
 				} else {
 					newWishlist.push(productType.id);
 				}
-				newWishlist = new Set(newWishlist);
-				setWishlist([...newWishlist]);
+				setWishlist(newWishlist);
 			}
 		} catch (error) {
 			toast.error(error.message);
@@ -369,9 +384,12 @@ const ProductTypes: React.FC<{productType: Product_Type; leftOrient: boolean; su
 export default ProductTypes;
 
 export const checkIfJsonDuplicates = (jsonObject: any[], checkElement: string | number, checkField: string | number): boolean => {
-	for (let i = 0; i < jsonObject.length; i++) {
-		if (jsonObject[i][checkField] === checkElement) {
-			return true;
+	if (jsonObject !== undefined) {
+		console.log(jsonObject, "JSON Object");
+		for (let i = 0; i < jsonObject.length; i++) {
+			if (jsonObject[i][checkField] === checkElement) {
+				return true;
+			}
 		}
 	}
 

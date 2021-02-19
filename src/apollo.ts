@@ -34,8 +34,14 @@ const createIsomorphLink = () => {
 		ssrMode: true,
 		headers: {
 			"x-hasura-admin-secret": "indoame@321"
-		}
-
+		}, defaultOptions: {
+			watchQuery: {
+				fetchPolicy: "network-only",
+			},
+			query: {
+				fetchPolicy: "network-only",
+			},
+		},
 	})
 
 	const link = process.browser ? split(

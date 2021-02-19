@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -14,8 +14,9 @@ import {useMutation} from "@apollo/client";
 import Spinner from "../../Components/Utils/Spinner";
 import Link from "next/link";
 import {GetProductTypesById} from "../../../queries/productQuery";
-import {useLocalStorage} from "../../hooks/useLocalStorage";
+import useLocalStorage from "@rooks/use-localstorage";
 import {checkIfJsonDuplicates, getDiscountedPrice} from "../../Components/Product/ProductTypes";
+import WishlistContext from "../../Context/wishlistContext";
 
 interface HeaderProps {
 	categories: Category[];
@@ -41,20 +42,8 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<script src="/js/vendor/jquery.min.js"></script>
 				<script src="/js/popper.min.js"></script>
 				<script src="/js/bootstrap.min.js"></script>
-
 				<script src="/js/plugins.js"></script>
 				<script src="/js/main.js"></script>
-
-				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
-				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
-				<script src="/revolution/revolution-active.js"></script>
-
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
@@ -79,7 +68,7 @@ const WishlistMain = () => {
 	const {user} = useAuth();
 
 	const [wishlistItems, setWishlistItems] = useState<Wishlists[]>([]);
-	const [wishlist] = useLocalStorage("wishlist", []);
+	const {wishlist} = useContext(WishlistContext);
 
 	const apolloClient = initializeApollo();
 
@@ -109,9 +98,8 @@ const WishlistMain = () => {
 					expiry: new Date().toISOString(),
 				},
 			});
-			console.log(product_type);
-			const newItems = product_type.map((product) => ({
-				id: product.id,
+			const newItems = product_type.map((product, index) => ({
+				id: `${product.id}${index}`,
 				product_type: JSON.parse(JSON.stringify(product)),
 			}));
 			setWishlistItems(newItems);
@@ -146,7 +134,7 @@ const WishlistMain = () => {
 									</thead>
 									<tbody>
 										{wishlistItems.map((wishlist) => (
-											<WishlistItem wishlist={wishlist} user={user} />
+											<WishlistItem wishlist={wishlist} user={user} key={wishlist.id} />
 										))}
 									</tbody>
 								</table>
@@ -168,8 +156,8 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 	const [count, setCount] = useState<number>(1);
 	const [deleteWishlist] = useMutation(DeleteWishlist);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [wishlistStore, setWishlistStore] = useLocalStorage("wishlist", []);
-	const [cartStore, setCartStore] = useLocalStorage("cart", []);
+	const {wishlist: wishlistStore, setWishlist: setWishlistStore} = useContext(WishlistContext);
+	const [cartStore, setCartStore] = useLocalStorage("cart");
 
 	const addToCart = async () => {
 		try {
@@ -197,12 +185,10 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 				} else {
 					newCartStore.push({productTypeId: wishlist.product_type.id, count});
 				}
-				newCartStore = new Set(newCartStore);
 				setCartStore([...newCartStore]);
 
 				let newWishlist: any = [...wishlistStore];
 				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
-				newWishlist = new Set(newWishlist);
 				setWishlistStore([...newWishlist]);
 			}
 		} catch (error) {
@@ -232,7 +218,6 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 			} else {
 				let newWishlist: any = [...wishlistStore];
 				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
-				newWishlist = new Set(newWishlist);
 				setWishlistStore([...newWishlist]);
 			}
 		} catch (error) {

@@ -15,3 +15,14 @@ export const GetFaqTitles = gql`
 		}
 	}
 `;
+
+export const GetTestimonials = gql`
+	query GetTestimonials {
+		testimonials(order_by: {id: asc}, where: {isDeleted: {_eq: false}}) {
+			author
+			designation
+			id
+			testimonial
+		}
+	}
+`;

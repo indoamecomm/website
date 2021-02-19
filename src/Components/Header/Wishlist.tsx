@@ -1,15 +1,16 @@
 import {useMutation} from "@apollo/client";
 import Link from "next/link";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import toast from "react-hot-toast";
 import {GetProductTypesById} from "../../../queries/productQuery";
 import {DeleteWishlist, GetUserWishlist} from "../../../queries/userQuery";
 import {initializeApollo} from "../../apollo";
 import {Wishlists} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
-import {useLocalStorage} from "../../hooks/useLocalStorage";
 import {getDiscountedPrice} from "../Product/ProductTypes";
 import Spinner from "../Utils/Spinner";
+import WishlistContext from "../../Context/wishlistContext";
+import overlayContext from "../../Context/overlayContext";
 
 const Wishlist = () => {
 	const {user} = useAuth();
@@ -17,7 +18,8 @@ const Wishlist = () => {
 
 	const apolloClient = initializeApollo();
 
-	const [wishlist] = useLocalStorage("wishlist", []);
+	const {wishlist} = useContext(WishlistContext);
+	const {wishlistActive, setWishlistActive} = useContext(overlayContext);
 
 	const getUserWishlists = async () => {
 		if (user) {
@@ -27,6 +29,7 @@ const Wishlist = () => {
 					userId: user.id,
 					expiry: new Date().toISOString(),
 				},
+				fetchPolicy: "network-only",
 			});
 
 			if (data) {
@@ -46,8 +49,8 @@ const Wishlist = () => {
 				},
 			});
 			console.log(product_type);
-			const newItems = product_type.map((product) => ({
-				id: product.id,
+			const newItems = product_type.map((product, index) => ({
+				id: `${product.id}${index}`,
 				product_type: JSON.parse(JSON.stringify(product)),
 			}));
 			setWishlistItems(newItems);
@@ -60,11 +63,11 @@ const Wishlist = () => {
 	}, [user, wishlist]);
 
 	return (
-		<div className="wishlist-overlay" id="wishlist-overlay">
-			<div className="wishlist-overlay-close inactive" />
+		<div className={`wishlist-overlay ${wishlistActive ? "active-wishlist-overlay" : ""}`} id="wishlist-overlay">
+			<div className={`wishlist-overlay-close ${wishlistActive ? "active" : "inactive"}`} />
 			<div className="wishlist-overlay-content">
 				{/*=======  close icon  =======*/}
-				<span className="close-icon" id="wishlist-close-icon">
+				<span className="close-icon" id="wishlist-close-icon" onClick={() => setWishlistActive(false)}>
 					<a>
 						<i className="ion-android-close" />
 					</a>
@@ -84,7 +87,7 @@ const Wishlist = () => {
 							{/*=======  cart buttons  =======*/}
 							<div className="cart-buttons">
 								<Link href="/wishlist">
-									<a>view wishlist</a>
+									<a onClick={() => setWishlistActive(false)}>view wishlist</a>
 								</Link>
 							</div>
 							{/*=======  End of cart buttons  =======*/}
@@ -105,7 +108,7 @@ const WishlistItem: React.FC<{wishlist: Wishlists}> = (props) => {
 
 	const [deleteWishlist] = useMutation(DeleteWishlist);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [wishlistStore, setWishlistStore] = useLocalStorage("wishlist", []);
+	const {wishlist: wishlistStore, setWishlist: setWishlistStore} = useContext(WishlistContext);
 
 	const deleteWishlistItem = async () => {
 		try {
@@ -128,8 +131,7 @@ const WishlistItem: React.FC<{wishlist: Wishlists}> = (props) => {
 			} else {
 				let newWishlist: any = [...wishlistStore];
 				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
-				newWishlist = new Set(newWishlist);
-				setWishlistStore([...newWishlist]);
+				setWishlistStore(newWishlist);
 			}
 		} catch (error) {
 			setLoading(false);

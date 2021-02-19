@@ -124,6 +124,7 @@ export const GetDealOfTheDay = gql`
 				productId
 			}
 			product {
+				id
 				productTypes_aggregate {
 					aggregate {
 						avg {
@@ -148,11 +149,14 @@ export const GetProductListing = gql`
 			discountedPrice
 			productId
 			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				id
 				discount
 				enable
 			}
 			product {
+				id
 				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					id
 					discount
 					enable
 				}
@@ -173,11 +177,14 @@ export const GetProductListing = gql`
 			discountedPrice
 			productId
 			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+				id
 				discount
 				enable
 			}
 			product {
+				id
 				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					id
 					discount
 					enable
 				}

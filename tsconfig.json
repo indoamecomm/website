@@ -31,7 +31,7 @@
     "**/*.tsx",
     "next.config.js",
     "next-firebase-auth.d.ts"
-  ],
+, "src/hooks/useLocalStorage."  ],
   "exclude": [
     "node_modules"
   ]

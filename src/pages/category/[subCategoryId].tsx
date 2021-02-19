@@ -498,21 +498,6 @@ const CategoryCard: React.FC<{product: Product}> = (props) => {
 							<img src={hoverImageUrl} className="img-fluid" alt={name + "Hover Image"} />
 						</a>
 					</Link>
-					<div className="single-product__floating-icons">
-						<span className="wishlist">
-							<a
-								href="#"
-								data-tippy="Add to wishlist"
-								data-tippy-inertia="true"
-								data-tippy-animation="shift-away"
-								data-tippy-delay={50}
-								data-tippy-arrow="true"
-								data-tippy-theme="sharpborder"
-								data-tippy-placement="bottom">
-								<i className="ion-android-favorite-outline" />
-							</a>
-						</span>
-					</div>
 				</div>
 				{/*=======  End of single product image  =======*/}
 				{/*=======  single product content  =======*/}

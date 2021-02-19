@@ -19,7 +19,7 @@ import {AddressEdit} from "../account";
 // import ReactTooltip from "react-tooltip";
 import dynamic from "next/dynamic";
 import {useRouter} from "next/router";
-import { getDiscountedPrice } from "../../Components/Product/ProductTypes";
+import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
 
 interface HeaderProps {
 	categories: Category[];
@@ -137,12 +137,7 @@ const Checkout: React.FC = () => {
 		}
 	}, [user, refetch]);
 
-	useEffect(() => {
-		console.log(refetch);
-	}, [refetch]);
-
-	const placeOrder = async (event: React.FormEvent<HTMLFormElement>) => {
-		console.log("place order called");
+	const placeOrder = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		try {
 			event.preventDefault();
 			setLoading(true);
@@ -268,7 +263,7 @@ const Checkout: React.FC = () => {
 					<div className="col-12">
 						<div className="lezada-form">
 							{/* Checkout Form s*/}
-							<form className="checkout-form" onSubmit={activeAddress ? placeOrder : undefined}>
+							<form className="checkout-form">
 								<div className="row row-40">
 									{!queryLoading ? (
 										<CheckoutUserForm
@@ -319,6 +314,7 @@ const Checkout: React.FC = () => {
 														style={!activeAddress ? {opacity: 0.7} : {opacity: 1}}
 														className="lezada-button lezada-button--medium mt-30"
 														data-tip={"Please add address"}
+														onClick={activeAddress ? placeOrder : undefined}
 														type="submit">
 														Place order
 													</button>
@@ -405,7 +401,6 @@ const CheckoutAddress: React.FC<{
 
 	useEffect(() => {
 		if (address && address.length > 0) {
-			console.log(address);
 			setAddressList({addresses: address});
 			setActiveAddress(address[0]);
 		}
@@ -420,6 +415,8 @@ const CheckoutAddress: React.FC<{
 				setData={setAddressList}
 				onClickAddress={setActiveAddress}
 				activeAddress={activeAddress}
+				setRefetch={setRefetch}
+				refetch={refetch}
 			/>
 
 			<AddressEdit
@@ -476,13 +473,24 @@ interface ModalProps {
 	setData?: (value: any) => void;
 	onClickAddress?: (value: any) => void;
 	activeAddress?: any;
+	refetch: number;
+	setRefetch: (value: any) => void;
 }
 
 const AddressListModal: React.FC<ModalProps> = (props) => {
-	const {open, setOpen, data, onClickAddress, activeAddress: selectedAddress} = props;
+	const {open, setOpen, data, onClickAddress, activeAddress: selectedAddress, refetch, setRefetch} = props;
+	const [openAddressModal, setOpenAddressModal] = useState<boolean>(false);
+	const {user} = useAuth();
 
 	return (
 		<Modal overlayClassName="overlay" className="modal__main modal-list__address" isOpen={open}>
+			<AddressEdit
+				open={openAddressModal}
+				setOpen={setOpenAddressModal}
+				userId={user && user.id}
+				setRefetch={setRefetch}
+				refetch={refetch}
+			/>
 			<div className="d-flex flex-column">
 				<div className="close">
 					<h2 className="checkout-title">Select Address</h2>
@@ -528,6 +536,14 @@ const AddressListModal: React.FC<ModalProps> = (props) => {
 									</div>
 								</div>
 							))}
+
+						<div
+							className="address__container d-flex justify-content-center align-items-center"
+							onClick={() => {
+								setOpenAddressModal(true);
+							}}>
+							<p className="address__name">Add new address + </p>
+						</div>
 					</div>
 				</div>
 			</div>

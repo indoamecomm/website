@@ -1,13 +1,15 @@
 import Link from "next/link";
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {useState} from "react";
 import {GetUserTotalCartCount, GetUserTotalWishlistCount} from "../../../queries/userQuery";
 import {initializeApollo} from "../../apollo";
 import {Category, Store_Locations} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
-import {useLocalStorage} from "../../hooks/useLocalStorage";
 import Cart from "./Cart";
 import Wishlist from "./Wishlist";
+import WishlistContext from "../../Context/wishlistContext";
+import cartContext from "../../Context/cartContext";
+import overlayContext from "../../Context/overlayContext";
 
 interface HeaderProps {
 	categories: Category[];
@@ -17,16 +19,17 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = (props) => {
 	const {categories, storeLocations} = props;
 	const [cartCount, setCartCount] = useState<number>(0);
-	const [wishlistStore] = useLocalStorage("wishlist", []);
-	const [cartStore] = useLocalStorage("cart", []);
+	const {wishlist} = useContext(WishlistContext);
+	const {cart: cartStore} = useContext(cartContext);
+
+	const {setWishlistActive, setCartActive} = useContext(overlayContext);
 
 	const [wishlistCount, setWishlistCount] = useState<number>(0);
 
 	const {user} = useAuth();
 
 	const apolloClient = initializeApollo();
-
-	const checkCartExist = async () => {
+	const getCartCount = async () => {
 		const data = await apolloClient.subscribe({
 			query: GetUserTotalCartCount,
 			variables: {
@@ -41,12 +44,15 @@ const Header: React.FC<HeaderProps> = (props) => {
 			// setCartItems(data.data.cart);
 		}
 	};
-	useEffect(() => {
-		setWishlistCount(wishlistStore && wishlistStore.length > 0 ? wishlistStore.length : 0);
-		setCartCount(cartStore && cartStore.length > 0 ? cartStore.length : 0);
-	}, [wishlistStore, cartStore]);
 
-	const checkWishlistExist = async () => {
+	useEffect(() => {
+		if (!user) {
+			setWishlistCount(wishlist && wishlist.length > 0 ? wishlist.length : 0);
+			setCartCount(cartStore && cartStore.length > 0 ? cartStore.length : 0);
+		}
+	}, [wishlist, cartStore, user]);
+
+	const getWishlistCount = async () => {
 		const data = await apolloClient.subscribe({
 			query: GetUserTotalWishlistCount,
 			variables: {
@@ -64,8 +70,8 @@ const Header: React.FC<HeaderProps> = (props) => {
 
 	useEffect(() => {
 		if (user) {
-			checkCartExist();
-			checkWishlistExist();
+			getCartCount();
+			getWishlistCount();
 		}
 	}, [user]);
 
@@ -135,14 +141,30 @@ const Header: React.FC<HeaderProps> = (props) => {
 										</a>
 									</Link>
 								</div>
-								<div className="single-icon wishlist">
-									<a id="offcanvas-wishlist-icon">
+								<div
+									className="single-icon wishlist"
+									onClick={() => {
+										setWishlistActive(true);
+									}}>
+									<a
+										id="offcanvas-wishlist-icon"
+										onClick={() => {
+											setWishlistActive(true);
+										}}>
 										<i className="ion-android-favorite-outline" />
 										<span className="count">{wishlistCount}</span>
 									</a>
 								</div>
-								<div className="single-icon cart">
-									<a id="offcanvas-cart-icon">
+								<div
+									className="single-icon cart"
+									onClick={() => {
+										setCartActive(true);
+									}}>
+									<a
+										id="offcanvas-cart-icon"
+										onClick={() => {
+											setCartActive(true);
+										}}>
 										<i className="ion-ios-cart" />
 										<span className="count">{cartCount}</span>
 									</a>

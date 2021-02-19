@@ -11,11 +11,12 @@ import {DeleteCartById, GetUserCartSubscription, UpdateCart} from "../../../quer
 import {useAuth} from "../../hooks/useAuth";
 import {Cart} from "../../generated/graphql";
 import {useMutation} from "@apollo/client";
-import Link from "next/link";
 import Spinner from "../../Components/Utils/Spinner";
-import {useLocalStorage} from "../../hooks/useLocalStorage";
 import {GetProductTypesById} from "../../../queries/productQuery";
 import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
+import cartContext from "../../Context/cartContext";
+import {useContext} from "react";
+import {useRouter} from "next/router";
 
 interface HeaderProps {
 	categories: Category[];
@@ -41,20 +42,6 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<script src="/js/vendor/jquery.min.js"></script>
 				<script src="/js/popper.min.js"></script>
 				<script src="/js/bootstrap.min.js"></script>
-
-				<script src="/js/plugins.js"></script>
-				<script src="/js/main.js"></script>
-
-				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
-				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
-				<script src="/revolution/revolution-active.js"></script>
-
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
@@ -78,7 +65,8 @@ export default index;
 const CartMain: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
-	const [cartStore] = useLocalStorage("cart", []);
+	const {cart: cartStore} = useContext(cartContext);
+	const router = useRouter();
 
 	const apolloClient = initializeApollo();
 
@@ -130,6 +118,16 @@ const CartMain: React.FC = () => {
 
 		return subTotal;
 	};
+
+	const proceedToCheckout = () => {
+		if (user) {
+			router.push("/checkout");
+		} else {
+			toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
+			router.push("/login?checkout=true");
+		}
+	};
+
 	return (
 		<div className="shopping-cart-area mb-130">
 			<Toaster position="bottom-center" />
@@ -196,12 +194,9 @@ const CartMain: React.FC = () => {
 													</tr>
 												</tbody>
 											</table>
-											<Link href="/checkout">
-												<a>
-													<button className="lezada-button lezada-button--medium">proceed to checkout</button>
-												</a>
-											</Link>
-
+											<button className="lezada-button lezada-button--medium" onClick={proceedToCheckout}>
+												proceed to checkout
+											</button>
 											{/*=======  End of update cart button  =======*/}
 										</div>
 									</div>
@@ -221,7 +216,7 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 	const [count, setCount] = useState<number>(cart.count ?? 1);
 	const [updateCartCount] = useMutation(UpdateCart);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [cartStore, setCartStore] = useLocalStorage("cart", []);
+	const {cart: cartStore, setCart: setCartStore} = useContext(cartContext);
 	const {user} = useAuth();
 	const [deleteCartById] = useMutation(DeleteCartById);
 	const [firstRender, setFirstRender] = useState<boolean>(false);

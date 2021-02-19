@@ -1,12 +1,9 @@
-Registration Form //
 Bread crumb 
 Popular Products
-Offline Cart
-
-
 Rating screen 
 Popular Products
 
+Registration Form // Done
 refetch in Checkout //Done
 timeout in cart // Done
 button disable on no address (hover message) //Done
@@ -14,12 +11,13 @@ wishlist duplicates //Done
 Refetch Query in Account // Done
 Delete Cart after order successful // Done
 Calculate Deal of the Day  // Done
+Recommendation Product Type // Done
+Connect Testimonials // Done
 
-add address in use different address // Current
-Connect Testimonials 
+
+add address in use different address // Done
+Offline Cart // Working
 Individual Order Page 
-
-
 
 
 //Admin Panel 

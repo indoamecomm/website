@@ -1357,6 +1357,11 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@rooks/use-localstorage@^4.9.1":
+  version "4.9.1"
+  resolved "https://registry.yarnpkg.com/@rooks/use-localstorage/-/use-localstorage-4.9.1.tgz#c0e3817829024acd94925fbba088ebd5bd47b749"
+  integrity sha512-plsD6jt+XdCxVxd0lbaBzVcHVH36F1OcH/kZo8IPZPr4z2scMqf3LnKvcRgysUrX5b2bTCCHUpmS9ICQePAIcw==
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.1.tgz#a21117b19ee9be70c379ec1877537ef2e1c63301"

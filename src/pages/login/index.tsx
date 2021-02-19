@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React from "react";
+import React, {useContext} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -11,6 +11,10 @@ import {useState} from "react";
 import Spinner from "../../Components/Utils/Spinner";
 import toast, {Toaster} from "react-hot-toast";
 import {useRouter} from "next/router";
+import {useEffect} from "react";
+import cartContext from "../../Context/cartContext";
+import wishlistContext from "../../Context/wishlistContext";
+import {InsertUserCartAndWishlist} from "../../../queries/userQuery";
 
 interface HeaderProps {
 	categories: Category[];
@@ -72,41 +76,118 @@ export default index;
 
 const Login: React.FC = () => {
 	const [loginActive, setLoginActive] = useState<boolean>(true);
+	const router = useRouter();
+
+	const {checkout} = router.query;
+	const [proceedToCheckout, setProceedToCheckout] = useState<boolean>(false);
+	const {cart} = useContext(cartContext);
+	const {wishlist} = useContext(wishlistContext);
+	const apolloClient = initializeApollo();
+
+	useEffect(() => {
+		setProceedToCheckout(checkout === "true");
+	}, [checkout]);
+
+	const saveUserCartAndWishlist = async (userId: number) => {
+		const cartItems = cart.map((element) => {
+			return {
+				count: element.count,
+				productTypeId: element.productTypeId,
+				userId,
+			};
+		});
+		const wishlistItems = wishlist.map((element) => {
+			return {
+				productTypeId: element,
+				userId,
+			};
+		});
+
+		return await apolloClient.mutate({
+			mutation: InsertUserCartAndWishlist,
+			variables: {
+				insertCart: cartItems,
+				insertWishlist: wishlistItems,
+			},
+		});
+	};
+
+	console.log(checkout, "Proceed to Checkout");
 	return (
 		<div className="login-area mb-130 mb-md-70 mb-sm-70 mb-xs-70 mb-xxs-70">
 			<div className="container">
 				<div className="row">
-					{loginActive ? <LoginForm setLoginActive={setLoginActive} /> : <SignUpForm setLoginActive={setLoginActive} />}
+					{loginActive ? (
+						<LoginForm
+							setLoginActive={setLoginActive}
+							proceedToCheckout={proceedToCheckout}
+							setProceedToCheckout={setProceedToCheckout}
+							saveUserCartAndWishlist={saveUserCartAndWishlist}
+						/>
+					) : (
+						<SignUpForm
+							setLoginActive={setLoginActive}
+							proceedToCheckout={proceedToCheckout}
+							setProceedToCheckout={setProceedToCheckout}
+							saveUserCartAndWishlist={saveUserCartAndWishlist}
+						/>
+					)}
 				</div>
 			</div>
 		</div>
 	);
 };
 
-const LoginForm: React.FC<{setLoginActive: (value: boolean) => void}> = (props) => {
-	const {setLoginActive} = props;
-	const {signIn, sendPasswordResetEmail} = useAuth();
+interface AuthFormProps {
+	setLoginActive: (value: boolean) => void;
+	proceedToCheckout: boolean;
+	setProceedToCheckout: (boolean) => void;
+	saveUserCartAndWishlist: (userId: number) => void;
+}
 
+const LoginForm: React.FC<AuthFormProps> = (props) => {
+	const {setLoginActive, proceedToCheckout, saveUserCartAndWishlist} = props;
+	const {signIn, sendPasswordResetEmail} = useAuth();
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
+	const {setCart} = useContext(cartContext);
+	const {setWishlist} = useContext(wishlistContext);
 	const router = useRouter();
+	// const {checkout} = router.query;
+	// const [proceedToCheckout, setProceedToCheckout] = useState<boolean>(false);
 
-	const login = (event: React.FormEvent<HTMLFormElement>) => {
+	// useEffect(() => {
+	// 	setProceedToCheckout(checkout === "true");
+	// }, [checkout]);
+
+	// console.log(checkout, "Proceed to Checkout");
+
+	const login = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		setLoading(true);
-		signIn({email, password}).then((data: any) => {
-			setLoading(false);
 
+		try {
+			setLoading(true);
+			const data = await signIn({email, password});
 			if (data.error) {
 				toast.error(data.error.message);
+				setLoading(false);
 				return console.log(data.error, "error");
 			}
 			toast.success("Login Successful");
-			router.push("/account");
-
+			await saveUserCartAndWishlist(data.id);
+			setCart([]);
+			setWishlist([]);
+			if (proceedToCheckout) {
+				router.push("/checkout");
+			} else {
+				router.push("/account");
+			}
 			return console.log(data, "user ");
-		});
+		} catch (error) {
+			setLoading(false);
+			toast.error(error.message);
+		}
 	};
 
 	return (
@@ -181,8 +262,8 @@ const LoginForm: React.FC<{setLoginActive: (value: boolean) => void}> = (props) 
 	);
 };
 
-const SignUpForm: React.FC<{setLoginActive: (value: boolean) => void}> = (props) => {
-	const {setLoginActive} = props;
+const SignUpForm: React.FC<AuthFormProps> = (props) => {
+	const {setLoginActive, proceedToCheckout} = props;
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -204,7 +285,11 @@ const SignUpForm: React.FC<{setLoginActive: (value: boolean) => void}> = (props)
 
 			await signUp({email, password, firstName, lastName, phoneNumber: `+91${phoneNumber}`});
 			toast.success("SignUp completed Successfully, Redirecting you to Home Page");
-			router.push("/");
+			if (proceedToCheckout) {
+				router.push("/checkout");
+			} else {
+				router.push("/");
+			}
 		} catch (error) {
 			console.log(error);
 			toast.error(error.message);

@@ -6,14 +6,16 @@ import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
 import {Category, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
+import {GetTestimonials} from "../../../queries/faqQuery";
 
 interface HeaderProps {
 	categories: Category[];
 	storeLocations: Store_Locations[];
+	testimonials: any[];
 }
 
 const About: React.FC<HeaderProps> = (props: HeaderProps) => {
-	const {categories, storeLocations} = props;
+	const {categories, storeLocations, testimonials} = props;
 
 	return (
 		<>
@@ -188,68 +190,21 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 						{"breakpoint":479, "settings": {"slidesToShow": 1, "arrows": false} }
 					]'>
 										{/*=======  single testimonial  =======*/}
-										<div className="col">
-											<div className="testimonial-item multi-testimonial-single-item">
-												<div className="multi-testimonial-single-item__text">
-													I can say your dedication is second to none. I like the fact that you are strongly proud
-													of your work in every way.
-												</div>
-												<div className="multi-testimonial-single-item__author-info">
-													<div className="content">
-														<p className="name">Sally Ramsey</p>
-														<span className="designation">/ Reporter</span>
+										{testimonials.map((testimonial) => (
+											<div className="col" key={testimonial.id}>
+												<div className="testimonial-item multi-testimonial-single-item">
+													<div className="multi-testimonial-single-item__text">{testimonial.testimonial}</div>
+													<div className="multi-testimonial-single-item__author-info">
+														<div className="content">
+															<p className="name">{testimonial.author}</p>
+															<span className="designation">/ {testimonial.designation}</span>
+														</div>
 													</div>
 												</div>
 											</div>
-										</div>
+										))}
 										{/*=======  End of single testimonial  =======*/}
 										{/*=======  single testimonial  =======*/}
-										<div className="col">
-											<div className="testimonial-item multi-testimonial-single-item">
-												<div className="multi-testimonial-single-item__text">
-													This has already been my fifth-time purchasing their products. I have been highly
-													satisfied with their work.
-												</div>
-												<div className="multi-testimonial-single-item__author-info">
-													<div className="content">
-														<p className="name">Lois Thompson</p>
-														<span className="designation">/ Bio Chemist</span>
-													</div>
-												</div>
-											</div>
-										</div>
-										{/*=======  End of single testimonial  =======*/}
-										{/*=======  single testimonial  =======*/}
-										<div className="col">
-											<div className="testimonial-item multi-testimonial-single-item">
-												<div className="multi-testimonial-single-item__text">
-													There's nothing would satisfy me much more than beautiful seeds for my garderner.
-												</div>
-												<div className="multi-testimonial-single-item__author-info">
-													<div className="content">
-														<p className="name">Florence Pittman</p>
-														<span className="designation">/ Garderner</span>
-													</div>
-												</div>
-											</div>
-										</div>
-										{/*=======  End of single testimonial  =======*/}
-										{/*=======  single testimonial  =======*/}
-										<div className="col">
-											<div className="testimonial-item multi-testimonial-single-item">
-												<div className="multi-testimonial-single-item__text">
-													Five-star for good customer support. They have the ability to resolve any issue in less
-													than the time for a coffee cup.
-												</div>
-												<div className="multi-testimonial-single-item__author-info">
-													<div className="content">
-														<p className="name">Anais Coulon</p>
-														<span className="designation">/ Farmer</span>
-													</div>
-												</div>
-											</div>
-										</div>
-										{/*=======  End of single testimonial  =======*/}
 									</div>
 									{/*=======  End of testmonial slider container  =======*/}
 								</div>
@@ -273,12 +228,17 @@ export async function getStaticProps() {
 	} = await apolloClient.query({
 		query: GetHeaderData,
 	});
-
+	const {
+		data: {testimonials},
+	} = await apolloClient.query({
+		query: GetTestimonials,
+	});
 	return {
 		props: {
 			initialApolloState: apolloClient.cache.extract(),
 			categories,
 			storeLocations,
+			testimonials,
 		},
 	};
 }
