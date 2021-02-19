@@ -7,6 +7,7 @@ import Header from "../../Components/Header/Header";
 import {Category, Faq_Titles, Store_Locations} from "../../generated/graphql";
 import {GetFaqTitles} from "../../../queries/faqQuery";
 import BreadCrumb from "../../Components/BreadCrumb";
+import Link from "next/link";
 
 interface FaqsProps {
 	categories: Category[];
@@ -85,21 +86,19 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 										<h2>Any unanswered questions?</h2>
 									</div>
 									<div className="cta-button">
-										<a href="support.html">
-											<button className="lezada-button lezada-button--medium lezada-cta-button">contact us</button>
-										</a>
+										<Link href="/support">
+											<a>
+												<button className="lezada-button lezada-button--medium lezada-cta-button">
+													contact us
+												</button>
+											</a>
+										</Link>
 									</div>
-									<a href="support.html"></a>
 								</div>
-								<a href="support.html"></a>
 							</div>
-							<a href="support.html"></a>
 						</div>
-						<a href="support.html"></a>
 					</div>
-					<a href="support.html"></a>
 				</div>
-				<a href="support.html"></a>
 			</main>
 			<Footer />
 		</>

@@ -72,6 +72,8 @@ const CartItems: React.FC = () => {
 	}, [cartStore, user]);
 
 	const proceedToCheckout = () => {
+		setCartActive(false);
+
 		if (user) {
 			router.push("/checkout");
 		} else {
@@ -184,7 +186,7 @@ const CartItem: React.FC<{cart: Cart}> = (props) => {
 			<div className="content">
 				<h5>
 					<Link href={`/product/${cart.product_type.product.id}`}>
-						<a href="shop-product-basic.html">{cart.product_type.name}</a>
+						<a>{cart.product_type.name}</a>
 					</Link>
 				</h5>
 				<p>

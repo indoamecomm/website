@@ -315,7 +315,7 @@ const CategorySidebar: React.FC<{categories: Categories[]; searchString: string;
 				<ul className="single-sidebar-widget--list single-sidebar-widget--list--category">
 					{categories.map((category) => (
 						<li className={category.sub_categories.length > 0 ? "has-children" : undefined} key={category.id}>
-							<a href="shop-left-sidebar.html">{category.name} </a> <span className="quantity">{getCount(category)}</span>
+							<a>{category.name} </a> <span className="quantity">{getCount(category)}</span>
 							<ul>
 								{category.sub_categories &&
 									category.sub_categories.map((subCategory) => (
@@ -328,7 +328,7 @@ const CategorySidebar: React.FC<{categories: Categories[]; searchString: string;
 												{subCategory.products.map((product) => (
 													<li key={product.id}>
 														<Link href={`/product/${product.id}`}>
-															<a href="shop-left-sidebar.html">{product.name}</a>
+															<a>{product.name}</a>
 														</Link>
 													</li>
 												))}

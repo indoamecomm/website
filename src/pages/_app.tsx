@@ -43,25 +43,25 @@ function MyApp({Component, pageProps}: any) {
 	}, []);
 
 	return (
-		<OverlayContext.Provider value={{wishlistActive, setWishlistActive, cartActive, setCartActive}}>
-			<CartContext.Provider
+		<CartContext.Provider
+			value={{
+				cart,
+				setCart,
+			}}>
+			<WishlistContext.Provider
 				value={{
-					cart,
-					setCart,
+					wishlist,
+					setWishlist,
 				}}>
-				<WishlistContext.Provider
-					value={{
-						wishlist,
-						setWishlist,
-					}}>
+				<OverlayContext.Provider value={{wishlistActive, setWishlistActive, cartActive, setCartActive}}>
 					<AuthProvider>
 						<ApolloProvider client={client}>
 							<Component {...pageProps} />
 						</ApolloProvider>
 					</AuthProvider>
-				</WishlistContext.Provider>
-			</CartContext.Provider>
-		</OverlayContext.Provider>
+				</OverlayContext.Provider>
+			</WishlistContext.Provider>
+		</CartContext.Provider>
 	);
 }
 

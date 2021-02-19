@@ -7,7 +7,7 @@ import {Category, Store_Locations} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
 import Cart from "./Cart";
 import Wishlist from "./Wishlist";
-import WishlistContext from "../../Context/wishlistContext";
+import wishlistContext from "../../Context/wishlistContext";
 import cartContext from "../../Context/cartContext";
 import overlayContext from "../../Context/overlayContext";
 
@@ -19,8 +19,8 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = (props) => {
 	const {categories, storeLocations} = props;
 	const [cartCount, setCartCount] = useState<number>(0);
-	const {wishlist} = useContext(WishlistContext);
 	const {cart: cartStore} = useContext(cartContext);
+	const {wishlist} = useContext(wishlistContext);
 
 	const {setWishlistActive, setCartActive} = useContext(overlayContext);
 
@@ -218,7 +218,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<ul className="mega-sub-menu">
 														<li>
 															<Link href="/about">
-																<a href="about.html">About Us</a>
+																<a>About Us</a>
 															</Link>
 														</li>
 														<li>
@@ -237,7 +237,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<ul className="mega-sub-menu">
 														<li>
 															<Link href="/faqs">
-																<a href="faq.html">F.A.Q</a>
+																<a>F.A.Q</a>
 															</Link>
 														</li>
 														<li>
@@ -245,7 +245,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 														</li>
 														<li>
 															<Link href="/support">
-																<a href="support.html">Customer Support</a>
+																<a>Customer Support</a>
 															</Link>
 														</li>
 													</ul>
@@ -395,7 +395,9 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<a className="mega-column-title">The Community</a>
 													<ul className="mega-sub-menu">
 														<li>
-															<a href="about.html">About Us</a>
+															<Link href="/about">
+																<a>About Us</a>
+															</Link>
 														</li>
 														<li>
 															<a href="https://indamseeds.com/news.html" target="newwindow">
@@ -412,13 +414,17 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<a className="mega-column-title">Shop Related</a>
 													<ul className="mega-sub-menu">
 														<li>
-															<a href="faq.html">F.A.Q</a>
+															<Link href="Faqs">
+																<a>F.A.Q</a>
+															</Link>
 														</li>
 														<li>
 															<a href="privacy-policy.html">Privacy Policy</a>
 														</li>
 														<li>
-															<a href="support.html">Support</a>
+															<Link href="/support">
+																<a>Support</a>
+															</Link>
 														</li>
 													</ul>
 												</li>

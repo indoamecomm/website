@@ -189,7 +189,7 @@ const Checkout: React.FC = () => {
 							});
 							setLoading(false);
 
-							router.push("/account");
+							router.push(`/order/${createOrder.order.id}`);
 							toast.success("Order Successfully Placed");
 						}
 					},

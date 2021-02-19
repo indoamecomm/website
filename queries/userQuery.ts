@@ -252,11 +252,13 @@ export const GetUserCartDetails = gql`
 					name
 					discountedPrice
 					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+						id
 						discount
 						enable
 					}
 					product {
 						deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+							id
 							discount
 							enable
 						}
@@ -379,4 +381,61 @@ export const InsertUserCartAndWishlist = gql`
 # { productTypeId: 10, userId: 0, count: 0 }
 	
 `;
+
+
+
+export const GetOrderByUserId = gql`
+
+	query GetOrderByUserId($orderId: bigint!, $userId: bigint!, $expiry: timestamptz! ) {
+		orders(where: {id: {_eq: $orderId}, userId: {_eq: $userId}}) {
+			address {
+				id
+				lineOne
+				lineTwo
+				name
+				state
+				town
+				zipcode
+			}
+			order_status {
+				id
+				name
+			}
+			order_product_types {
+				id
+				product_type {
+					id
+					imageUrl
+					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+						id
+						discount
+						enable
+					}
+					product {
+						id
+						name
+						deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+							id
+							discount
+							enable
+						}
+					}
+					name
+					discountedPrice
+				}
+				count
+				}
+			totalAmount
+		}
+	}
+`
+
+
+export const GetOrders = gql`
+	query GetOrders {
+		orders {
+			id
+		}
+	}
+`
 

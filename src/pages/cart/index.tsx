@@ -17,6 +17,7 @@ import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
 import cartContext from "../../Context/cartContext";
 import {useContext} from "react";
 import {useRouter} from "next/router";
+import Link from "next/link";
 
 interface HeaderProps {
 	categories: Category[];
@@ -302,12 +303,17 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 	return (
 		<tr>
 			<td className="product-thumbnail">
-				<a href="shop-product-basic.html">
-					<img src={cart.product_type.imageUrl ?? ""} className="img-fluid" alt={cart.product_type.product.name} />
-				</a>
+				<Link href={`/product/${cart.product_type.product.id}`}>
+					<a>
+						<img src={cart.product_type.imageUrl ?? ""} className="img-fluid" alt={cart.product_type.product.name} />
+					</a>
+				</Link>
 			</td>
 			<td className="product-name">
-				<a href="shop-product-basic.html">{cart.product_type.name}</a>
+				<Link href={`/product/${cart.product_type.product.id}`}>
+					<a>{cart.product_type.name}</a>
+				</Link>
+
 				<span className="product-variation">{cart.product_type.product.name}</span>
 			</td>
 			<td className="product-price">
