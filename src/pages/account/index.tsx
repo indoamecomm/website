@@ -16,6 +16,7 @@ import toast, {Toaster} from "react-hot-toast";
 import Spinner from "../../Components/Utils/Spinner";
 import {useRouter} from "next/router";
 import Modal from "react-modal";
+import Link from "next/link";
 
 interface HeaderProps {
 	categories: Category[];
@@ -261,9 +262,9 @@ const Account: React.FC = () => {
 																	<td>{order.order_status.name}</td>
 																	<td>₹{order.totalAmount}</td>
 																	<td>
-																		<a href="#" className="check-btn sqr-btn ">
-																			View
-																		</a>
+																		<Link href={`/order/${order.id}`}>
+																			<a className="check-btn sqr-btn ">View</a>
+																		</Link>
 																	</td>
 																</tr>
 															))}
