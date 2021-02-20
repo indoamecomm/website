@@ -220,6 +220,10 @@ export async function getStaticProps() {
 		data: {blogs},
 	} = await apolloClient.query({
 		query: GetBlogsList,
+		variables: {
+			limit: 5,
+			offset: 0,
+		},
 	});
 
 	return {

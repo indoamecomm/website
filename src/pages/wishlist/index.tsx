@@ -14,9 +14,9 @@ import {useMutation} from "@apollo/client";
 import Spinner from "../../Components/Utils/Spinner";
 import Link from "next/link";
 import {GetProductTypesById} from "../../../queries/productQuery";
-import useLocalStorage from "@rooks/use-localstorage";
 import {checkIfJsonDuplicates, getDiscountedPrice} from "../../Components/Product/ProductTypes";
-import WishlistContext from "../../Context/wishlistContext";
+import wishlistContext from "../../Context/wishlistContext";
+import cartContext from "../../Context/cartContext";
 
 interface HeaderProps {
 	categories: Category[];
@@ -42,8 +42,6 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<script src="/js/vendor/jquery.min.js"></script>
 				<script src="/js/popper.min.js"></script>
 				<script src="/js/bootstrap.min.js"></script>
-				<script src="/js/plugins.js"></script>
-				<script src="/js/main.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
@@ -68,46 +66,58 @@ const WishlistMain = () => {
 	const {user} = useAuth();
 
 	const [wishlistItems, setWishlistItems] = useState<Wishlists[]>([]);
-	const {wishlist} = useContext(WishlistContext);
-
+	const {wishlist} = useContext(wishlistContext);
+	const [loading, setLoading] = useState<boolean>(false);
 	const apolloClient = initializeApollo();
 
 	const getUserWishlists = async () => {
-		if (user) {
-			const data = await apolloClient.subscribe({
-				query: GetUserWishlist,
-				variables: {
-					userId: user.id,
-					expiry: new Date().toISOString(),
-				},
-			});
-
-			if (data) {
-				data.subscribe(({data: {wishlists}}) => {
-					setWishlistItems(wishlists);
+		try {
+			setLoading(true);
+			if (user) {
+				const data = await apolloClient.subscribe({
+					query: GetUserWishlist,
+					variables: {
+						userId: user.id,
+						expiry: new Date().toISOString(),
+					},
 				});
-				// setCartItems(data.data.cart);
+
+				if (data) {
+					data.subscribe(({data: {wishlists}}) => {
+						setWishlistItems(wishlists);
+						// setLoading(false);
+					});
+					// setCartItems(data.data.cart);
+				}
+			} else {
+				const {
+					data: {product_type},
+				} = await apolloClient.query({
+					query: GetProductTypesById,
+					variables: {
+						productTypeArray: wishlist ?? [],
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
+				});
+				const newItems = product_type.map((product, index) => ({
+					id: `${product.id}${index}`,
+					product_type: JSON.parse(JSON.stringify(product)),
+				}));
+
+				console.log(newItems);
+				setWishlistItems(newItems);
 			}
-		} else {
-			const {
-				data: {product_type},
-			} = await apolloClient.query({
-				query: GetProductTypesById,
-				variables: {
-					productTypeArray: wishlist ?? [],
-					expiry: new Date().toISOString(),
-				},
-			});
-			const newItems = product_type.map((product, index) => ({
-				id: `${product.id}${index}`,
-				product_type: JSON.parse(JSON.stringify(product)),
-			}));
-			setWishlistItems(newItems);
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
 		getUserWishlists();
+		console.log(wishlist, "Inside UseEffect");
 	}, [user, wishlist]);
 
 	return (
@@ -118,30 +128,36 @@ const WishlistMain = () => {
 				<div className="row">
 					<div className="col-lg-12">
 						{/*=======  cart table  =======*/}
-						<div className="cart-table-container">
-							{wishlistItems.length > 0 ? (
-								<table className="cart-table">
-									<thead>
-										<tr>
-											<th className="product-name" colSpan={2}>
-												Product
-											</th>
-											<th className="product-price">Price</th>
-											<th className="product-quantity">Quantity</th>
-											<th className="product-subtotal">&nbsp;</th>
-											<th className="product-remove">&nbsp;</th>
-										</tr>
-									</thead>
-									<tbody>
-										{wishlistItems.map((wishlist) => (
-											<WishlistItem wishlist={wishlist} user={user} key={wishlist.id} />
-										))}
-									</tbody>
-								</table>
-							) : (
-								<p> No Items added to wishlist yet</p>
-							)}
-						</div>
+						{!loading ? (
+							<div className="cart-table-container">
+								{wishlistItems.length > 0 ? (
+									<table className="cart-table">
+										<thead>
+											<tr>
+												<th className="product-name" colSpan={2}>
+													Product
+												</th>
+												<th className="product-price">Price</th>
+												<th className="product-quantity">Quantity</th>
+												<th className="product-subtotal">&nbsp;</th>
+												<th className="product-remove">&nbsp;</th>
+											</tr>
+										</thead>
+										<tbody>
+											{wishlistItems.map((wishlist) => (
+												<WishlistItem wishlist={wishlist} user={user} key={wishlist.id} />
+											))}
+										</tbody>
+									</table>
+								) : (
+									<p> No Items added to wishlist yet</p>
+								)}
+							</div>
+						) : (
+							<div className="d-flex justify-content-center">
+								<Spinner width="40px" height="40px" />
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
@@ -156,8 +172,8 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 	const [count, setCount] = useState<number>(1);
 	const [deleteWishlist] = useMutation(DeleteWishlist);
 	const [loading, setLoading] = useState<boolean>(false);
-	const {wishlist: wishlistStore, setWishlist: setWishlistStore} = useContext(WishlistContext);
-	const [cartStore, setCartStore] = useLocalStorage("cart");
+	const {wishlist: wishlistStore, setWishlist: setWishlistStore} = useContext(wishlistContext);
+	const {cart: cartStore, setCart: setCartStore} = useContext(cartContext);
 
 	const addToCart = async () => {
 		try {
@@ -179,17 +195,17 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 					toast.error("Some unknown error occurred");
 				}
 			} else {
-				let newCartStore: any = [...cartStore];
+				let newCartStore: any[] = [...cartStore];
 				if (checkIfJsonDuplicates(newCartStore, wishlist.product_type.id, "productTypeId")) {
 					newCartStore = newCartStore.filter((item) => item.productTypeId !== wishlist.product_type.id);
 				} else {
 					newCartStore.push({productTypeId: wishlist.product_type.id, count});
 				}
-				setCartStore([...newCartStore]);
+				setCartStore(newCartStore);
 
 				let newWishlist: any = [...wishlistStore];
 				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
-				setWishlistStore([...newWishlist]);
+				setWishlistStore(newWishlist);
 			}
 		} catch (error) {
 			setCartLoading(false);
@@ -218,7 +234,7 @@ const WishlistItem: React.FC<{wishlist: Wishlists; user: User}> = (props) => {
 			} else {
 				let newWishlist: any = [...wishlistStore];
 				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
-				setWishlistStore([...newWishlist]);
+				setWishlistStore(newWishlist);
 			}
 		} catch (error) {
 			setLoading(false);

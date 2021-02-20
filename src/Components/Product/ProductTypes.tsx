@@ -10,7 +10,6 @@ import {initializeApollo} from "../../apollo";
 import {Product_Type} from "../../generated/graphql";
 import {useAuth} from "../../hooks/useAuth";
 import WishlistContext from "../../Context/wishlistContext";
-// import useLocalStorage from "@rooks/use-localstorage";
 import Spinner from "../Utils/Spinner";
 import CartContext from "../../Context/cartContext";
 
@@ -30,6 +29,7 @@ const ProductTypes: React.FC<{
 
 	const {user} = useAuth();
 	const [count, setCount] = useState<number>(1);
+	const [url, setUrl] = useState<string>("");
 
 	const [insertToUserCart] = useMutation(InsertToUserCart);
 	const [insertWishlist] = useMutation(InsertWishlist);
@@ -80,7 +80,13 @@ const ProductTypes: React.FC<{
 	};
 
 	useEffect(() => {
-		if (wishlist !== undefined) {
+		if (window) {
+			setUrl(window.location.href);
+		}
+	}, []);
+
+	useEffect(() => {
+		if (cartStore !== undefined) {
 			checkCartExist();
 		}
 	}, [user, cartStore]);
@@ -298,17 +304,17 @@ const ProductTypes: React.FC<{
 										<td className="quickview-value">
 											<ul className="quickview-social-icons">
 												<li>
-													<a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Findamseeds.com%2Ftest%2Fonion.html&t=&quote=">
+													<a target="_blank" href={`https://www.facebook.com/sharer/sharer.php?u=${url}`}>
 														<i className="fa fa-facebook" />
 													</a>
 												</li>
 												<li>
-													<a href="https://twitter.com/intent/tweet?text=%20https%3A%2F%2Findamseeds.com%2Ftest%2Fonion.html&related=AddToAny,micropat">
+													<a target="_blank" href={`https://twitter.com/intent/tweet?text=${url}`}>
 														<i className="fa fa-twitter" />
 													</a>
 												</li>
 												<li>
-													<a href="https://api.whatsapp.com/send?text=%20https%3A%2F%2Findamseeds.com%2Ftest%2Fonion.html">
+													<a target="_blank" href={`https://api.whatsapp.com/send?text=${url}`}>
 														<i className="fa fa-whatsapp" />
 													</a>
 												</li>

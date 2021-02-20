@@ -1,4 +1,5 @@
 import {format} from "date-fns";
+import Link from "next/link";
 import React from "react";
 import {Blogs} from "../../generated/graphql";
 
@@ -19,10 +20,13 @@ const BlogList: React.FC<BlogsListProps> = ({blogs}) => {
 									From our <br />
 									Knowledge Base
 								</h2>
-								<p>Lorem ipsum dolor sit amet, consecte tur cing elit. Suspe ndisse suscipit sagittis leo sit met condim entum.</p>
-								<a href="blog-standard-left-sidebar.html" className="lezada-button lezada-button--medium">
-									view all
-								</a>
+								<p>
+									Lorem ipsum dolor sit amet, consecte tur cing elit. Suspe ndisse suscipit sagittis leo sit met condim
+									entum.
+								</p>
+								<Link href="/blogs">
+									<a className="lezada-button lezada-button--medium">view all</a>
+								</Link>
 							</div>
 							{/*=======  End of blog intro  =======*/}
 						</div>
@@ -68,9 +72,11 @@ const Blog: React.FC<{blog: Blogs}> = ({blog}) => {
 			<div className="single-slider-post">
 				{/*=======  image  =======*/}
 				<div className="single-slider-post__image mb-30">
-					<a href="blog-single-post-left-sidebar.html">
-						<img src={blog.imageUrl ?? " "} className="img-fluid" alt={blog.title} />
-					</a>
+					<Link href={`/blogs/${blog.id}`}>
+						<a>
+							<img src={blog.imageUrl ?? " "} className="img-fluid" alt={blog.title} />
+						</a>
+					</Link>
 				</div>
 				{/*=======  End of image  =======*/}
 				{/*=======  content  =======*/}
@@ -80,12 +86,15 @@ const Blog: React.FC<{blog: Blogs}> = ({blog}) => {
 						<a href="blog-standard-left-sidebar.html">{formateISOToDate(blog.createdAt)}</a>
 					</div>
 					<h2 className="post-title">
-						<a href="blog-single-post-left-sidebar.html">{blog.title}</a>
+						<Link href={`/blogs/${blog.id}`}>
+							<a>{blog.title}</a>
+						</Link>
 					</h2>
 					<p className="post-excerpt">{blog.summary}</p>
-					<a href="blog-single-post-left-sidebar.html" className="blog-readmore-btn">
-						read more
-					</a>
+
+					<Link href={`/blogs/${blog.id}`}>
+						<a className="blog-readmore-btn">read more</a>
+					</Link>
 				</div>
 				{/*=======  End of content  =======*/}
 			</div>
@@ -93,7 +102,7 @@ const Blog: React.FC<{blog: Blogs}> = ({blog}) => {
 	);
 };
 
-const formateISOToDate = (isoString: string): string => {
+export const formateISOToDate = (isoString: string): string => {
 	const date = new Date(isoString);
 	return format(date, "LLLL d, y");
 };

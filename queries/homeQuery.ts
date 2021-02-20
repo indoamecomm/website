@@ -202,13 +202,43 @@ export const GetProductListing = gql`
 
 
 export const GetBlogsList = gql`
-	query GetBlogs {
-		blogs(where: {isDeleted: {_eq: false}}, order_by: {id: asc}) {
+	query GetBlogs($limit: Int!, $offset: Int!) {
+		blogs(where: {isDeleted: {_eq: false}}, order_by: {id: asc}, limit: $limit, offset: $offset) {
 			summary
 			title
 			id
 			createdAt
 			imageUrl
 		}
+		blogs_aggregate(where: {isDeleted: {_eq: false}}) {
+			aggregate {
+			count
+			}
+		}
 	}
 `;
+export const GetBlogsParams = gql`
+	query GetBlogsParams {
+		blogs(where: { isDeleted: { _eq: false } }) {
+			title
+			id
+		}
+	}
+`;
+
+
+export const GetBlogDetail = gql`
+	query GetBlogDetail($blogId: bigint!) {
+		blogs(where: { id: { _eq: $blogId } }) {
+			title
+			author
+			id
+			body
+			imageUrl
+			summary
+			updatedAt
+			createdAt
+		}
+	}
+`;
+

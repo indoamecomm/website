@@ -29,41 +29,52 @@ const CartItems: React.FC = () => {
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
 	const {cart: cartStore} = useContext(CartContext);
 	const {cartActive, setCartActive} = useContext(overlayContext);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const router = useRouter();
 	const apolloClient = initializeApollo();
 
 	const getUserCartItem = async () => {
-		if (user) {
-			const data = await apolloClient.subscribe({
-				query: GetUserCartSubscription,
-				variables: {
-					userId: user.id,
-					expiry: new Date().toISOString(),
-				},
-			});
+		try {
+			setLoading(true);
 
-			if (data) {
-				data.subscribe(({data: {cart}}) => {
-					setCartItems(cart);
+			if (user) {
+				const data = await apolloClient.subscribe({
+					query: GetUserCartSubscription,
+					variables: {
+						userId: user.id,
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
 				});
+
+				if (data) {
+					data.subscribe(({data: {cart}}) => {
+						setCartItems(cart);
+					});
+				}
+			} else {
+				const {
+					data: {product_type},
+				} = await apolloClient.query({
+					query: GetProductTypesById,
+					variables: {
+						productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
+				});
+				const newItems = product_type.map((product, index) => ({
+					id: `${product.id}${index}`,
+					count: cartStore[index].count,
+					product_type: JSON.parse(JSON.stringify(product)),
+				}));
+				setCartItems(newItems);
 			}
-		} else {
-			const {
-				data: {product_type},
-			} = await apolloClient.query({
-				query: GetProductTypesById,
-				variables: {
-					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
-					expiry: new Date().toISOString(),
-				},
-			});
-			const newItems = product_type.map((product, index) => ({
-				id: `${product.id}${index}`,
-				count: cartStore[index].count,
-				product_type: JSON.parse(JSON.stringify(product)),
-			}));
-			setCartItems(newItems);
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -92,32 +103,38 @@ const CartItems: React.FC = () => {
 						<i className="ion-android-close" />
 					</a>
 				</span>
-				<div className="offcanvas-cart-content-container">
-					<h3 className="cart-title">Cart</h3>
-					{cartItems.length > 0 ? (
-						<div className="cart-product-wrapper">
-							<div className="cart-product-container ps-scroll">
-								{cartItems.map((cart) => (
-									<CartItem cart={cart} key={cart.id} />
-								))}
-							</div>
-							<p className="cart-subtotal">
-								<span className="subtotal-title">Subtotal:</span>
-								<span className="subtotal-amount">₹{getSubTotal(cartItems)}</span>
-							</p>
-							<div className="cart-buttons">
-								<Link href="/cart">
-									<a onClick={() => setCartActive(false)}>view cart</a>
-								</Link>
+				{!loading ? (
+					<div className="offcanvas-cart-content-container">
+						<h3 className="cart-title">Cart</h3>
+						{cartItems.length > 0 ? (
+							<div className="cart-product-wrapper">
+								<div className="cart-product-container ps-scroll">
+									{cartItems.map((cart) => (
+										<CartItem cart={cart} key={cart.id} />
+									))}
+								</div>
+								<p className="cart-subtotal">
+									<span className="subtotal-title">Subtotal:</span>
+									<span className="subtotal-amount">₹{getSubTotal(cartItems)}</span>
+								</p>
+								<div className="cart-buttons">
+									<Link href="/cart">
+										<a onClick={() => setCartActive(false)}>view cart</a>
+									</Link>
 
-								<a onClick={proceedToCheckout}>checkout</a>
+									<a onClick={proceedToCheckout}>checkout</a>
+								</div>
+								{/* <p className="free-shipping-text">Free Shipping on All Orders Over ₹100!</p> */}
 							</div>
-							{/* <p className="free-shipping-text">Free Shipping on All Orders Over ₹100!</p> */}
-						</div>
-					) : (
-						<p>No items added to cart yet</p>
-					)}
-				</div>
+						) : (
+							<p>No items added to cart yet</p>
+						)}
+					</div>
+				) : (
+					<div className="offcanvas-cart-content-container">
+						<Spinner width="50px" height="50px" />
+					</div>
+				)}
 			</div>
 		</div>
 	);

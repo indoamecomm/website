@@ -35,10 +35,8 @@ function MyApp({Component, pageProps}: any) {
 	useEffect(() => {
 		if (typeof window !== "undefined") {
 			const rootEl: any = document.getElementById("__next");
-
 			Modal.setAppElement(rootEl);
 		}
-
 		// Modal.setAppElement(rootEl);
 	}, []);
 

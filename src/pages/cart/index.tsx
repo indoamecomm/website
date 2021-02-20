@@ -66,43 +66,52 @@ export default index;
 const CartMain: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
+	const [loading, setLoading] = useState<boolean>(false);
+
 	const {cart: cartStore} = useContext(cartContext);
 	const router = useRouter();
 
 	const apolloClient = initializeApollo();
 
 	const getUserCartItem = async () => {
-		if (user) {
-			const data = await apolloClient.subscribe({
-				query: GetUserCartSubscription,
-				variables: {
-					userId: user.id,
-					expiry: new Date().toISOString(),
-				},
-			});
-
-			if (data) {
-				data.subscribe(({data: {cart}}) => {
-					setCartItems(cart);
+		try {
+			if (user) {
+				const data = await apolloClient.subscribe({
+					query: GetUserCartSubscription,
+					variables: {
+						userId: user.id,
+						expiry: new Date().toISOString(),
+					},
 				});
-				// setCartItems(data.data.cart);
+
+				if (data) {
+					data.subscribe(({data: {cart}}) => {
+						setCartItems(cart);
+					});
+					// setCartItems(data.data.cart);
+				}
+			} else {
+				const {
+					data: {product_type},
+				} = await apolloClient.query({
+					query: GetProductTypesById,
+					variables: {
+						productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
+				});
+				const newItems = product_type.map((product, index) => ({
+					id: `${product.id}${index}`,
+					count: cartStore[index].count,
+					product_type: JSON.parse(JSON.stringify(product)),
+				}));
+				setCartItems(newItems);
 			}
-		} else {
-			const {
-				data: {product_type},
-			} = await apolloClient.query({
-				query: GetProductTypesById,
-				variables: {
-					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
-					expiry: new Date().toISOString(),
-				},
-			});
-			const newItems = product_type.map((product, index) => ({
-				id: `${product.id}${index}`,
-				count: cartStore[index].count,
-				product_type: JSON.parse(JSON.stringify(product)),
-			}));
-			setCartItems(newItems);
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -134,77 +143,85 @@ const CartMain: React.FC = () => {
 			<Toaster position="bottom-center" />
 			<div className="container">
 				<div className="row">
-					<div className="col-lg-12 mb-30">
-						{/*=======  cart table  =======*/}
-						{cartItems.length > 0 ? (
-							<div className="cart-table-container">
-								<table className="cart-table">
-									<thead>
-										<tr>
-											<th className="product-name" colSpan={2}>
-												Product
-											</th>
-											<th className="product-price">Price</th>
-											<th className="product-quantity">Quantity</th>
-											<th className="product-subtotal">Total</th>
-											<th className="product-remove">&nbsp;</th>
-										</tr>
-									</thead>
-									<tbody>
-										{cartItems.map((cartItem) => (
-											<CartProduct cart={cartItem} key={cartItem.id} />
-										))}
-									</tbody>
-								</table>
-							</div>
-						) : (
-							<p className="d-flex justify-content-center">No items added yet</p>
-						)}
-						{/*=======  End of cart table  =======*/}
-					</div>
-					{cartItems.length > 0 && (
+					{!loading ? (
 						<>
-							<div className="col-lg-12 mb-80">
-								{/*=======  coupon area  =======*/}
-								<div className="cart-coupon-area pb-30">
-									<div className="row align-items-center">
-										<div className="col-lg-6 mb-md-30 mb-sm-30">
-											<table className="cart-calculation-table mb-30">
-												<tbody>
-													<tr>
-														<th>**</th>
-													</tr>
-													<tr>
-														<th></th>
-														<td className="subtotal"></td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-										<div className="col-lg-6 text-left text-lg-right">
-											{/*=======  update cart button  =======*/}
-											<table className="cart-calculation-table mb-30">
-												<tbody>
-													<tr>
-														<th>SUBTOTAL</th>
-														<td className="subtotal">₹{getSubTotal(cartItems)}</td>
-													</tr>
-													<tr>
-														<th>TOTAL</th>
-														<td className="total">₹{getSubTotal(cartItems)}</td>
-													</tr>
-												</tbody>
-											</table>
-											<button className="lezada-button lezada-button--medium" onClick={proceedToCheckout}>
-												proceed to checkout
-											</button>
-											{/*=======  End of update cart button  =======*/}
-										</div>
+							<div className="col-lg-12 mb-30">
+								{/*=======  cart table  =======*/}
+								{cartItems.length > 0 ? (
+									<div className="cart-table-container">
+										<table className="cart-table">
+											<thead>
+												<tr>
+													<th className="product-name" colSpan={2}>
+														Product
+													</th>
+													<th className="product-price">Price</th>
+													<th className="product-quantity">Quantity</th>
+													<th className="product-subtotal">Total</th>
+													<th className="product-remove">&nbsp;</th>
+												</tr>
+											</thead>
+											<tbody>
+												{cartItems.map((cartItem) => (
+													<CartProduct cart={cartItem} key={cartItem.id} />
+												))}
+											</tbody>
+										</table>
 									</div>
-								</div>
-								{/*=======  End of coupon area  =======*/}
+								) : (
+									<p className="d-flex justify-content-center">No items added yet</p>
+								)}
+								{/*=======  End of cart table  =======*/}
 							</div>
+							{cartItems.length > 0 && (
+								<>
+									<div className="col-lg-12 mb-80">
+										{/*=======  coupon area  =======*/}
+										<div className="cart-coupon-area pb-30">
+											<div className="row align-items-center">
+												<div className="col-lg-6 mb-md-30 mb-sm-30">
+													<table className="cart-calculation-table mb-30">
+														<tbody>
+															<tr>
+																<th>**</th>
+															</tr>
+															<tr>
+																<th></th>
+																<td className="subtotal"></td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div className="col-lg-6 text-left text-lg-right">
+													{/*=======  update cart button  =======*/}
+													<table className="cart-calculation-table mb-30">
+														<tbody>
+															<tr>
+																<th>SUBTOTAL</th>
+																<td className="subtotal">₹{getSubTotal(cartItems)}</td>
+															</tr>
+															<tr>
+																<th>TOTAL</th>
+																<td className="total">₹{getSubTotal(cartItems)}</td>
+															</tr>
+														</tbody>
+													</table>
+													<button className="lezada-button lezada-button--medium" onClick={proceedToCheckout}>
+														proceed to checkout
+													</button>
+													{/*=======  End of update cart button  =======*/}
+												</div>
+											</div>
+										</div>
+										{/*=======  End of coupon area  =======*/}
+									</div>
+								</>
+							)}
 						</>
+					) : (
+						<div className="col-lg-12 mb-80">
+							<Spinner width="40px" height="40px" />
+						</div>
 					)}
 				</div>
 			</div>
