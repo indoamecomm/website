@@ -197,6 +197,7 @@ export async function getStaticProps() {
 			limit: 6,
 			offset: 0,
 		},
+		
 	});
 
 	return {

@@ -147,6 +147,7 @@ export async function getStaticProps({params}) {
 		variables: {
 			blogId: params ? params.blogId : null,
 		},
+		fetchPolicy: "network-only",
 	});
 	return {
 		props: {
@@ -155,5 +156,6 @@ export async function getStaticProps({params}) {
 			categories,
 			blog: blog[0],
 		},
+		revalidate: 1,
 	};
 }
