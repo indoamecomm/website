@@ -68,7 +68,6 @@ const Wishlist = () => {
 
 	useEffect(() => {
 		getUserWishlists();
-		console.log(wishlist);
 	}, [user, wishlist]);
 
 	return (

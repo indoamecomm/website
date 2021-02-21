@@ -119,7 +119,6 @@ const ProductTypes: React.FC<{
 					toast.error("Some unknown error occurred");
 				}
 			} else {
-				console.log(cartStore, "Cart Store");
 				let newCartStore: any[] = [...cartStore];
 				if (checkIfJsonDuplicates(newCartStore, productType.id, "productTypeId")) {
 					newCartStore = newCartStore.filter((item) => item.productTypeId !== productType.id);
@@ -146,7 +145,6 @@ const ProductTypes: React.FC<{
 							productTypeId: productType.id,
 						},
 					});
-					console.log(insert_wishlists);
 					if (insert_wishlists && insert_wishlists.affected_rows > 0) {
 						toast.success("Product added to your wishlist successfully");
 					} else {
@@ -391,7 +389,6 @@ export default ProductTypes;
 
 export const checkIfJsonDuplicates = (jsonObject: any[], checkElement: string | number, checkField: string | number): boolean => {
 	if (jsonObject !== undefined) {
-		console.log(jsonObject, "JSON Object");
 		for (let i = 0; i < jsonObject.length; i++) {
 			if (jsonObject[i][checkField] === checkElement) {
 				return true;

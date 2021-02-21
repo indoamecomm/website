@@ -1,5 +1,5 @@
 import {createContext} from "react";
 //@ts-ignore
-const CartContext = createContext<any>(null);
+const OverlayContext = createContext<any>({});
 
-export default CartContext;
+export default OverlayContext;

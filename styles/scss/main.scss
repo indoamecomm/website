@@ -223,6 +223,7 @@
 		border: 1px solid $primary-web;
 		cursor: pointer;
 		position: relative;
+		max-width: 20rem;
 
 		&:hover {
 			&::after {
@@ -264,5 +265,7 @@
 
 	&__item {
 		margin-bottom: 0;
+		max-width: 100%;
+		word-break: break-all;
 	}
 }

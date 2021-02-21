@@ -100,19 +100,6 @@ const Header: React.FC<HeaderProps> = (props) => {
 								</ul>
 							</div>
 
-							<span className="header-separator d-none d-lg-block">|</span>
-
-							<div className="currency-change change-dropdown d-none d-lg-block">
-								<a>INR</a>
-								<ul>
-									<li>
-										<a href="#">EURO</a>
-									</li>
-									<li>
-										<a href="#">USD</a>
-									</li>
-								</ul>
-							</div>
 							{/*=======  End of currency change =======*/}
 						</div>
 						{/*=======  End of language and currency change  =======*/}
@@ -183,9 +170,10 @@ const Header: React.FC<HeaderProps> = (props) => {
 										<li className="menu-item-has-children">
 											<a>Products</a>
 											<ul className="sub-menu mega-menu mega-menu-column-5">
-												{categories.map((category) => (
-													<HeaderCategoryCard category={category} key={category.id} isMobile={false} />
-												))}
+												{categories &&
+													categories.map((category) => (
+														<HeaderCategoryCard category={category} key={category.id} isMobile={false} />
+													))}
 												<li>
 													<a className="mega-column-title">Downloads</a>
 													<ul className="mega-sub-menu">
@@ -303,9 +291,10 @@ const Header: React.FC<HeaderProps> = (props) => {
 								<li>
 									<a href="#">Products</a>
 									<ul className="dl-submenu">
-										{categories.map((category) => (
-											<HeaderCategoryCard category={category} key={category.id} isMobile={true} />
-										))}
+										{categories &&
+											categories.map((category) => (
+												<HeaderCategoryCard category={category} key={category.id} isMobile={true} />
+											))}
 										<li>
 											<a href="#">Downloads</a>
 											<ul className="dl-submenu">
@@ -328,15 +317,17 @@ const Header: React.FC<HeaderProps> = (props) => {
 												<li>
 													<a className="mega-column-title">Seeds</a>
 													<ul className="mega-sub-menu">
-														<li>
-															<a href="shop-no-sidebar.html">Vegetable Seeds</a>
-														</li>
-														<li>
-															<a href="shop-left-sidebar.html">Flower Seeds</a>
-														</li>
+														{categories &&
+															categories.map((category) => (
+																<HeaderCategoryCard
+																	category={category}
+																	key={category.id}
+																	isMobile={false}
+																/>
+															))}
 													</ul>
 												</li>
-												<li>
+												{/* <li>
 													<a className="mega-column-title">Greens</a>
 													<ul className="mega-sub-menu">
 														<li>
@@ -349,8 +340,8 @@ const Header: React.FC<HeaderProps> = (props) => {
 															<a href="shop-product-sticky-details.html">Microgreens</a>
 														</li>
 													</ul>
-												</li>
-												<li>
+												</li> */}
+												{/* <li>
 													<a className="mega-column-title">Collections</a>
 													<ul className="mega-sub-menu">
 														<li>
@@ -369,7 +360,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 															<a href="shop-product-extra-content.html">Everything Else</a>
 														</li>
 													</ul>
-												</li>
+												</li> */}
 												<li>
 													<a className="mega-column-title">View By</a>
 													<ul className="mega-sub-menu">
@@ -485,6 +476,7 @@ const HeaderCategoryCard: React.FC<HeaderCategoryCardProps> = (props: HeaderCate
 			</a>
 			<ul className={isMobile ? "dl-submenu" : "mega-sub-menu"}>
 				{category.subCategories && category.subCategories.length > 0 ? (
+					category &&
 					category.subCategories?.map((subCategory) => (
 						<li key={subCategory?.id}>
 							<Link href={`/category/${subCategory?.id}`}>

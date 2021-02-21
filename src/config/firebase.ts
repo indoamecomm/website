@@ -13,7 +13,6 @@ export const firebaseConfig = {
 if (!firebase.apps.length) {
 	firebase.initializeApp(firebaseConfig);
 }
-const app = firebase.app();
+// const app = firebase.app();
 const auth = firebase.auth();
 export { auth };
-console.log(app.name ? 'Firebase Mode Activated!' : 'Firebase not working :(');

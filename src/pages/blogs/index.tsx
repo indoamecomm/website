@@ -109,7 +109,7 @@ export const BlogList: React.FC<{blogs: Blogs[]; count: number}> = (props) => {
 				<div className="row">
 					<div className="col-lg-12">
 						<div className="row blog-post-wrapper blog-post-wrapper--masonry">
-							{!loading && blogLists.map((blog) => <BlogItem blog={blog} />)}
+							{!loading && blogLists && blogLists.map((blog) => <BlogItem blog={blog} />)}
 						</div>
 					</div>
 				</div>
@@ -150,19 +150,25 @@ const BlogItem: React.FC<{blog: Blogs}> = (props) => {
 		<div className="col-lg-4 col-md-6 single-slider-post grid-item mb-40">
 			{/*=======  image  =======*/}
 			<div className="single-slider-post__image mb-30">
-				<a href="blog-single-post-left-sidebar.html">
-					<img src={blog.imageUrl ?? undefined} className="img-fluid" alt={blog.title} />
-				</a>
+				<Link href={`/blogs/${blog.id}`}>
+					<a>
+						<img src={blog.imageUrl ?? undefined} className="img-fluid" alt={blog.title} />
+					</a>
+				</Link>
 			</div>
 			{/*=======  End of image  =======*/}
 			{/*=======  content  =======*/}
 			<div className="single-slider-post__content">
 				<div className="post-date">
 					<i className="ion-android-calendar" />
-					<a href="blog-standard-left-sidebar.html">{formateISOToDate(blog.createdAt)}</a>
+					<Link href={`/blogs/${blog.id}`}>
+						<a>{formateISOToDate(blog.createdAt)}</a>
+					</Link>
 				</div>
 				<h2 className="post-title">
-					<a href="blog-single-post-left-sidebar.html">{blog.title}</a>
+					<Link href={`/blogs/${blog.id}`}>
+						<a>{blog.title}</a>
+					</Link>
 				</h2>
 				<p className="post-excerpt">{blog.summary}</p>
 				<Link href={`/blogs/${blog.id}`}>
@@ -203,21 +209,3 @@ export async function getStaticProps() {
 		},
 	};
 }
-// export const getStaticPaths = async () => {
-// 	const apolloClient = initializeApollo();
-
-// 	// Get the paths we want to pre-render based on posts
-// 	const {
-// 		data: {orders},
-// 	} = await apolloClient.query({
-// 		query: GetOrders,
-// 	});
-
-// 	const paths = orders.map((order: Order) => ({
-// 		params: {orderId: order.id.toString()},
-// 	}));
-
-// 	// We'll pre-render only these paths at build time.
-// 	// { fallback: false } means other routes should 404.
-// 	return {paths, fallback: false};
-// };

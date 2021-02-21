@@ -105,9 +105,11 @@ const CartMain: React.FC = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{order.order_product_types.map((orderProduct) => (
-											<CartProduct orderProduct={orderProduct} key={orderProduct.id} />
-										))}
+										{order &&
+											order.order_product_types &&
+											order.order_product_types.map((orderProduct) => (
+												<CartProduct orderProduct={orderProduct} key={orderProduct.id} />
+											))}
 									</tbody>
 								</table>
 							</div>
@@ -257,10 +259,12 @@ export const getStaticPaths = async () => {
 	} = await apolloClient.query({
 		query: GetOrders,
 	});
-
-	const paths = orders.map((order: Order) => ({
-		params: {orderId: order.id.toString()},
-	}));
+	const paths =
+		orders &&
+		orders.length > 0 &&
+		orders.map((order: Order) => ({
+			params: {orderId: order.id.toString()},
+		}));
 
 	// We'll pre-render only these paths at build time.
 	// { fallback: false } means other routes should 404.

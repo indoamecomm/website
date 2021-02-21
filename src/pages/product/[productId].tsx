@@ -156,7 +156,6 @@ export const getStaticProps: GetStaticProps = async ({params}) => {
 		},
 	});
 	const product: Product = products[0];
-	console.log(product);
 	const productDescription: ProductDescriptionProps = {
 		name: product.name,
 		categoryName: product.sub_category.name,

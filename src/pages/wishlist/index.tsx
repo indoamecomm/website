@@ -67,7 +67,7 @@ const WishlistMain = () => {
 
 	const [wishlistItems, setWishlistItems] = useState<Wishlists[]>([]);
 	const {wishlist} = useContext(wishlistContext);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 	const apolloClient = initializeApollo();
 
 	const getUserWishlists = async () => {
@@ -105,7 +105,6 @@ const WishlistMain = () => {
 					product_type: JSON.parse(JSON.stringify(product)),
 				}));
 
-				console.log(newItems);
 				setWishlistItems(newItems);
 			}
 		} catch (error) {
@@ -117,7 +116,6 @@ const WishlistMain = () => {
 
 	useEffect(() => {
 		getUserWishlists();
-		console.log(wishlist, "Inside UseEffect");
 	}, [user, wishlist]);
 
 	return (

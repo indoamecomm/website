@@ -112,7 +112,6 @@ const Login: React.FC = () => {
 		});
 	};
 
-	console.log(checkout, "Proceed to Checkout");
 	return (
 		<div className="login-area mb-130 mb-md-70 mb-sm-70 mb-xs-70 mb-xxs-70">
 			<div className="container">
@@ -154,14 +153,7 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 	const {setCart} = useContext(cartContext);
 	const {setWishlist} = useContext(wishlistContext);
 	const router = useRouter();
-	// const {checkout} = router.query;
-	// const [proceedToCheckout, setProceedToCheckout] = useState<boolean>(false);
-
-	// useEffect(() => {
-	// 	setProceedToCheckout(checkout === "true");
-	// }, [checkout]);
-
-	// console.log(checkout, "Proceed to Checkout");
+	
 
 	const login = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -172,7 +164,6 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 			if (data.error) {
 				toast.error(data.error.message);
 				setLoading(false);
-				return console.log(data.error, "error");
 			}
 			toast.success("Login Successful");
 			await saveUserCartAndWishlist(data.id);
@@ -183,7 +174,6 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 			} else {
 				router.push("/account");
 			}
-			return console.log(data, "user ");
 		} catch (error) {
 			setLoading(false);
 			toast.error(error.message);
@@ -291,7 +281,6 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 				router.push("/");
 			}
 		} catch (error) {
-			console.log(error);
 			toast.error(error.message);
 		} finally {
 			setLoading(false);

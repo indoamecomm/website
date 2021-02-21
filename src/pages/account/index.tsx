@@ -116,17 +116,15 @@ const Account: React.FC = () => {
 		})
 			.then(({data: {update_users}}) => {
 				setDetailsLoading(false);
-
 				if (update_users.affected_rows > 0) {
 					toast.success("Details Update Successfully");
-					console.log("Update Successful");
 					setRefetch(() => refetch + 1);
 				}
+				setRefetch(() => refetch + 1);
 			})
 			.catch((error) => {
 				setDetailsLoading(false);
 
-				console.log(error);
 				toast.error(error.message);
 			});
 	};
@@ -150,7 +148,6 @@ const Account: React.FC = () => {
 	};
 
 	useEffect(() => {
-		console.log("Use effect called");
 		setQueryLoading(true);
 		if (user) {
 			apolloClient
@@ -226,7 +223,7 @@ const Account: React.FC = () => {
 												<p>
 													Hello, &nbsp;
 													<strong>
-														{user && user.firstName} {user && user.lastName}
+														{firstName} {lastName}
 													</strong>
 												</p>
 											</div>

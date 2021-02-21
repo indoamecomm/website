@@ -22,7 +22,7 @@ export const GetBannerData = gql`
 		shopCollection: banner_type(where: {type: {_eq: 1}}, order_by: {id: asc}) {
 			id
 			name
-			banners {
+			banners( order_by: {id: asc}) {
 				heading
 				description
 				id
@@ -43,7 +43,7 @@ export const GetBannerData = gql`
 		highlyUsed: banner_type(where: {type: {_eq: 2}}, order_by: {id: asc}) {
 			id
 			name
-			banners {
+			banners( order_by: {id: asc})  {
 				heading
 				description
 				id
@@ -64,7 +64,7 @@ export const GetBannerData = gql`
 		promotedBanners: banner_type(where: {type: {_eq: 3}}, order_by: {id: asc}) {
 			id
 			name
-			banners {
+			banners( order_by: {id: asc})  {
 				heading
 				description
 				id

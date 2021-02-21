@@ -66,7 +66,7 @@ export default index;
 const CartMain: React.FC = () => {
 	const {user} = useAuth();
 	const [cartItems, setCartItems] = useState<Cart[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 
 	const {cart: cartStore} = useContext(cartContext);
 	const router = useRouter();
@@ -309,7 +309,6 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 		if (firstRender) {
 			timeout = setTimeout(() => {
 				updateCart();
-				console.log("After timeout");
 			}, 1000);
 		} else {
 			setFirstRender(true);

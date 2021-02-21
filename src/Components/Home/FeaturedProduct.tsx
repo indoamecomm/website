@@ -14,7 +14,6 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 
 	const featuredProduct = featuredProducts.banners[0];
 
-	console.log(featuredProduct);
 
 	return (
 		<div className="cabinet-revslider-area mt-50 mt-md-30 mt-sm-30 mb-100 mb-md-80 mb-sm-80">

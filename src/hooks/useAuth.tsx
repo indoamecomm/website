@@ -24,7 +24,6 @@ const useAuthProvider = () => {
 	const [user, setUser] = useState<User | null>(null);
 	const createUser = (hasuraUser: User) => {
 		setUser(() => hasuraUser);
-		console.log(hasuraUser, "inside Create user", user);
 		return user;
 	};
 	const signUp = async ({firstName, lastName, email, password, phoneNumber}: any) => {
@@ -42,7 +41,6 @@ const useAuthProvider = () => {
 		});
 
 		if (UserSignUp.Error) {
-			console.log(UserSignUp.Error);
 			throw UserSignUp.Error;
 		} else {
 			return signIn({email, password});
@@ -50,7 +48,6 @@ const useAuthProvider = () => {
 	};
 
 	const getUserAdditionalData = async (firebaseUser: firebase.User): Promise<User[]> => {
-		console.log(firebaseUser, firebaseUser.email);
 		const {
 			data: {users},
 		} = await apolloClient.query({
@@ -61,7 +58,6 @@ const useAuthProvider = () => {
 			fetchPolicy: "network-only",
 		});
 
-		console.log(users);
 
 		return users;
 	};
@@ -69,9 +65,7 @@ const useAuthProvider = () => {
 	const handleAuthStateChanged = async (firebaseUser: firebase.User) => {
 		if (firebaseUser) {
 			const users = await getUserAdditionalData(firebaseUser);
-			console.log(users, "Inside Handle Auth State Changed");
 			if (users && users.length > 0) {
-				console.log(users, "inside condition");
 				createUser(users[0]);
 			}
 		}
@@ -86,7 +80,6 @@ const useAuthProvider = () => {
 		const unsub = auth.onAuthStateChanged(async (firebaseUser) => {
 			if (firebaseUser) {
 				await handleAuthStateChanged(firebaseUser);
-				console.log("inside Use effect", user);
 			}
 		});
 
@@ -94,14 +87,11 @@ const useAuthProvider = () => {
 	}, []);
 
 	const signIn = ({email, password}: any) => {
-		console.log(email, password);
 		return auth
 			.signInWithEmailAndPassword(email, password)
 			.then(async (response) => {
 				if (response.user) {
-					console.log(response.user);
 					const users = await getUserAdditionalData(response.user);
-					console.log(users);
 					if (users.length === 0) {
 						return {error: {message: "User Does not exist please SignUp to continue"}};
 					}

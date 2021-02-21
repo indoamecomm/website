@@ -17,7 +17,6 @@ interface FaqsProps {
 
 const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 	const {categories, storeLocations, faqTitles: faqs} = props;
-	console.log(faqs, "Here in app");
 
 	return (
 		<>
@@ -38,17 +37,6 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 
 				<script src="/js/plugins.js"></script>
 				<script src="/js/main.js"></script>
-
-				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
-				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
-				<script src="/revolution/revolution-active.js"></script>
-
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
@@ -158,7 +146,6 @@ export async function getStaticProps() {
 		query: GetFaqTitles,
 	});
 
-	console.log(faqTitles);
 
 	return {
 		props: {

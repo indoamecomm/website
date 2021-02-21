@@ -232,7 +232,7 @@ const CategoryHeader: React.FC<CategoryHeader> = (props) => {
 									onChange={(event) => {
 										setValueChange(parseInt(event.target.value));
 									}}>
-									<option value={"6"} onClick={() => console.log(6)}>
+									<option value={"6"}>
 										Default sorting
 									</option>
 									<option value={"1"}>Sort by popularity</option>
@@ -594,5 +594,6 @@ export async function getStaticProps({params}) {
 			categoriesHeader,
 			subCategory: subCategories[0],
 		},
+		revalidate: 1
 	};
 }

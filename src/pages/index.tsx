@@ -12,6 +12,7 @@ import FeaturedProduct from "../Components/Home/FeaturedProduct";
 import BlogList from "../Components/Home/BlogList";
 import Footer from "../Components/Footer";
 import {useAuth} from "../hooks/useAuth";
+import {GetStaticProps} from "next";
 
 interface HomeProps {
 	categories: Category[];
@@ -183,7 +184,7 @@ const InstagramSlider: React.FC = () => {
 	);
 };
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
 	const apolloClient = initializeApollo();
 
 	const {
@@ -240,5 +241,6 @@ export async function getStaticProps() {
 			featuredProduct,
 			blogs,
 		},
+		revalidate: 1,
 	};
-}
+};

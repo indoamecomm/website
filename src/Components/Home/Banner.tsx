@@ -267,7 +267,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 													letterSpacing: "5px",
 													fontFamily: "Work Sans",
 												}}>
-												{shopCollection1.title}
+												{shopCollection2.title}
 											</div>
 											{/* LAYER NR. 5 */}
 											<div
@@ -509,7 +509,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 												alt={highlyUsed1.title as string}
 											/>
 											<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
-												<SplitWordToSentence word={highlyUsed2.title as string} />
+												<SplitWordToSentence word={highlyUsed1.title as string} />
 												<span className="price">&#8377; {highlyUsed1.cost}</span>
 											</span>
 										</a>
@@ -549,6 +549,7 @@ export default Banner;
 
 const SplitWordToSentence: React.FC<{word: string}> = (props) => {
 	const {word} = props;
+
 	return (
 		<span className="name">
 			{word.split(" ")[0]} {word.split(" ")[1]}

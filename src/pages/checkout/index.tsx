@@ -8,7 +8,14 @@ import {Address, Cart, Category, Store_Locations, User} from "../../generated/gr
 import BreadCrumb from "../../Components/BreadCrumb";
 import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
-import {CheckCouponValidity, CreateOrder, DeleteUserCart, GetUserCartDetails, VerifyPayment} from "../../../queries/userQuery";
+import {
+	CheckCouponValidity,
+	CreateOrder,
+	DeleteUserCart,
+	GetUserCartDetails,
+	UpdateOrderStatus,
+	VerifyPayment,
+} from "../../../queries/userQuery";
 import {useState} from "react";
 import {getSubTotal} from "../../Components/Header/Cart";
 import {useMutation} from "@apollo/client";
@@ -96,6 +103,7 @@ const Checkout: React.FC = () => {
 	const [placeOrderMutation] = useMutation(CreateOrder);
 	const [verifyOrder] = useMutation(VerifyPayment);
 	const [deleteCart] = useMutation(DeleteUserCart);
+	const [updateOrderStatus] = useMutation(UpdateOrderStatus);
 
 	const [loading, setLoading] = useState<boolean>(false);
 	const [couponLoading, setCouponLoading] = useState<boolean>(false);
@@ -156,6 +164,7 @@ const Checkout: React.FC = () => {
 					userId: user.id,
 					currency: "INR",
 					productTypes,
+					promoCode: activeCoupon && couponName.length > 0 ? couponName : null,
 				},
 			});
 
@@ -204,15 +213,40 @@ const Checkout: React.FC = () => {
 					theme: {
 						color: "#3399cc",
 					},
+					modal: {
+						ondismiss: async function () {
+							setLoading(false);
+							await updateOrderStatus({
+								variables: {
+									orderId: createOrder.order.id,
+									statusId: 5,
+								},
+							});
+							toast.error("Checkout Gateway closed");
+						},
+					},
 				};
 				//@ts-ignore
 				const paymentObject = new window.Razorpay(options);
 				paymentObject.open();
+				paymentObject.on("payment.failed", async function (response) {
+					await updateOrderStatus({
+						variables: {
+							orderId: createOrder.order.id,
+							statusId: 5,
+						},
+					});
+					toast.success(response.error.reason);
+					// alert(response.error.metadata.order_id);
+					// alert(response.error.metadata.payment_id);
+					setLoading(false);
+				});
 			} else {
 				setLoading(false);
 				toast.error("Some unknown error occurred");
 			}
 		} catch (error) {
+			console.log(error.message);
 			setLoading(false);
 			toast.error(error.message);
 		}
@@ -402,7 +436,7 @@ const CheckoutAddress: React.FC<{
 	useEffect(() => {
 		if (address && address.length > 0) {
 			setAddressList({addresses: address});
-			setActiveAddress(address[0]);
+			setActiveAddress(address[address.length - 1]);
 		}
 	}, [address]);
 
@@ -522,8 +556,8 @@ const AddressListModal: React.FC<ModalProps> = (props) => {
 										<p className="address__name">{activeAddress?.name}</p>
 									</div>
 									<div className="col-12">
-										<p className="address__item">{activeAddress?.lineOne}</p>
-										<p className="address__item">{activeAddress?.lineTwo}</p>
+										<p className="address__item">{activeAddress?.lineOne},</p>
+										<p className="address__item">{activeAddress?.lineTwo},</p>
 									</div>
 									<div className="col-md-6 col-12">
 										<p className="address__item">{activeAddress?.town}</p>

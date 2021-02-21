@@ -85,18 +85,18 @@ const BlogMain: React.FC<{blog: Blogs}> = (props) => {
 										<a href="#">plants</a>
 									</div> */}
 									<h2 className="post-title">
-										<a href="blog-single-post-left-sidebar.html">{blog.title}</a>
+										<a>{blog.title}</a>
 									</h2>
 									{/*=======  End of post category  =======*/}
 									{/*=======  post info  =======*/}
 									<div className="post-info d-flex flex-wrap align-items-center mb-50">
 										<div className="post-user">
 											<i className="ion-android-person" /> By
-											<a href="blog-standard-left-sidebar.html">&nbsp;{blog.author}</a>
+											<a>&nbsp;{blog.author}</a>
 										</div>
 										<div className="post-date mb-0 pl-30">
 											<i className="ion-android-calendar" />
-											<a href="blog-standard-left-sidebar.html">{formateISOToDate(blog.createdAt)}</a>
+											<a> {formateISOToDate(blog.createdAt)}</a>
 										</div>
 									</div>
 								</div>

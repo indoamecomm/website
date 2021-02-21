@@ -99,32 +99,33 @@ export const GetUserCart = gql`
 
 export const GetUserCartSubscription = gql`
 	subscription GetUserCart($userId: bigint!, $expiry: timestamptz!) {
-		cart(where: {userId: {_eq: $userId}}) {
+		cart(where: {userId: {_eq: $userId}}, order_by: {product_type: {id: asc}}) {
 			id
 			count
 			product_type {
 				id
-				deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
+				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
 					discount
 					id
 					enable
 				}
 				name
 				discountedPrice
-					product {
-						deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
-							id
-							discount
-							enable
-						}
+				product {
+					deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+					id
+					discount
+					enable
 					}
+				}
 				imageUrl
 				product {
-					id 
+					id
 				}
 			}
 		}
 	}
+
 `;
 
 
@@ -289,15 +290,14 @@ export const GetUserCartDetails = gql`
 
 
 export const CreateOrder = gql`
-	mutation CreateOrder($addressId: Int!, $currency: String!, $userId: Int!, $productTypes: [ProductTypePair!]!) {
-		createOrder(input: { addressId: $addressId, currency: $currency, productTypeIds: $productTypes, userId: $userId }) {
+	mutation CreateOrder($addressId: Int!, $currency: String!, $userId: Int!, $productTypes: [ProductTypePair!]!, $promoCode: String) {
+		createOrder(input: {addressId: $addressId, currency: $currency, productTypeIds: $productTypes, userId: $userId, promoCode: $promoCode}) {
 			order {
-				id
+			id
 			}
 			razorpayOrderId
 		}
 	}
-
 `;
 
 
@@ -438,4 +438,14 @@ export const GetOrders = gql`
 		}
 	}
 `
+
+
+
+export const UpdateOrderStatus = gql`
+	mutation UpdateOrderStatus($statusId: Int!, $orderId: bigint!) {
+		update_orders(where: {id: {_eq: $orderId}}, _set: {statusId: $statusId}) {
+			affected_rows
+		}
+	}
+`;
 
