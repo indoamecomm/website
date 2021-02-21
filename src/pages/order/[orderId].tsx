@@ -80,6 +80,9 @@ const CartMain: React.FC = () => {
 		}
 	};
 
+	//@ts-ignore
+	const couponValue = order && order.coupon && order.coupon.value;
+
 	useEffect(() => {
 		getUserCartItem();
 	}, [user]);
@@ -124,17 +127,38 @@ const CartMain: React.FC = () => {
 								{/*=======  coupon area  =======*/}
 								<div className="cart-coupon-area pb-30">
 									<div className="row align-items-center">
-										<div className="col-lg-6 mb-md-30 mb-sm-30">
+										{/* <div className="col-lg-6 mb-md-30 mb-sm-30">
 											<table className="cart-calculation-table mb-30">
 												<tbody>
-													<tr></tr>
 													<tr>
-														<th></th>
-														<td className="subtotal"></td>
+														<td className="subtotal">Coupon</td>
+														<td className="subtotal">25</td>
+													</tr>
+													<tr>
+														<td className="subtotal">Coupon</td>
+														<td className="subtotal">25</td>
 													</tr>
 												</tbody>
 											</table>
-										</div>
+										</div> */}
+
+										{
+										//@ts-ignore
+										order.coupon && (
+											<div className="col-lg-6 text-left text-lg-right">
+												{/*=======  update cart button  =======*/}
+												<table className="cart-calculation-table mb-30">
+													<tbody>
+														<tr>
+															<th>Coupon</th>
+															{/* {@ts-ignore} */}
+															<td className="total">-{couponValue}%</td>
+														</tr>
+													</tbody>
+												</table>
+												{/*=======  End of update cart button  =======*/}
+											</div>
+										)}
 										<div className="col-lg-6 text-left text-lg-right">
 											{/*=======  update cart button  =======*/}
 											<table className="cart-calculation-table mb-30">

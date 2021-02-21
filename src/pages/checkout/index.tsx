@@ -164,7 +164,7 @@ const Checkout: React.FC = () => {
 					userId: user.id,
 					currency: "INR",
 					productTypes,
-					promoCode: activeCoupon && couponName.length > 0 ? couponName : null,
+					promoCodeId: activeCoupon ? activeCoupon.couponId : null,
 				},
 			});
 
