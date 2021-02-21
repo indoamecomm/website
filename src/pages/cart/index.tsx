@@ -183,9 +183,6 @@ const CartMain: React.FC = () => {
 													<table className="cart-calculation-table mb-30">
 														<tbody>
 															<tr>
-																<th>**</th>
-															</tr>
-															<tr>
 																<th></th>
 																<td className="subtotal"></td>
 															</tr>
