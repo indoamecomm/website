@@ -18,10 +18,14 @@ interface HeaderProps {
 	categoriesHeader: Categories[];
 	subCategory: SubCategory;
 	seasons: Seasons[];
+	productCount: number;
 }
+const offset = 3;
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
-	const {categories, storeLocations, product: products, categoriesHeader, subCategory, seasons} = props;
+	const {categories, storeLocations, product: products, categoriesHeader, subCategory, seasons, productCount} = props;
+
+	console.log(products);
 	return (
 		<>
 			<Head>
@@ -62,7 +66,13 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 						finalName={subCategory.name}
 						links={[{link: "/", name: "HOME"}]}
 					/>
-					<CategoryMain products={products} categories={categories} subCategory={subCategory} seasons={seasons} />
+					<CategoryMain
+						products={products}
+						categories={categories}
+						subCategory={subCategory}
+						seasons={seasons}
+						productCount={productCount}
+					/>
 				</div>
 			</main>
 			<Footer />
@@ -77,10 +87,11 @@ interface MainProps {
 	categories: Categories[];
 	subCategory: SubCategory;
 	seasons: Seasons[];
+	productCount: number;
 }
 
 const CategoryMain: React.FC<MainProps> = (props) => {
-	const {products, categories, subCategory, seasons} = props;
+	const {products, categories, subCategory, seasons, productCount} = props;
 
 	const [seasonId, setSeasonId] = useState<number | null>(null);
 	const [productLoading, setProductLoading] = useState<boolean>(false);
@@ -89,6 +100,12 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 	const [orderObject, setOrderObject] = useState<any | null>({});
 	const [valueChange, setValueChange] = useState<number>(6);
 	const [searchString, setSearchString] = useState<string>("");
+	const [limit, setLimit] = useState<number>(offset);
+
+	useEffect(() => {
+		console.log(products, "Products");
+		setFilteredProducts(products);
+	}, [products]);
 
 	const getFilteredProducts = async () => {
 		setProductLoading(true);
@@ -102,16 +119,19 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 				orderObject,
 				searchString: `%${searchString}%`,
 				expiry: new Date().toISOString(),
+				limit,
 			},
+			fetchPolicy: "network-only",
 		});
+		const newProduct = [...product];
 
-		setFilteredProducts(product);
+		setFilteredProducts(newProduct);
 		setProductLoading(false);
 	};
 
 	useEffect(() => {
 		getFilteredProducts();
-	}, [seasonId, orderObject, valueChange, searchString]);
+	}, [seasonId, orderObject, valueChange, searchString, limit]);
 
 	useEffect(() => {
 		let newObject: any = null;
@@ -172,10 +192,14 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 									</div>
 								)}
 							</div>
-							{!productLoading && (
+							{!productLoading && productCount > limit && (
 								<div className="row d-block">
 									<div className="col-lg-12 text-center mt-30 col-md-12 ">
-										<a className="lezada-button lezada-button--medium lezada-button--icon--left ">
+										<a
+											className="lezada-button lezada-button--medium lezada-button--icon--left "
+											onClick={() => {
+												setLimit((currentLimit) => currentLimit + offset);
+											}}>
 											<i className="ion-android-add" /> MORE
 										</a>
 									</div>
@@ -232,9 +256,7 @@ const CategoryHeader: React.FC<CategoryHeader> = (props) => {
 									onChange={(event) => {
 										setValueChange(parseInt(event.target.value));
 									}}>
-									<option value={"6"}>
-										Default sorting
-									</option>
+									<option value={"6"}>Default sorting</option>
 									<option value={"1"}>Sort by popularity</option>
 									<option value={"2"}>Sort by average rating</option>
 									<option value={"3"}>Sort by latest</option>
@@ -566,14 +588,15 @@ export async function getStaticProps({params}) {
 		query: GetCategories,
 	});
 	const {
-		data: {product},
+		data: {product, product_aggregate},
 	} = await apolloClient.query({
 		query: GetProductsByCategoryId,
-
 		variables: {
 			subCategoryId: params ? params.subCategoryId : null,
 			expiry: new Date().toISOString(),
+			limit: offset,
 		},
+		fetchPolicy: "network-only",
 	});
 
 	const {
@@ -593,7 +616,8 @@ export async function getStaticProps({params}) {
 			seasons,
 			categoriesHeader,
 			subCategory: subCategories[0],
+			productCount: product_aggregate.aggregate.count,
 		},
-		revalidate: 1
+		revalidate: 1,
 	};
 }

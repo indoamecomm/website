@@ -177,6 +177,7 @@ const Checkout: React.FC = () => {
 					description: "Test Transaction",
 					image: "https://example.com/your_logo",
 					order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+					// order_id: "order_GeBMz369ne4rF4",
 					handler: async (response) => {
 						const {
 							data: {code, message},
