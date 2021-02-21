@@ -616,7 +616,7 @@ export async function getStaticProps({params}) {
 			seasons,
 			categoriesHeader,
 			subCategory: subCategories[0],
-			productCount: product_aggregate.aggregate.count,
+			productCount:  product_aggregate.aggregate.count,
 		},
 		revalidate: 1,
 	};

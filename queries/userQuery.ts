@@ -31,7 +31,7 @@ export const UserSignUp = gql`
 
 export const GetAccountDetails = gql`
 	query GetAccountDetails($userId: bigint!) {
-		orders: orders(where: {userId: {_eq: $userId}}) {
+		orders: orders(where: {userId: {_eq: $userId}},  order_by: {id: desc}) {
 			id
 			order_status {
 			name
@@ -290,8 +290,8 @@ export const GetUserCartDetails = gql`
 
 
 export const CreateOrder = gql`
-	mutation CreateOrder($addressId: Int!, $currency: String!, $userId: Int!, $productTypes: [ProductTypePair!]!, $promoCode: String) {
-		createOrder(input: {addressId: $addressId, currency: $currency, productTypeIds: $productTypes, userId: $userId, promoCode: $promoCode}) {
+	mutation CreateOrder($addressId: Int!, $currency: String!, $userId: Int!, $productTypes: [ProductTypePair!]!, $promoCodeId: Int) {
+		createOrder(input: {addressId: $addressId, currency: $currency, productTypeIds: $productTypes, userId: $userId, promoCodeId: $promoCodeId}) {
 			order {
 			id
 			}
@@ -397,6 +397,9 @@ export const GetOrderByUserId = gql`
 				town
 				zipcode
 			}
+      coupon {
+        value
+      }
 			order_status {
 				id
 				name

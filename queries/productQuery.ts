@@ -91,31 +91,36 @@ export const GetRecommendations = gql`
 
 
 export const GetProductsByCategoryId = gql`
-	query GetProductsBySubCategoryId($subCategoryId: Int!, $seasonId: bigint, $orderObject: [product_order_by!], $searchString: String, $expiry: timestamptz!) {
-		product(order_by: $orderObject, where: {subCategoryId: {_eq: $subCategoryId}, isDeleted: {_eq: false}, productTypes: {product_seasons: {seasonId: {_eq: $seasonId}}}, name: {_ilike: $searchString }}) {
-			imageUrl
-			hoverImageUrl
-			name
-			description
-			id
-			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
-				id
-				discount
-				enable
+	query GetProductsBySubCategoryId($subCategoryId: Int!, $seasonId: bigint, $orderObject: [product_order_by!], $searchString: String, $expiry: timestamptz, $limit: Int!) {
+	product(order_by: $orderObject, where: {subCategoryId: {_eq: $subCategoryId}, isDeleted: {_eq: false}, productTypes: {product_seasons: {seasonId: {_eq: $seasonId}}}, name: {_ilike: $searchString}}, limit: $limit) {
+		imageUrl
+		hoverImageUrl
+		name
+		description
+		id
+		deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+		id
+		discount
+		enable
+		}
+		productTypes_aggregate {
+		aggregate {
+			max {
+			discountedPrice
+			originalPrice
 			}
-			productTypes_aggregate {
-				aggregate {
-					max {
-						discountedPrice
-						originalPrice
-					}
-					min {
-						originalPrice
-						discountedPrice
-					}
-				}
+			min {
+			originalPrice
+			discountedPrice
 			}
 		}
+		}
+	}
+	product_aggregate(where: {subCategoryId: {_eq: $subCategoryId}, isDeleted: {_eq: false}, productTypes: {product_seasons: {seasonId: {_eq: $seasonId}}}, name: {_ilike: $searchString}}) {
+		aggregate {
+		count
+		}
+	}
 	}
 
 `;
