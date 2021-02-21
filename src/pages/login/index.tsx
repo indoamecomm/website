@@ -153,7 +153,6 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 	const {setCart} = useContext(cartContext);
 	const {setWishlist} = useContext(wishlistContext);
 	const router = useRouter();
-	
 
 	const login = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -163,16 +162,18 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 			const data = await signIn({email, password});
 			if (data.error) {
 				toast.error(data.error.message);
-				setLoading(false);
-			}
-			toast.success("Login Successful");
-			await saveUserCartAndWishlist(data.id);
-			setCart([]);
-			setWishlist([]);
-			if (proceedToCheckout) {
-				router.push("/checkout");
-			} else {
-				router.push("/account");
+				return setLoading(false);
+			} else if (data && data.id) {
+				console.log(data.id);
+				toast.success("Login Successful");
+				await saveUserCartAndWishlist(data.id);
+				setCart([]);
+				setWishlist([]);
+				if (proceedToCheckout) {
+					router.push("/checkout");
+				} else {
+					router.push("/account");
+				}
 			}
 		} catch (error) {
 			setLoading(false);
@@ -253,7 +254,7 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 };
 
 const SignUpForm: React.FC<AuthFormProps> = (props) => {
-	const {setLoginActive, proceedToCheckout} = props;
+	const {setLoginActive, proceedToCheckout, saveUserCartAndWishlist} = props;
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -262,6 +263,8 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 	const [lastName, setLastName] = useState<string>("");
 
 	const [loading, setLoading] = useState<boolean>(false);
+	const {setCart} = useContext(cartContext);
+	const {setWishlist} = useContext(wishlistContext);
 	const router = useRouter();
 	const {signUp} = useAuth();
 
@@ -273,12 +276,22 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 			}
 			setLoading(true);
 
-			await signUp({email, password, firstName, lastName, phoneNumber: `+91${phoneNumber}`});
-			toast.success("SignUp completed Successfully, Redirecting you to Home Page");
-			if (proceedToCheckout) {
-				router.push("/checkout");
-			} else {
-				router.push("/");
+			const data = await signUp({email, password, firstName, lastName, phoneNumber: `+91${phoneNumber}`});
+
+			if (data.error) {
+				toast.error(data.error.message);
+				return setLoading(false);
+			} else if (data && data.id) {
+				console.log(data.id);
+				toast.success("Login Successful");
+				await saveUserCartAndWishlist(data.id);
+				setCart([]);
+				setWishlist([]);
+				if (proceedToCheckout) {
+					router.push("/checkout");
+				} else {
+					router.push("/account");
+				}
 			}
 		} catch (error) {
 			toast.error(error.message);

@@ -83,7 +83,6 @@ const CartMain: React.FC = () => {
 						expiry: new Date().toISOString(),
 					},
 				});
-
 				if (data) {
 					data.subscribe(({data: {cart}}) => {
 						setCartItems(cart);
@@ -255,7 +254,7 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 			} else {
 				let newCartStore: any = [...cartStore];
 				newCartStore = newCartStore.map((item) => {
-					if (item.productTypeId !== cart.product_type.id) {
+					if (item.productTypeId === cart.product_type.id) {
 						return {
 							productTypeId: item.productTypeId,
 							count,
@@ -303,14 +302,18 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 
 	let timeout;
 	useEffect(() => {
-		if (firstRender) {
-			timeout = setTimeout(() => {
-				updateCart();
-			}, 1000);
+		if (user) {
+			if (firstRender) {
+				timeout = setTimeout(() => {
+					updateCart();
+				}, 500);
+			} else {
+				setFirstRender(true);
+			}
+			return () => clearTimeout(timeout);
 		} else {
-			setFirstRender(true);
+			updateCart();
 		}
-		return () => clearTimeout(timeout);
 	}, [count]);
 
 	return (

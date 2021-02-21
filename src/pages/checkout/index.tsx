@@ -131,7 +131,29 @@ const Checkout: React.FC = () => {
 		});
 		if (users && users.length > 0) {
 			setUserDetails(users[0]);
-			setCart(users[0].carts);
+
+			// let newCarts: any[] = [];
+			// let cartCopy: any[] = [];
+
+			// let newUniqueCarts: any[] = [];
+
+			// newUniqueCarts = users[0].carts.filter(function (currentObject) {
+			// 	if (currentObject.productTypeId in newCarts) {
+			// 		cartCopy[currentObject.productTypeId] = {
+			// 			...cartCopy[currentObject.productTypeId],
+			// 			count: cartCopy[currentObject.productTypeId].count + currentObject.count,
+			// 		};
+			// 		return false;
+			// 	} else {
+			// 		newCarts[currentObject.productTypeId] = true;
+			// 		cartCopy[currentObject.productTypeId] = currentObject;
+			// 		return true;
+			// 	}
+			// });
+
+			// cartCopy = cartCopy.filter((element) => element.id);
+			setCart(removeDuplicatesProductTypes(users[0].carts));
+
 			// if (users[0].addresses.length > 0) {
 			// 	setActiveAddress(users[0].addresses[0]);
 			// }
@@ -640,3 +662,23 @@ export async function getStaticProps() {
 		},
 	};
 }
+
+export const removeDuplicatesProductTypes = (carts: Cart[]): Cart[] => {
+	let newCarts: any[] = [];
+	let cartCopy: any[] = [];
+	carts.filter(function (currentObject) {
+		if (currentObject.productTypeId in newCarts) {
+			cartCopy[currentObject.productTypeId] = {
+				...cartCopy[currentObject.productTypeId],
+				count: cartCopy[currentObject.productTypeId].count + currentObject.count,
+			};
+			return false;
+		} else {
+			newCarts[currentObject.productTypeId] = true;
+			cartCopy[currentObject.productTypeId] = currentObject;
+			return true;
+		}
+	});
+
+	return cartCopy.filter((element) => element.id);
+};

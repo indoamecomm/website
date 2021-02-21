@@ -239,5 +239,6 @@ export async function getStaticProps() {
 			storeLocations,
 			testimonials,
 		},
+		revalidate: 10,
 	};
 }
