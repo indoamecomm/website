@@ -85,13 +85,14 @@ const CartItems: React.FC = () => {
 
 	const proceedToCheckout = () => {
 		setCartActive(false);
+		router.push("/checkout");
 
-		if (user) {
-			router.push("/checkout");
-		} else {
-			toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
-			router.push("/login?checkout=true");
-		}
+		// if (user) {
+		// 	router.push("/checkout");
+		// } else {
+		// 	toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
+		// 	router.push("/login?checkout=true");
+		// }
 	};
 
 	return (

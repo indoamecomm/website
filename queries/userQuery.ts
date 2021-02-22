@@ -9,6 +9,7 @@ export const GetUserByFirebaseUUID = gql`
 			firebaseUUID
 			firstName
 			lastName
+			phoneNumber
 		}
 	}
 `;
@@ -30,33 +31,51 @@ export const UserSignUp = gql`
 `;
 
 export const GetAccountDetails = gql`
-	query GetAccountDetails($userId: bigint!) {
-		orders: orders(where: {userId: {_eq: $userId}},  order_by: {id: desc}) {
-			id
-			order_status {
-			name
-			id
-			}
-			totalAmount
-			createdAt
-		}
-		addresses: addresses(where: {userId: {_eq: $userId}}, order_by: {id: asc}) {
-			id
-			lineOne
-			lineTwo
-			name
-			state
-			town
-			zipcode
-		}
-		users: users(where: {id: {_eq: $userId}}) {
-			id
-			firstName
-			lastName
-			phoneNumber
-			email
-		}
-	}
+query GetAccountDetails($userId: bigint!) {
+  orders: orders(where: {userId: {_eq: $userId}}, order_by: {id: desc}) {
+    id
+    order_status {
+      name
+      id
+    }
+    totalAmount
+    createdAt
+    order_product_types {
+      id
+      product_type {
+        id
+        name
+        discountedPrice
+      }
+      count
+    }
+    address {
+      lineOne
+      lineTwo
+      name
+      state
+      town
+	  zipcode
+    }
+  }
+  addresses: addresses(where: {userId: {_eq: $userId}}, order_by: {id: asc}) {
+    id
+    lineOne
+    lineTwo
+    name
+    state
+    town
+    zipcode
+  }
+  users: users(where: {id: {_eq: $userId}}) {
+    id
+    firstName
+    lastName
+    phoneNumber
+    email
+  }
+}
+
 
 `;
 
@@ -300,6 +319,19 @@ export const CreateOrder = gql`
 	}
 `;
 
+export const CreateOrderUnauthenticated = gql`
+	mutation CreateOrderUnauthenticated($productTypes: [ProductTypePair!]!, $promoCodeId: Int, $town: String!, $state: String!, $zipcode: String!, $email: String!, $firstName: String!, $lastName: String!, $lineTwo: String!, $lineOne: String!, $phoneNumber: String!) {
+	createOrder(input: {currency: "INR", productTypeIds: $productTypes, promoCodeId: $promoCodeId, town: $town, state: $state, zipcode: $zipcode, email: $email, countryId: 1, firstName: $firstName, lastName: $lastName, lineTwo: $lineTwo, lineOne: $lineOne, name: "Home", phoneNumber: $phoneNumber, addressName: "Home"}) {
+		order {
+		id
+		}
+		razorpayOrderId
+	}
+	}
+
+`;
+
+
 
 export const CheckCouponValidity = gql`
 	query CheckCouponValidity($couponName: String!) {
@@ -473,5 +505,14 @@ query VerifyIfOrderBelongsToUser($orderId: bigint!, $email: String!) {
 
 `;
 
+
+export const InsertContactUs = gql`
+	mutation InsertContactUs($email: String!, $firstName: String!, $message: String!, $subject: String!) {
+		insert_contact_us(objects: { email: $email, firstName: $firstName, message: $message, subject: $subject }) {
+			affected_rows
+		}
+	}
+
+`;
 
 

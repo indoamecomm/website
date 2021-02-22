@@ -17,13 +17,56 @@ import Spinner from "../../Components/Utils/Spinner";
 import {useRouter} from "next/router";
 import Modal from "react-modal";
 import Link from "next/link";
-import Invoice from "../../Components/Invoice";
 import {PDFDownloadLink} from "@react-pdf/renderer";
+import Invoice from "../../Components/Invoice/Invoice";
 
 interface HeaderProps {
 	categories: Category[];
 	storeLocations: Store_Locations[];
 }
+const invoice = {
+	id: "5df3180a09ea16dc4b95f910",
+	invoice_no: "201906-28",
+	balance: "$2,283.74",
+	company: "MANTRIX",
+	email: "susanafuentes@mantrix.com",
+	phone: "+1 (872) 588-3809",
+	address: "922 Campus Road, Drytown, Wisconsin, 1986",
+	trans_date: "2019-09-12",
+	due_date: "2019-10-12",
+	items: [
+		{
+			sno: 1,
+			desc: "ad sunt culpa occaecat qui",
+			qty: 5,
+			rate: 405.89,
+		},
+		{
+			sno: 2,
+			desc: "cillum quis sunt qui aute",
+			qty: 5,
+			rate: 373.11,
+		},
+		{
+			sno: 3,
+			desc: "ea commodo labore culpa irure",
+			qty: 5,
+			rate: 458.61,
+		},
+		{
+			sno: 4,
+			desc: "nisi consequat et adipisicing dolor",
+			qty: 10,
+			rate: 725.24,
+		},
+		{
+			sno: 5,
+			desc: "proident cillum anim elit esse",
+			qty: 4,
+			rate: 141.02,
+		},
+	],
+};
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	const {categories, storeLocations} = props;
@@ -99,12 +142,11 @@ const Account: React.FC = () => {
 	const [passwordLoading, setPasswordLoading] = useState<boolean>(false);
 	const [openAddressModal, setOpenAddressModal] = useState<boolean>(false);
 	const [logoutModal, setLogoutModal] = useState<boolean>(false);
-
 	const [addressEditData, setAddressEditData] = useState<any>();
 	const [refetch, setRefetch] = useState<number>(0);
 	const [queryLoading, setQueryLoading] = useState<boolean>(false);
-
 	const router = useRouter();
+
 	const updateUser = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setDetailsLoading(true);
@@ -148,6 +190,8 @@ const Account: React.FC = () => {
 			toast.error("Passwords do not match");
 		}
 	};
+
+	console.log("Re rendering");
 
 	useEffect(() => {
 		setQueryLoading(true);
@@ -294,19 +338,7 @@ const Account: React.FC = () => {
 														</thead>
 														<tbody>
 															{orders.map((order) => (
-																<tr key={order.id}>
-																	<td>{order.id}</td>
-																	<td>{format(new Date(order.createdAt), "MMM d, y")}</td>
-																	<td>{order.order_status.name}</td>
-																	<td>₹{order.totalAmount}</td>
-																	<td>
-																		<PDFDownloadLink document={<Invoice />} fileName="Invoice.pdf">
-																			{({loading}) =>
-																				loading ? "Loading document..." : "Download"
-																			}
-																		</PDFDownloadLink>
-																	</td>
-																</tr>
+																<InvoiceItem key={order.id} order={order} />
 															))}
 														</tbody>
 													</table>
@@ -517,6 +549,48 @@ export async function getStaticProps() {
 		},
 	};
 }
+
+const InvoiceItem: React.FC<{order: any}> = (props) => {
+	const {order} = props;
+	const {user} = useAuth();
+
+	const invoice = {
+		id: "5df3180a09ea16dc4b95f910",
+		invoice_no: order.id,
+		company: "Indoamerican",
+		email: user && user.email,
+		phone: user && user.phoneNumber,
+		address:
+			order &&
+			`${order.address.lineOne}, ${order.address.lineTwo}, ${order.address.state}, ${order.address.town}, ${order.address.zipcode}`,
+		trans_date: order && format(new Date(order.createdAt), "MMM d, y"),
+		items: order && order.order_product_types,
+	};
+
+	const [ready, setReady] = useState<boolean>(false);
+	return (
+		<tr key={order.id}>
+			<td>{order.id}</td>
+			<td>{format(new Date(order.createdAt), "MMM d, y")}</td>
+			<td>{order.order_status.name}</td>
+			<td>₹{order.totalAmount}</td>
+
+			{ready ? (
+				<td>
+					<PDFDownloadLink document={<Invoice invoice={invoice} />} fileName="Invoice.pdf">
+						{({loading}) => (loading ? "Loading..." : "Download")}
+					</PDFDownloadLink>
+				</td>
+			) : (
+				<td>
+					<a onClick={() => setReady(true)} className="check-btn  sqr-btn">
+						Generate
+					</a>
+				</td>
+			)}
+		</tr>
+	);
+};
 interface ModalProps {
 	open: boolean;
 	setOpen: (value: boolean) => void;

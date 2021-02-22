@@ -1,11 +1,14 @@
 import Head from "next/head";
-import React from "react";
+import React, {useState} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
 import {Category, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
+import toast, {Toaster} from "react-hot-toast";
+import {InsertContactUs} from "../../../queries/userQuery";
+import Spinner from "../../Components/Utils/Spinner";
 
 interface HeaderProps {
 	categories: Category[];
@@ -57,6 +60,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 						links={[{link: "/", name: "HOME"}]}
 					/>
 					<Support />
+					<Toaster position={"bottom-center"} />
 				</div>
 			</main>
 			<Footer />
@@ -67,6 +71,40 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 export default index;
 
 const Support: React.FC = () => {
+	const [email, setEmail] = useState<string>("");
+	const [name, setName] = useState<string>("");
+	const [subject, setSubject] = useState<string>("");
+	const [summary, setSummary] = useState<string>("");
+
+	const [loading, setLoading] = useState<boolean>(false);
+	const apolloClient = initializeApollo();
+
+	const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
+		try {
+			setLoading(true);
+			event.preventDefault();
+			const {
+				data: {insert_contact_us},
+			} = await apolloClient.mutate({
+				mutation: InsertContactUs,
+				variables: {
+					email,
+					firstName: name,
+					subject,
+					message: summary,
+				},
+			});
+			if (insert_contact_us.affected_rows > 0) {
+				toast.success("Query submitted successfully");
+			} else {
+				toast.error("Some error occurred");
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 	return (
 		<>
 			<div className="section-title-container mb-50">
@@ -185,16 +223,45 @@ const Support: React.FC = () => {
 					<div className="row">
 						<div className="col-lg-8 offset-lg-2">
 							<div className="lezada-form contact-form">
-								<form id="contact-form" action="assets/php/mail.php" method="post">
+								<form onSubmit={submitForm}>
 									<div className="row">
 										<div className="col-md-6 mb-40">
-											<input type="text" placeholder="First Name *" name="customerName" id="customername" required />
+											<input
+												type="text"
+												placeholder="First Name *"
+												name="customerName"
+												id="customername"
+												value={name}
+												onChange={(event) => {
+													setName(event.target.value);
+												}}
+												required
+											/>
 										</div>
 										<div className="col-md-6 mb-40">
-											<input type="email" placeholder="Email *" name="customerEmail" id="customerEmail" required />
+											<input
+												type="email"
+												placeholder="Email *"
+												name="customerEmail"
+												id="customerEmail"
+												value={email}
+												onChange={(event) => {
+													setEmail(event.target.value);
+												}}
+												required
+											/>
 										</div>
 										<div className="col-lg-12 mb-40">
-											<input type="text" placeholder="Subject" name="contactSubject" id="contactSubject" />
+											<input
+												type="text"
+												placeholder="Subject"
+												name="contactSubject"
+												value={subject}
+												onChange={(event) => {
+													setSubject(event.target.value);
+												}}
+												id="contactSubject"
+											/>
 										</div>
 										<div className="col-lg-12 mb-40">
 											<textarea
@@ -204,16 +271,24 @@ const Support: React.FC = () => {
 												name="contactMessage"
 												id="contactMessage"
 												defaultValue={""}
+												value={summary}
+												onChange={(event) => {
+													setSummary(event.target.value);
+												}}
 											/>
 										</div>
 										<div className="col-lg-12 text-center">
-											<button
-												type="submit"
-												value="submit"
-												id="submit"
-												className="lezada-button lezada-button--medium">
-												submit
-											</button>
+											{!loading ? (
+												<button
+													type="submit"
+													value="submit"
+													id="submit"
+													className="lezada-button lezada-button--medium">
+													submit
+												</button>
+											) : (
+												<Spinner width="40px" height="40px" />
+											)}
 										</div>
 									</div>
 								</form>

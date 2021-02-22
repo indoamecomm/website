@@ -105,7 +105,7 @@ const CartMain: React.FC = () => {
 					count: cartStore[index].count,
 					product_type: JSON.parse(JSON.stringify(product)),
 				}));
-				
+
 				setCartItems(newItems);
 			}
 		} catch (error) {
@@ -130,12 +130,14 @@ const CartMain: React.FC = () => {
 	};
 
 	const proceedToCheckout = () => {
-		if (user) {
-			router.push("/checkout");
-		} else {
-			toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
-			router.push("/login?checkout=true");
-		}
+		router.push("/checkout");
+
+		// if (user) {
+		// 	router.push("/checkout");
+		// } else {
+		// 	toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
+		// 	router.push("/login?checkout=true");
+		// }
 	};
 
 	return (

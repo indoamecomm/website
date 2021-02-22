@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React from "react";
+import React, {useContext} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -11,6 +11,7 @@ import {useEffect} from "react";
 import {
 	CheckCouponValidity,
 	CreateOrder,
+	CreateOrderUnauthenticated,
 	DeleteUserCart,
 	GetUserCartDetails,
 	UpdateOrderStatus,
@@ -27,6 +28,8 @@ import {AddressEdit} from "../account";
 import dynamic from "next/dynamic";
 import {useRouter} from "next/router";
 import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
+import {GetProductTypesById} from "../../../queries/productQuery";
+import cartContext from "../../Context/cartContext";
 
 interface HeaderProps {
 	categories: Category[];
@@ -101,6 +104,8 @@ const Checkout: React.FC = () => {
 	const apolloClient = initializeApollo();
 
 	const [placeOrderMutation] = useMutation(CreateOrder);
+	const [placeOrderMutationUnauthenticated] = useMutation(CreateOrderUnauthenticated);
+
 	const [verifyOrder] = useMutation(VerifyPayment);
 	const [deleteCart] = useMutation(DeleteUserCart);
 	const [updateOrderStatus] = useMutation(UpdateOrderStatus);
@@ -114,57 +119,90 @@ const Checkout: React.FC = () => {
 	const [couponName, setCouponName] = useState<string>("");
 	const [activeCoupon, setActiveCoupon] = useState<any>(null);
 	const [refetch, setRefetch] = useState<number>(1);
+	const {cart: cartStore, setCart: setCartStore} = useContext(cartContext);
+
+	//For Unauthenticated User
+	const [email, setEmail] = useState<string>("");
+	const [firstName, setFirstName] = useState<string>("");
+	const [lastName, setLastName] = useState<string>("");
+	const [phoneNumber, setPhoneNumber] = useState<string>("");
+	const [lineOne, setLineOne] = useState<string>("");
+	const [lineTwo, setLineTwo] = useState<string>("");
+	const [zipcode, setZipcode] = useState<string>("");
+	const [town, setTown] = useState<string>("");
+	const [state, setState] = useState<string>("");
+
+	// const [lineOne, setLineOne] = useState<string>("");
 
 	const router = useRouter();
 
 	const getUserCartItem = async () => {
-		setQueryLoading(true);
-		const {
-			data: {users},
-		} = await apolloClient.query({
-			query: GetUserCartDetails,
-			variables: {
-				userId: user.id,
-				expiry: new Date().toISOString(),
-			},
-			fetchPolicy: "network-only",
-		});
-		if (users && users.length > 0) {
-			setUserDetails(users[0]);
+		if (user) {
+			setQueryLoading(true);
+			const {
+				data: {users},
+			} = await apolloClient.query({
+				query: GetUserCartDetails,
+				variables: {
+					userId: user.id,
+					expiry: new Date().toISOString(),
+				},
+				fetchPolicy: "network-only",
+			});
+			if (users && users.length > 0) {
+				setUserDetails(users[0]);
 
-			// let newCarts: any[] = [];
-			// let cartCopy: any[] = [];
+				// let newCarts: any[] = [];
+				// let cartCopy: any[] = [];
 
-			// let newUniqueCarts: any[] = [];
+				// let newUniqueCarts: any[] = [];
 
-			// newUniqueCarts = users[0].carts.filter(function (currentObject) {
-			// 	if (currentObject.productTypeId in newCarts) {
-			// 		cartCopy[currentObject.productTypeId] = {
-			// 			...cartCopy[currentObject.productTypeId],
-			// 			count: cartCopy[currentObject.productTypeId].count + currentObject.count,
-			// 		};
-			// 		return false;
-			// 	} else {
-			// 		newCarts[currentObject.productTypeId] = true;
-			// 		cartCopy[currentObject.productTypeId] = currentObject;
-			// 		return true;
-			// 	}
-			// });
+				// newUniqueCarts = users[0].carts.filter(function (currentObject) {
+				// 	if (currentObject.productTypeId in newCarts) {
+				// 		cartCopy[currentObject.productTypeId] = {
+				// 			...cartCopy[currentObject.productTypeId],
+				// 			count: cartCopy[currentObject.productTypeId].count + currentObject.count,
+				// 		};
+				// 		return false;
+				// 	} else {
+				// 		newCarts[currentObject.productTypeId] = true;
+				// 		cartCopy[currentObject.productTypeId] = currentObject;
+				// 		return true;
+				// 	}
+				// });
 
-			// cartCopy = cartCopy.filter((element) => element.id);
-			setCart(removeDuplicatesProductTypes(users[0].carts));
+				// cartCopy = cartCopy.filter((element) => element.id);
+				setCart(removeDuplicatesProductTypes(users[0].carts));
 
-			// if (users[0].addresses.length > 0) {
-			// 	setActiveAddress(users[0].addresses[0]);
-			// }
+				// if (users[0].addresses.length > 0) {
+				// 	setActiveAddress(users[0].addresses[0]);
+				// }
+			}
+			setQueryLoading(false);
+		} else {
+			const {
+				data: {product_type},
+			} = await apolloClient.query({
+				query: GetProductTypesById,
+				variables: {
+					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+					expiry: new Date().toISOString(),
+				},
+				fetchPolicy: "network-only",
+			});
+			const newItems = product_type.map((product, index) => ({
+				id: `${product.id}${index}`,
+				count: cartStore[index].count,
+				productTypeId: product.id,
+				product_type: JSON.parse(JSON.stringify(product)),
+			}));
+
+			setCart(removeDuplicatesProductTypes(newItems));
 		}
-		setQueryLoading(false);
 	};
 
 	useEffect(() => {
-		if (user) {
-			getUserCartItem();
-		}
+		getUserCartItem();
 	}, [user, refetch]);
 
 	const placeOrder = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -275,6 +313,228 @@ const Checkout: React.FC = () => {
 		}
 	};
 
+	const placeOrderUnauthenticated = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		if(phoneNumber.length === 10){
+try {
+	event.preventDefault();
+	setLoading(true);
+	const productTypes = cart.map((cartItem) => {
+		return {
+			count: cartItem.count,
+			productTypeId: cartItem.productTypeId,
+		};
+	});
+
+	const {
+		data: {createOrder},
+	} = await placeOrderMutationUnauthenticated({
+		variables: {
+			currency: "INR",
+			firstName,
+			lastName,
+			email,
+			phoneNumber: `+91${phoneNumber}`,
+			zipcode,
+			lineOne,
+			lineTwo,
+			town,
+			state,
+			productTypes,
+			promoCodeId: activeCoupon ? activeCoupon.couponId : null,
+		},
+	});
+
+	if (createOrder) {
+		const options = {
+			key: "rzp_test_LlLmyaSARCe7Dw", // Enter the Key ID generated from the Dashboard
+			currency: "INR",
+			name: "Indoamerican",
+			amount: "100",
+			description: "Test Transaction",
+			image: "https://example.com/your_logo",
+			order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+			// order_id: "order_GeBMz369ne4rF4",
+			handler: async (response) => {
+				const {
+					data: {code, message},
+				} = await verifyOrder({
+					variables: {
+						razorpayOrderId: createOrder.razorpayOrderId,
+						razorpayPaymentId: response.razorpay_payment_id,
+						razorpaySignature: response.razorpay_signature,
+						orderId: createOrder.order.id,
+					},
+				});
+				if (code === 500 || code === 401) {
+					toast.error("Some error occurred please try again," + message);
+				} else {
+					setLoading(false);
+					setCartStore([]);
+					router.push(`/login`);
+					toast.success("Please login with the password provided in your email");
+				}
+			},
+			prefill: {
+				name: `${firstName} ${lastName}`,
+				email: email,
+				contact: phoneNumber,
+			},
+			notes: {
+				address: `${lineOne} ${lineTwo}`,
+			},
+			theme: {
+				color: "#3399cc",
+			},
+			modal: {
+				ondismiss: async function () {
+					setLoading(false);
+					await updateOrderStatus({
+						variables: {
+							orderId: createOrder.order.id,
+							statusId: 5,
+						},
+					});
+					toast.error("Checkout Gateway closed");
+				},
+			},
+		};
+		//@ts-ignore
+		const paymentObject = new window.Razorpay(options);
+		paymentObject.open();
+		paymentObject.on("payment.failed", async function (response) {
+			await updateOrderStatus({
+				variables: {
+					orderId: createOrder.order.id,
+					statusId: 5,
+				},
+			});
+			toast.success(response.error.reason);
+			// alert(response.error.metadata.order_id);
+			// alert(response.error.metadata.payment_id);
+			setLoading(false);
+		});
+	} else {
+		setLoading(false);
+		toast.error("Some unknown error occurred");
+	}
+} catch (error) {
+	console.log(error.message);
+	setLoading(false);
+try {
+			event.preventDefault();
+			setLoading(true);
+			const productTypes = cart.map((cartItem) => {
+				return {
+					count: cartItem.count,
+					productTypeId: cartItem.productTypeId,
+				};
+			});
+
+			const {
+				data: {createOrder},
+			} = await placeOrderMutationUnauthenticated({
+				variables: {
+					currency: "INR",
+					firstName,
+					lastName,
+					email,
+					phoneNumber: `+91${phoneNumber}`,
+					zipcode,
+					lineOne,
+					lineTwo,
+					town,
+					state,
+					productTypes,
+					promoCodeId: activeCoupon ? activeCoupon.couponId : null,
+				},
+			});
+
+			if (createOrder) {
+				const options = {
+					key: "rzp_test_LlLmyaSARCe7Dw", // Enter the Key ID generated from the Dashboard
+					currency: "INR",
+					name: "Indoamerican",
+					amount: "100",
+					description: "Test Transaction",
+					image: "https://example.com/your_logo",
+					order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+					// order_id: "order_GeBMz369ne4rF4",
+					handler: async (response) => {
+						const {
+							data: {code, message},
+						} = await verifyOrder({
+							variables: {
+								razorpayOrderId: createOrder.razorpayOrderId,
+								razorpayPaymentId: response.razorpay_payment_id,
+								razorpaySignature: response.razorpay_signature,
+								orderId: createOrder.order.id,
+							},
+						});
+						if (code === 500 || code === 401) {
+							toast.error("Some error occurred please try again," + message);
+						} else {
+							setLoading(false);
+							setCartStore([]);
+							router.push(`/login`);
+							toast.success("Please login with the password provided in your email");
+						}
+					},
+					prefill: {
+						name: `${firstName} ${lastName}`,
+						email: email,
+						contact: phoneNumber,
+					},
+					notes: {
+						address: `${lineOne} ${lineTwo}`,
+					},
+					theme: {
+						color: "#3399cc",
+					},
+					modal: {
+						ondismiss: async function () {
+							setLoading(false);
+							await updateOrderStatus({
+								variables: {
+									orderId: createOrder.order.id,
+									statusId: 5,
+								},
+							});
+							toast.error("Checkout Gateway closed");
+						},
+					},
+				};
+				//@ts-ignore
+				const paymentObject = new window.Razorpay(options);
+				paymentObject.open();
+				paymentObject.on("payment.failed", async function (response) {
+					await updateOrderStatus({
+						variables: {
+							orderId: createOrder.order.id,
+							statusId: 5,
+						},
+					});
+					toast.success(response.error.reason);
+					// alert(response.error.metadata.order_id);
+					// alert(response.error.metadata.payment_id);
+					setLoading(false);
+				});
+			} else {
+				setLoading(false);
+				toast.error("Some unknown error occurred");
+			}
+		} catch (error) {
+			console.log(error.message);
+			setLoading(false);
+			toast.error(error.message);
+		}}
+		} else {
+			toast.error("Please enter a valid phone number of length 10");
+		}
+		
+	};
+
+	const disabledButton = !email || !firstName || !lastName || !phoneNumber || !lineOne || !lineTwo || !town || !zipcode || !state;
+
 	const checkCoupon = async () => {
 		setCouponLoading(true);
 
@@ -322,7 +582,7 @@ const Checkout: React.FC = () => {
 							{/* Checkout Form s*/}
 							<form className="checkout-form">
 								<div className="row row-40">
-									{!queryLoading ? (
+									{user && !queryLoading ? (
 										<CheckoutUserForm
 											user={userDetails}
 											address={userDetails && userDetails.addresses ? userDetails.addresses : null}
@@ -332,9 +592,33 @@ const Checkout: React.FC = () => {
 											refetch={refetch}
 										/>
 									) : (
-										<div className="col-lg-7 mb-20 d-flex justify-content-center">
-											<Spinner width="40px" height="40px" />
-										</div>
+										user && (
+											<div className="col-lg-7 mb-20 d-flex justify-content-center">
+												<Spinner width="40px" height="40px" />
+											</div>
+										)
+									)}
+									{!user && (
+										<CheckoutUnauthenticatedUser
+											email={email}
+											setEmail={setEmail}
+											firstName={firstName}
+											setFirstName={setFirstName}
+											lastName={lastName}
+											setLastName={setLastName}
+											phoneNumber={phoneNumber}
+											setPhoneNumber={setPhoneNumber}
+											lineOne={lineOne}
+											setLineOne={setLineOne}
+											lineTwo={lineTwo}
+											setLineTwo={setLineTwo}
+											town={town}
+											setTown={setTown}
+											state={state}
+											setState={setState}
+											zipcode={zipcode}
+											setZipcode={setZipcode}
+										/>
 									)}
 									<div className="col-lg-5">
 										<div className="row">
@@ -364,7 +648,7 @@ const Checkout: React.FC = () => {
 												)}
 											</div>
 											{/* Payment Method */}
-											{!loading ? (
+											{user && !loading ? (
 												<div className="col-12">
 													<button
 														data-for={!activeAddress && "main"}
@@ -377,9 +661,29 @@ const Checkout: React.FC = () => {
 													</button>
 												</div>
 											) : (
+												user && (
+													<div className="col-12">
+														<Spinner width="30px" height="30px" />
+													</div>
+												)
+											)}
+											{!user && !loading ? (
 												<div className="col-12">
-													<Spinner width="30px" height="30px" />
+													<button
+														style={disabledButton ? {opacity: 0.7} : {opacity: 1}}
+														className="lezada-button lezada-button--medium mt-30"
+														onClick={placeOrderUnauthenticated}
+														disabled={disabledButton}
+														type="button">
+														Place order
+													</button>
 												</div>
+											) : (
+												!user && (
+													<div className="col-12">
+														<Spinner width="30px" height="30px" />
+													</div>
+												)
 											)}
 										</div>
 									</div>
@@ -434,6 +738,136 @@ const CheckoutUserForm: React.FC<{
 						setRefetch={setRefetch}
 						refetch={refetch}
 					/>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+const CheckoutUnauthenticatedUser: React.FC<any> = (props) => {
+	const {
+		email,
+		setEmail,
+		firstName,
+		setFirstName,
+		lastName,
+		setLastName,
+		phoneNumber,
+		setPhoneNumber,
+		lineOne,
+		setLineOne,
+		lineTwo,
+		setLineTwo,
+		town,
+		setTown,
+		state,
+		setState,
+		zipcode,
+		setZipcode,
+	} = props;
+
+	return (
+		<div className="col-lg-7 mb-20">
+			{/* Billing Address */}
+			<div id="billing-form" className="mb-40">
+				<h4 className="checkout-title">Billing Address</h4>
+				<div className="row">
+					<div className="col-md-6 col-12 mb-20">
+						<label>First Name*</label>
+						<input
+							type="text"
+							placeholder="First Name"
+							value={firstName}
+							onChange={(event) => {
+								setFirstName(event.target.value);
+							}}
+						/>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>Last Name*</label>
+						<input
+							type="text"
+							value={lastName}
+							onChange={(event) => {
+								setLastName(event.target.value);
+							}}
+							placeholder="Last Name"
+						/>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>Email Address*</label>
+						<input
+							type="email"
+							placeholder="Email Address"
+							value={email}
+							onChange={(event) => {
+								setEmail(event.target.value);
+							}}
+						/>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>Phone no*</label>
+						<input
+							type="text"
+							placeholder="Phone number"
+							value={phoneNumber}
+							onChange={(event) => {
+								setPhoneNumber(event.target.value);
+							}}
+						/>
+					</div>
+					<div className="col-12 mb-20">
+						<label>Address*</label>
+						<input
+							type="text"
+							placeholder="Address line 1"
+							value={lineOne}
+							onChange={(event) => {
+								setLineOne(event.target.value);
+							}}
+						/>
+						<input
+							type="text"
+							placeholder="Address line 2"
+							value={lineTwo}
+							onChange={(event) => {
+								setLineTwo(event.target.value);
+							}}
+						/>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>Town/City*</label>
+						<input
+							type="text"
+							placeholder="Town/City"
+							value={town}
+							onChange={(event) => {
+								setTown(event.target.value);
+							}}
+						/>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>State*</label>
+						<input
+							type="text"
+							placeholder="State"
+							value={state}
+							onChange={(event) => {
+								setState(event.target.value);
+							}}
+						/>
+					</div>
+					<div className="col-md-6 col-12 mb-20">
+						<label>Zip Code*</label>
+						<input
+							type="text"
+							placeholder="Zip Code"
+							value={zipcode}
+							onChange={(event) => {
+								setZipcode(event.target.value);
+							}}
+						/>
+					</div>
 				</div>
 			</div>
 		</div>
