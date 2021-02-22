@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -12,6 +12,7 @@ import {useAuth} from "../../hooks/useAuth";
 import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
 import {useRouter} from "next/router";
 import Link from "next/link";
+import OrderUserContext from "../../Context/orderUserContext";
 
 interface HeaderProps {
 	categories: Category[];
@@ -63,9 +64,23 @@ const CartMain: React.FC = () => {
 	const apolloClient = initializeApollo();
 	const router = useRouter();
 	const {orderId} = router.query;
+	const {orderUserId, setOrderUserId} = useContext(OrderUserContext);
 
 	const getUserCartItem = async () => {
-		if (user) {
+		if (orderUserId) {
+			const {
+				data: {orders},
+			} = await apolloClient.query({
+				query: GetOrderByUserId,
+				variables: {
+					userId: orderUserId,
+					orderId,
+					expiry: new Date().toISOString(),
+				},
+			});
+			setOrder(orders[0]);
+			setOrderUserId(undefined);
+		} else if (user) {
 			const {
 				data: {orders},
 			} = await apolloClient.query({
@@ -143,22 +158,23 @@ const CartMain: React.FC = () => {
 										</div> */}
 
 										{
-										//@ts-ignore
-										order.coupon && (
-											<div className="col-lg-6 text-left text-lg-right">
-												{/*=======  update cart button  =======*/}
-												<table className="cart-calculation-table mb-30">
-													<tbody>
-														<tr>
-															<th>Coupon</th>
-															{/* {@ts-ignore} */}
-															<td className="total">-{couponValue}%</td>
-														</tr>
-													</tbody>
-												</table>
-												{/*=======  End of update cart button  =======*/}
-											</div>
-										)}
+											//@ts-ignore
+											order.coupon && (
+												<div className="col-lg-6 text-left text-lg-right">
+													{/*=======  update cart button  =======*/}
+													<table className="cart-calculation-table mb-30">
+														<tbody>
+															<tr>
+																<th>Coupon</th>
+																{/* {@ts-ignore} */}
+																<td className="total">-{couponValue}%</td>
+															</tr>
+														</tbody>
+													</table>
+													{/*=======  End of update cart button  =======*/}
+												</div>
+											)
+										}
 										<div className="col-lg-6 text-left text-lg-right">
 											{/*=======  update cart button  =======*/}
 											<table className="cart-calculation-table mb-30">

@@ -452,3 +452,19 @@ export const UpdateOrderStatus = gql`
 	}
 `;
 
+export const VerifyIfOrderBelongsToUser = gql`
+query VerifyIfOrderBelongsToUser($orderId: bigint!, $email: String!) {
+	orders_aggregate(where: {id: {_eq: $orderId}, user: {email: {_eq: $email}}}) {
+		aggregate {
+		count
+		}
+		nodes {
+		user {
+			id
+		}
+		}
+	}
+	}
+
+`;
+

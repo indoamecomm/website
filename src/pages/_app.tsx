@@ -21,16 +21,19 @@ import useLocalStorage from "@rooks/use-localstorage";
 import WishlistContext from "../Context/wishlistContext";
 import CartContext from "../Context/cartContext";
 import OverlayContext from "../Context/overlayContext";
+import OrderUserContext from "../Context/orderUserContext";
+
 import {useState} from "react";
 
 // import "../styles/css/plugins.css";
 
-function MyApp({Component, pageProps}: any) {
+const MyApp = ({Component, pageProps}: any) => {
 	const client = useApollo(pageProps.initialApolloState);
 	const [wishlist, setWishlist] = useLocalStorage("wishlist", []);
 	const [cart, setCart] = useLocalStorage("cart", []);
 	const [wishlistActive, setWishlistActive] = useState<boolean>(false);
 	const [cartActive, setCartActive] = useState<boolean>(false);
+	const [orderUserId, setOrderUserId] = useState<number | undefined>();
 
 	useEffect(() => {
 		if (typeof window !== "undefined") {
@@ -41,26 +44,32 @@ function MyApp({Component, pageProps}: any) {
 	}, []);
 
 	return (
-		<CartContext.Provider
-			value={{
-				cart,
-				setCart,
-			}}>
-			<WishlistContext.Provider
-				value={{
-					wishlist,
-					setWishlist,
-				}}>
-				<OverlayContext.Provider value={{wishlistActive, setWishlistActive, cartActive, setCartActive}}>
-					<AuthProvider>
-						<ApolloProvider client={client}>
-							<Component {...pageProps} />
-						</ApolloProvider>
-					</AuthProvider>
-				</OverlayContext.Provider>
-			</WishlistContext.Provider>
-		</CartContext.Provider>
+		<ApolloProvider client={client}>
+			<AuthProvider>
+				<CartContext.Provider
+					value={{
+						cart,
+						setCart,
+					}}>
+					<WishlistContext.Provider
+						value={{
+							wishlist,
+							setWishlist,
+						}}>
+						<OverlayContext.Provider value={{wishlistActive, setWishlistActive, cartActive, setCartActive}}>
+							<OrderUserContext.Provider
+								value={{
+									orderUserId,
+									setOrderUserId,
+								}}>
+								<Component {...pageProps} />
+							</OrderUserContext.Provider>
+						</OverlayContext.Provider>
+					</WishlistContext.Provider>
+				</CartContext.Provider>
+			</AuthProvider>
+		</ApolloProvider>
 	);
-}
+};
 
 export default MyApp;

@@ -105,6 +105,7 @@ const CartMain: React.FC = () => {
 					count: cartStore[index].count,
 					product_type: JSON.parse(JSON.stringify(product)),
 				}));
+				
 				setCartItems(newItems);
 			}
 		} catch (error) {

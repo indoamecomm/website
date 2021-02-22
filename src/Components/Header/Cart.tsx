@@ -12,6 +12,7 @@ import Spinner from "../Utils/Spinner";
 import CartContext from "../../Context/cartContext";
 import {useRouter} from "next/router";
 import overlayContext from "../../Context/overlayContext";
+import { removeDuplicatesProductTypes } from "../../pages/checkout";
 
 export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number => {
 	let subTotal: number = 0;
@@ -69,6 +70,7 @@ const CartItems: React.FC = () => {
 					count: cartStore[index].count,
 					product_type: JSON.parse(JSON.stringify(product)),
 				}));
+				// removeDuplicatesProductTypes(newItems);
 				setCartItems(newItems);
 			}
 		} catch (error) {

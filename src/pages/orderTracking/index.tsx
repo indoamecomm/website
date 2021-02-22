@@ -1,11 +1,17 @@
 import Head from "next/head";
-import React from "react";
+import React, {useContext} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
 import {Category, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
+import {useState} from "react";
+import {VerifyIfOrderBelongsToUser} from "../../../queries/userQuery";
+import toast, {Toaster} from "react-hot-toast";
+import Spinner from "../../Components/Utils/Spinner";
+import OrderUserContext from "../../Context/orderUserContext";
+import {useRouter} from "next/router";
 
 interface HeaderProps {
 	categories: Category[];
@@ -20,7 +26,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>Order OrderTracking</title>
+				<title>Order Tracking | Indoamerica</title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
@@ -66,9 +72,45 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 export default index;
 
 const OrderTracking = () => {
+	const apolloClient = initializeApollo();
+	const [email, setEmail] = useState<string>("");
+	const [orderId, setOrderId] = useState<number | undefined>(0);
+	const [loading, setLoading] = useState<boolean>(false);
+	const {setOrderUserId} = useContext(OrderUserContext);
+	const router = useRouter();
+	const verifyIfOrderBelongsToUser = async () => {
+		try {
+			setLoading(true);
+			const {
+				data: {orders_aggregate: orders},
+			} = await apolloClient.query({
+				query: VerifyIfOrderBelongsToUser,
+				variables: {
+					orderId,
+					email,
+				},
+				fetchPolicy: "network-only",
+			});
+
+			if (orders.aggregate.count === 0) {
+				toast.error("Order Not found");
+				setLoading(false);
+			} else {
+				toast.success("Order found, redirecting... ");
+				setOrderUserId(orders.nodes[0].user.id);
+				router.push(`/order/${orderId}`);
+			}
+		} catch (error) {
+			toast.error(error.message);
+			setLoading(false);
+		} finally {
+		}
+	};
+
 	return (
 		<div className="order-tracking-area mb-130">
 			<div className="container">
+				<Toaster position={"bottom-center"} />
 				<div className="row">
 					<div className="col-lg-6 col-md-10 col-12 offset-lg-3 offset-md-1">
 						{/*=======  order tracking box  =======*/}
@@ -83,14 +125,39 @@ const OrderTracking = () => {
 									<div className="row">
 										<div className="col-lg-12 mb-20">
 											<label htmlFor="orderId">Order ID</label>
-											<input type="text" id="orderId" placeholder="Found in your order confirmation email" />
+											<input
+												type="number"
+												id="orderId"
+												placeholder="Found in your order confirmation email"
+												value={orderId ?? ""}
+												onChange={(event) => {
+													setOrderId(parseInt(event.target.value));
+												}}
+											/>
 										</div>
 										<div className="col-lg-12">
 											<label htmlFor="orderEmail">Billing email</label>
-											<input type="text" id="orderEmail" placeholder="Email you used during checkout" />
+											<input
+												type="email"
+												id="orderEmail"
+												placeholder="Email you used during checkout"
+												value={email}
+												onChange={(event) => {
+													setEmail(event.target.value);
+												}}
+											/>
 										</div>
 										<div className="col-lg-12 text-center mt-40">
-											<button className="lezada-button lezada-button--medium order-tracking-button">track</button>
+											{!loading ? (
+												<button
+													disabled={!email || !orderId}
+													className="lezada-button lezada-button--medium order-tracking-button"
+													onClick={verifyIfOrderBelongsToUser}>
+													track
+												</button>
+											) : (
+												<Spinner width="40px" height="40px" />
+											)}
 										</div>
 									</div>
 								</form>

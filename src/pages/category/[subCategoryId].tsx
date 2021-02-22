@@ -20,7 +20,7 @@ interface HeaderProps {
 	seasons: Seasons[];
 	productCount: number;
 }
-const offset = 3;
+const offset = 6;
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	const {categories, storeLocations, product: products, categoriesHeader, subCategory, seasons, productCount} = props;
