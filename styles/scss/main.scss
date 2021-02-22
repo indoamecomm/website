@@ -131,11 +131,17 @@
 	margin-bottom: 2em;
 	opacity: 1;
 }
+.close-img-1 {
+	width: 1.5rem;
+	height: 1.5rem;
+	cursor: pointer;
+}
 
 .close-img {
 	width: 1.5rem;
 	height: 1.5rem;
 	cursor: pointer;
+	margin: 0 1.5em;
 }
 
 .modal {
@@ -181,6 +187,16 @@
 
 	&-logout {
 		top: 30%;
+		left: 30%;
+		right: 40%;
+		bottom: 30%;
+		overflow: auto;
+		min-width: max-content;
+		background-color: #eff8f0;
+	}
+
+	&-rating {
+		top: 35%;
 		left: 30%;
 		right: 40%;
 		bottom: 30%;
@@ -269,3 +285,4 @@
 		word-break: break-all;
 	}
 }
+

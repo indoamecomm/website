@@ -500,7 +500,7 @@ interface HeaderStoreLocationProps {
 }
 
 const HeaderStoreLocations: React.FC<HeaderStoreLocationProps> = (props: HeaderStoreLocationProps) => {
-	const {storeLocations, isMobile} = props;
+	const {isMobile} = props;
 
 	return (
 		<li>
@@ -508,7 +508,33 @@ const HeaderStoreLocations: React.FC<HeaderStoreLocationProps> = (props: HeaderS
 				Other Outlets
 			</a>
 			<ul className={isMobile ? "dl-submenu" : "mega-sub-menu"}>
-				{storeLocations && storeLocations.length > 0 ? (
+				<li>
+					<a href="https://maps.app.goo.gl/MHJ7dAzQDkwCzW3E9" target="_blank">
+						Corporate Office
+					</a>
+				</li>
+				<li>
+					<a
+						href="https://maps.app.goo.gl/osAKo2kwnxYhZNU56
+"
+						target="_blank">
+						Garden Center
+					</a>
+				</li>
+				<li>
+					<a
+						href="https://maps.app.goo.gl/2B4N73mon8Nwud9g8
+"
+						target="_blank">
+						Ambara
+					</a>
+				</li>
+				<li>
+					<a href="https://maps.app.goo.gl/bjHg4zyp2dC4vnFE6" target="_blank">
+						Charms
+					</a>
+				</li>
+				{/* {storeLocations && storeLocations.length > 0 ? (
 					storeLocations.map((storeLocation) => (
 						<li key={storeLocation?.id}>
 							<a>{storeLocation?.name}</a>
@@ -518,7 +544,7 @@ const HeaderStoreLocations: React.FC<HeaderStoreLocationProps> = (props: HeaderS
 					<li>
 						<a>Coming soon</a>
 					</li>
-				)}
+				)} */}
 			</ul>
 		</li>
 	);

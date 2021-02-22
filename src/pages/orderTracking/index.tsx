@@ -96,7 +96,7 @@ const OrderTracking = () => {
 				toast.error("Order Not found");
 				setLoading(false);
 			} else {
-				toast.success("Order found, redirecting... ");
+				toast.success("Order found, redirecting...");
 				setOrderUserId(orders.nodes[0].user.id);
 				router.push(`/order/${orderId}`);
 			}

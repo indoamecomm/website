@@ -4,9 +4,16 @@ import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
-import {Categories, Category, Product, Seasons, Store_Locations, SubCategory} from "../../generated/graphql";
+import {Categories, Category, Product, Product_Type, Seasons, Store_Locations, SubCategory} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
-import {GetCategories, GetProductsByCategoryId, GetSeasons, GetSubCategories, GetSubCategoriesDetails} from "../../../queries/productQuery";
+import {
+	GetCategories,
+	GetProductsByCategoryId,
+	GetSeasons,
+	GetSubCategories,
+	GetSubCategoriesDetails,
+	GetTopPurchasedProducts,
+} from "../../../queries/productQuery";
 import Link from "next/link";
 import {useEffect} from "react";
 import Spinner from "../../Components/Utils/Spinner";
@@ -19,11 +26,21 @@ interface HeaderProps {
 	subCategory: SubCategory;
 	seasons: Seasons[];
 	productCount: number;
+	topThreeProductTypes: Product_Type[];
 }
 const offset = 6;
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
-	const {categories, storeLocations, product: products, categoriesHeader, subCategory, seasons, productCount} = props;
+	const {
+		categories,
+		storeLocations,
+		product: products,
+		categoriesHeader,
+		subCategory,
+		seasons,
+		productCount,
+		topThreeProductTypes,
+	} = props;
 
 	console.log(products);
 	return (
@@ -72,6 +89,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 						subCategory={subCategory}
 						seasons={seasons}
 						productCount={productCount}
+						topThreeProductTypes={topThreeProductTypes}
 					/>
 				</div>
 			</main>
@@ -88,10 +106,11 @@ interface MainProps {
 	subCategory: SubCategory;
 	seasons: Seasons[];
 	productCount: number;
+	topThreeProductTypes: Product_Type[];
 }
 
 const CategoryMain: React.FC<MainProps> = (props) => {
-	const {products, categories, subCategory, seasons, productCount} = props;
+	const {products, categories, subCategory, seasons, productCount, topThreeProductTypes} = props;
 
 	const [seasonId, setSeasonId] = useState<number | null>(null);
 	const [productLoading, setProductLoading] = useState<boolean>(false);
@@ -180,7 +199,12 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 				<div className="container wide">
 					<div className="row">
 						<div className="col-xl-3 col-lg-3 order-2 order-lg-1">
-							<CategorySidebar categories={categories} searchString={searchString} setSearchString={setSearchString} />
+							<CategorySidebar
+								categories={categories}
+								searchString={searchString}
+								setSearchString={setSearchString}
+								topThreeProductTypes={topThreeProductTypes}
+							/>
 						</div>
 						<div className="col-xl-9 col-lg-9 order-1 order-lg-2 mb-md-80 mb-sm-80">
 							<div className="row product-isotope shop-product-wrap five-column h-auto">
@@ -289,8 +313,13 @@ const CategoryHeader: React.FC<CategoryHeader> = (props) => {
 	);
 };
 
-const CategorySidebar: React.FC<{categories: Categories[]; searchString: string; setSearchString: (string) => void}> = (props) => {
-	const {categories, searchString, setSearchString} = props;
+const CategorySidebar: React.FC<{
+	categories: Categories[];
+	searchString: string;
+	setSearchString: (string) => void;
+	topThreeProductTypes: any[];
+}> = (props) => {
+	const {categories, searchString, setSearchString, topThreeProductTypes} = props;
 
 	const getCount = (category: Categories): number => {
 		let count = 0;
@@ -367,107 +396,50 @@ const CategorySidebar: React.FC<{categories: Categories[]; searchString: string;
 			<div className="single-sidebar-widget mb-40">
 				<h2 className="single-sidebar-widget--title">Popular products</h2>
 				{/*=======  widget product wrapper  =======*/}
+
 				<div className="widget-product-wrapper">
 					{/*=======  single widget product  =======*/}
-					<div className="single-widget-product-wrapper">
-						<div className="single-widget-product">
-							{/*=======  image  =======*/}
-							<div className="single-widget-product__image">
-								<a href="#">
-									<img src="/images/products/product-furniture-2-100x100.jpg" className="img-fluid" alt="" />
-								</a>
-							</div>
-							{/*=======  End of image  =======*/}
-							{/*=======  content  =======*/}
-							<div className="single-widget-product__content">
-								<div className="single-widget-product__content__top">
-									<h3 className="product-title">
-										<a href="#">Indam Redstar</a>
-									</h3>
-									<div className="price">
-										<span className="main-price discounted">₹270.00</span>
-										<span className="discounted-price">₹220.00</span>
-									</div>
-									<div className="rating">
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-										<i className="ion-android-star-outline" />
-										<i className="ion-android-star-outline" />
-										<i className="ion-android-star-outline" />
+					{topThreeProductTypes.map((product) => (
+						<div className="single-widget-product-wrapper">
+							<div className="single-widget-product">
+								{/*=======  image  =======*/}
+								<div className="single-widget-product__image">
+									<Link href={`/product/${product.productType.productId}`}>
+										<a>
+											<img src={product.productType.imageUrl} className="img-fluid" alt={product.productType.name} />
+										</a>
+									</Link>
+								</div>
+								{/*=======  End of image  =======*/}
+								{/*=======  content  =======*/}
+								<div className="single-widget-product__content">
+									<div className="single-widget-product__content__top">
+										<h3 className="product-title">
+											<Link href={`/product/${product.productType.productId}`}>
+												<a>{product.productType.name}</a>
+											</Link>
+										</h3>
+										<div className="price">
+											{product.productType.originalPrice && (
+												<span className="main-price discounted">₹{product.productType.originalPrice}</span>
+											)}
+											<span className="discounted-price">₹{product.productType.discountedPrice}</span>
+										</div>
+										<div className="rating">
+											<i className="ion-android-star" />
+											<i className="ion-android-star" />
+											<i className="ion-android-star-outline" />
+											<i className="ion-android-star-outline" />
+											<i className="ion-android-star-outline" />
+										</div>
 									</div>
 								</div>
+								{/*=======  End of content  =======*/}
 							</div>
-							{/*=======  End of content  =======*/}
 						</div>
-					</div>
-					{/*=======  End of single widget product  =======*/}
-					{/*=======  single widget product  =======*/}
-					<div className="single-widget-product-wrapper">
-						<div className="single-widget-product">
-							{/*=======  image  =======*/}
-							<div className="single-widget-product__image">
-								<a href="#">
-									<img src="/images/products/product-furniture-11-100x100.jpg" className="img-fluid" alt="" />
-								</a>
-							</div>
-							{/*=======  End of image  =======*/}
-							{/*=======  content  =======*/}
-							<div className="single-widget-product__content">
-								<div className="single-widget-product__content__top">
-									<h3 className="product-title">
-										<a href="#">Onion Indam</a>
-									</h3>
-									<div className="price">
-										<span className="main-price discounted">₹660.00</span>
-										<span className="discounted-price">₹600.00</span>
-									</div>
-									<div className="rating">
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-									</div>
-								</div>
-							</div>
-							{/*=======  End of content  =======*/}
-						</div>
-					</div>
-					{/*=======  End of single widget product  =======*/}
-					{/*=======  single widget product  =======*/}
-					<div className="single-widget-product-wrapper">
-						<div className="single-widget-product">
-							{/*=======  image  =======*/}
-							<div className="single-widget-product__image">
-								<a href="#">
-									<img src="/images/products/soccer-4-100x100.jpg" className="img-fluid" alt="" />
-								</a>
-							</div>
-							{/*=======  End of image  =======*/}
-							{/*=======  content  =======*/}
-							<div className="single-widget-product__content">
-								<div className="single-widget-product__content__top">
-									<h3 className="product-title">
-										<a href="#">Indam Chillies</a>
-									</h3>
-									<div className="price">
-										<span className="main-price discounted">₹36.00</span>
-										<span className="discounted-price">₹33.00</span>
-									</div>
-									<div className="rating">
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-										<i className="ion-android-star" />
-										<i className="ion-android-star-outline" />
-									</div>
-								</div>
-							</div>
-							{/*=======  End of content  =======*/}
-						</div>
-					</div>
-					{/*=======  End of single widget product  =======*/}
+					))}
 				</div>
+
 				{/*=======  End of widget product wrapper  =======*/}
 			</div>
 			{/*=======  End of single sidebar widget  =======*/}
@@ -607,6 +579,12 @@ export async function getStaticProps({params}) {
 			subCategoryId: params ? params.subCategoryId : null,
 		},
 	});
+
+	const {
+		data: {topThreeProductTypes},
+	} = await apolloClient.query({
+		query: GetTopPurchasedProducts,
+	});
 	return {
 		props: {
 			initialApolloState: apolloClient.cache.extract(),
@@ -616,7 +594,8 @@ export async function getStaticProps({params}) {
 			seasons,
 			categoriesHeader,
 			subCategory: subCategories[0],
-			productCount:  product_aggregate.aggregate.count,
+			productCount: product_aggregate.aggregate.count,
+			topThreeProductTypes,
 		},
 		revalidate: 1,
 	};

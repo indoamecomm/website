@@ -386,7 +386,7 @@ export const InsertUserCartAndWishlist = gql`
 
 export const GetOrderByUserId = gql`
 
-	query GetOrderByUserId($orderId: bigint!, $userId: bigint!, $expiry: timestamptz! ) {
+	query GetOrderByUserId($orderId: bigint!, $userId: bigint!, $expiry: timestamptz!) {
 		orders(where: {id: {_eq: $orderId}, userId: {_eq: $userId}}) {
 			address {
 				id
@@ -396,10 +396,10 @@ export const GetOrderByUserId = gql`
 				state
 				town
 				zipcode
+				}
+			coupon {
+				value
 			}
-      coupon {
-        value
-      }
 			order_status {
 				id
 				name
@@ -425,12 +425,17 @@ export const GetOrderByUserId = gql`
 					}
 					name
 					discountedPrice
+					user_ratings(where: {userId: {_eq: $userId}}) {
+						rating
+						id
+					}
 				}
 				count
 				}
 			totalAmount
 		}
 	}
+
 `
 
 
@@ -467,4 +472,6 @@ query VerifyIfOrderBelongsToUser($orderId: bigint!, $email: String!) {
 	}
 
 `;
+
+
 

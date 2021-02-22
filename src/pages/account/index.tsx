@@ -17,6 +17,8 @@ import Spinner from "../../Components/Utils/Spinner";
 import {useRouter} from "next/router";
 import Modal from "react-modal";
 import Link from "next/link";
+import Invoice from "../../Components/Invoice";
+import {PDFDownloadLink} from "@react-pdf/renderer";
 
 interface HeaderProps {
 	categories: Category[];
@@ -200,7 +202,7 @@ const Account: React.FC = () => {
 										Orders
 									</a>
 									<a href="#download" data-toggle="tab">
-										Download
+										Invoices
 									</a>
 									<a href="#address-edit" data-toggle="tab">
 										address
@@ -279,38 +281,38 @@ const Account: React.FC = () => {
 										<div className="myaccount-content">
 											<h3>Invoices</h3>
 											<div className="myaccount-table table-responsive text-center">
-												<table className="table table-bordered">
-													<thead className="thead-light">
-														<tr>
-															<th>Product</th>
-															<th>Date</th>
-															<th>Expire</th>
-															<th>Download</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr>
-															<td>Type A</td>
-															<td>Aug 22, 2020</td>
-															<td>Yes</td>
-															<td>
-																<a href="#" className="check-btn sqr-btn ">
-																	<i className="fa fa-cloud-download" /> Download File
-																</a>
-															</td>
-														</tr>
-														<tr>
-															<td>Type B</td>
-															<td>Sep 12, 2020</td>
-															<td>Never</td>
-															<td>
-																<a href="#" className="check-btn sqr-btn ">
-																	<i className="fa fa-cloud-download" /> Download File
-																</a>
-															</td>
-														</tr>
-													</tbody>
-												</table>
+												{orders && orders.length > 0 ? (
+													<table className="table table-bordered">
+														<thead className="thead-light">
+															<tr>
+																<th>Invoice Id</th>
+																<th>Date</th>
+																<th>Status</th>
+																<th>Total</th>
+																<th>Action</th>
+															</tr>
+														</thead>
+														<tbody>
+															{orders.map((order) => (
+																<tr key={order.id}>
+																	<td>{order.id}</td>
+																	<td>{format(new Date(order.createdAt), "MMM d, y")}</td>
+																	<td>{order.order_status.name}</td>
+																	<td>₹{order.totalAmount}</td>
+																	<td>
+																		<PDFDownloadLink document={<Invoice />} fileName="Invoice.pdf">
+																			{({loading}) =>
+																				loading ? "Loading document..." : "Download"
+																			}
+																		</PDFDownloadLink>
+																	</td>
+																</tr>
+															))}
+														</tbody>
+													</table>
+												) : (
+													<p>No invoices yet</p>
+												)}
 											</div>
 										</div>
 									</div>

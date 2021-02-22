@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.7",
+    "@react-pdf/renderer": "^1.6.13",
     "@rooks/use-localstorage": "^4.9.1",
     "apollo-link-ws": "^1.0.20",
     "date-fns": "^2.16.1",

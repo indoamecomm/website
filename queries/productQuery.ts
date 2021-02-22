@@ -232,3 +232,38 @@ export const GetProductTypesById = gql`
 
 
 
+
+
+export const GetTopPurchasedProducts = gql`
+	query GetTopPurchasedProducts {
+		topThreeProductTypes {
+			productType {
+				id
+				name
+				imageUrl
+				originalPrice
+				discountedPrice
+				productId
+			}
+		}
+	}
+`;
+
+
+export const InsertUserRatings = gql`
+	mutation InsertUserRatings($rating: Int!, $userId: bigint!, $productTypeId: Int!) {
+		insert_user_ratings(objects: {rating: $rating, userId: $userId, productTypeId: $productTypeId}) {
+			affected_rows
+		}
+	}
+`;
+
+
+export const UpdateUserRatings = gql`
+	mutation UpdateUserRatings($ratingId: bigint!, $rating: Int!) {
+		update_user_ratings(where: { id: { _eq: $ratingId } }, _set: { rating: $rating }) {
+			affected_rows
+		}
+	}
+
+`;
