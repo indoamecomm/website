@@ -22,6 +22,7 @@ interface HomeProps {
 	promotedBanners: Banner_Type[];
 	featuredProducts: ProductType[];
 	newProducts: ProductType[];
+	topRated: ProductType[];
 	featuredProduct: Banner_Type[];
 	dealOfTheDay: Deal_Of_The_Day;
 	blogs: Blogs[];
@@ -39,6 +40,7 @@ const Home: React.FC<HomeProps> = (props: HomeProps) => {
 		newProducts,
 		featuredProduct,
 		blogs,
+		topRated,
 	} = props;
 
 	return (
@@ -86,7 +88,7 @@ const Home: React.FC<HomeProps> = (props: HomeProps) => {
 				<Deal dealOfTheDay={dealOfTheDay} />
 				<PromotedBanner promotedBanner={promotedBanners} />
 				<PersonalizedListing />
-				<ProductListing featuredProducts={featuredProducts} newProducts={newProducts} />
+				<ProductListing featuredProducts={featuredProducts} newProducts={newProducts} topRated={topRated} />
 				<FeaturedProduct featuredProduct={featuredProduct} />
 				<BlogList blogs={blogs} />
 				<InstagramSlider />
@@ -115,7 +117,7 @@ const SectionTitle: React.FC = () => {
 					<div className="col-6 text-right">
 						<div className="section-title__label  section-title__label-style2 section-title__label--right section-title__label-style3--right">
 							<p>
-								WELCOME <br /> {user ? user.firstName.toUpperCase() : "STRANGER"}
+								WELCOME <br /> {user && user.firstName ? user.firstName.toUpperCase() : "STRANGER"}
 							</p>
 						</div>
 					</div>
@@ -209,7 +211,7 @@ export const getStaticProps: GetStaticProps = async () => {
 	});
 
 	const {
-		data: {newProducts, featuredProducts},
+		data: {newProducts, featuredProducts, topRated},
 	} = await apolloClient.query({
 		query: GetProductListing,
 		variables: {
@@ -239,6 +241,7 @@ export const getStaticProps: GetStaticProps = async () => {
 			newProducts,
 			featuredProducts,
 			featuredProduct,
+			topRated,
 			blogs,
 		},
 		revalidate: 1,

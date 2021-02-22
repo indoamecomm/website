@@ -34,6 +34,7 @@ export const GetAccountDetails = gql`
 query GetAccountDetails($userId: bigint!) {
   orders: orders(where: {userId: {_eq: $userId}}, order_by: {id: desc}) {
     id
+	statusId
     order_status {
       name
       id
@@ -320,14 +321,16 @@ export const CreateOrder = gql`
 `;
 
 export const CreateOrderUnauthenticated = gql`
-	mutation CreateOrderUnauthenticated($productTypes: [ProductTypePair!]!, $promoCodeId: Int, $town: String!, $state: String!, $zipcode: String!, $email: String!, $firstName: String!, $lastName: String!, $lineTwo: String!, $lineOne: String!, $phoneNumber: String!) {
-	createOrder(input: {currency: "INR", productTypeIds: $productTypes, promoCodeId: $promoCodeId, town: $town, state: $state, zipcode: $zipcode, email: $email, countryId: 1, firstName: $firstName, lastName: $lastName, lineTwo: $lineTwo, lineOne: $lineOne, name: "Home", phoneNumber: $phoneNumber, addressName: "Home"}) {
-		order {
-		id
-		}
-		razorpayOrderId
-	}
-	}
+mutation CreateOrderUnauthenticated($productTypes: [ProductTypePair!]!, $promoCodeId: Int, $town: String!, $state: String!, $zipcode: String!, $email: String!, $firstName: String!, $lastName: String!, $lineTwo: String!, $lineOne: String!, $phoneNumber: String!) {
+  createOrder(input: {currency: "INR", productTypeIds: $productTypes, promoCodeId: $promoCodeId, town: $town, state: $state, zipcode: $zipcode, email: $email, countryId: 1, firstName: $firstName, lastName: $lastName, lineTwo: $lineTwo, lineOne: $lineOne, name: "Home", phoneNumber: $phoneNumber, addressName: "Home"}) {
+    order {
+      id
+    }
+    razorpayOrderId
+    userId
+  }
+}
+
 
 `;
 
@@ -516,3 +519,16 @@ export const InsertContactUs = gql`
 `;
 
 
+
+
+export const GetUserRatingByProductId = gql`
+	query GetUserRatingByProductId($productTypeId: Int!) {
+		user_ratings_aggregate(where: {productTypeId: {_eq: $productTypeId}}) {
+			aggregate {
+			avg {
+				rating
+			}
+			}
+		}
+	}
+`;

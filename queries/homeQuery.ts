@@ -140,64 +140,93 @@ export const GetDealOfTheDay = gql`
 
 export const GetProductListing = gql`
 
-	query GetProductListing( $expiry: timestamptz!) {
-		newProducts: product_type(order_by: {createdAt: desc}, limit: 9) {
-			id
-			imageUrl
-			name
-			originalPrice
-			discountedPrice
-			productId
-			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
-				id
-				discount
-				enable
-			}
-			product {
-				id
-				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
-					id
-					discount
-					enable
-				}
-			}
-			user_ratings_aggregate {
-				aggregate {
-					avg {
-					rating
-					}
-				}
-			}
-		}
-		featuredProducts: product_type(where: {isFeatured: {_eq: true}}) {
-			id
-			imageUrl
-			name
-			originalPrice
-			discountedPrice
-			productId
-			deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
-				id
-				discount
-				enable
-			}
-			product {
-				id
-				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
-					id
-					discount
-					enable
-				}
-			}
-			user_ratings_aggregate {
-			aggregate {
-				avg {
-				rating
-				}
-			}
-			}
-		}
-	}
+	query GetProductListing($expiry: timestamptz!) {
+  newProducts: product_type(order_by: {createdAt: desc}, limit: 9, where: {isDeleted: {_eq: false}}) {
+    id
+    imageUrl
+    name
+    originalPrice
+    discountedPrice
+    productId
+    deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+      id
+      discount
+      enable
+    }
+    product {
+      id
+      deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+        id
+        discount
+        enable
+      }
+    }
+    user_ratings_aggregate {
+      aggregate {
+        avg {
+          rating
+        }
+      }
+    }
+  }
+  featuredProducts: product_type(where: {isFeatured: {_eq: true}, isDeleted: {_eq: false}}) {
+    id
+    imageUrl
+    name
+    originalPrice
+    discountedPrice
+    productId
+    deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+      id
+      discount
+      enable
+    }
+    product {
+      id
+      deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+        id
+        discount
+        enable
+      }
+    }
+    user_ratings_aggregate {
+      aggregate {
+        avg {
+          rating
+        }
+      }
+    }
+  }
+  topRated: product_type(where: {isDeleted: {_eq: false}, user_ratings: {rating: {_gte: 4}}}) {
+    id
+    imageUrl
+    name
+    originalPrice
+    discountedPrice
+    productId
+    deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+      id
+      discount
+      enable
+    }
+    product {
+      id
+      deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {
+        id
+        discount
+        enable
+      }
+    }
+    user_ratings_aggregate {
+      aggregate {
+        avg {
+          rating
+        }
+      }
+    }
+  }
+}
+
 `;
 
 

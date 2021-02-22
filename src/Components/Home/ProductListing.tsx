@@ -6,10 +6,11 @@ import {getDiscountedPrice} from "../Product/ProductTypes";
 interface ProductListingProps {
 	featuredProducts: ProductType[];
 	newProducts: ProductType[];
+	topRated: ProductType[];
 }
 
 const ProductListing: React.FC<ProductListingProps> = (props: ProductListingProps) => {
-	const {featuredProducts, newProducts} = props;
+	const {featuredProducts, newProducts, topRated} = props;
 	return (
 		<div className="product-widget-slider-container mb-100">
 			<div className="container">
@@ -41,9 +42,6 @@ const ProductListing: React.FC<ProductListingProps> = (props: ProductListingProp
 									{"breakpoint":575, "settings": {"slidesToShow": 1, "slidesToScroll": 1} },
 									{"breakpoint":479, "settings": {"slidesToShow": 1, "slidesToScroll": 1} }
 								]'>
-								{newProducts.map((productType) => (
-									<Product productType={productType} />
-								))}
 								{newProducts.map((productType) => (
 									<Product productType={productType} />
 								))}
@@ -79,10 +77,7 @@ const ProductListing: React.FC<ProductListingProps> = (props: ProductListingProp
 									{"breakpoint":575, "settings": {"slidesToShow": 1, "slidesToScroll": 1} },
 									{"breakpoint":479, "settings": {"slidesToShow": 1, "slidesToScroll": 1} }
 								]'>
-								{newProducts.map((productType) => (
-									<Product productType={productType} />
-								))}
-								{newProducts.map((productType) => (
+								{topRated.map((productType) => (
 									<Product productType={productType} />
 								))}
 							</div>
@@ -120,9 +115,6 @@ const ProductListing: React.FC<ProductListingProps> = (props: ProductListingProp
 								{featuredProducts.map((productType) => (
 									<Product productType={productType} key={productType.id} />
 								))}
-								{newProducts.map((productType) => (
-									<Product productType={productType} key={productType.id} />
-								))}
 							</div>
 							{/*=======  End of single product widget slider  =======*/}
 						</div>
@@ -138,6 +130,9 @@ export default ProductListing;
 
 const Product: React.FC<{productType: ProductType}> = (props) => {
 	const {productType} = props;
+
+	//@ts-ignore
+	const ratings = Math.ceil(productType.user_ratings_aggregate.aggregate.avg.rating ?? 1);
 
 	return (
 		<div className="single-widget-product-wrapper">
@@ -165,11 +160,9 @@ const Product: React.FC<{productType: ProductType}> = (props) => {
 							<span className="discounted-price">₹{getDiscountedPrice(productType)}</span>
 						</div>
 						<div className="rating">
-							<i className="ion-android-star" />
-							<i className="ion-android-star" />
-							<i className="ion-android-star" />
-							<i className="ion-android-star" />
-							<i className="ion-android-star" />
+							{[1, 2, 3, 4, 5].map((element) => (
+								<i className={element <= ratings ? "ion-android-star" : "ion-android-star-outline"} />
+							))}
 						</div>
 					</div>
 					{/* <div className="single-widget-product__content__bottom">

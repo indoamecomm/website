@@ -30,6 +30,7 @@ import {useRouter} from "next/router";
 import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
 import {GetProductTypesById} from "../../../queries/productQuery";
 import cartContext from "../../Context/cartContext";
+import OrderUserContext from "../../Context/orderUserContext";
 
 interface HeaderProps {
 	categories: Category[];
@@ -120,6 +121,7 @@ const Checkout: React.FC = () => {
 	const [activeCoupon, setActiveCoupon] = useState<any>(null);
 	const [refetch, setRefetch] = useState<number>(1);
 	const {cart: cartStore, setCart: setCartStore} = useContext(cartContext);
+	const {setOrderUserId} = useContext(OrderUserContext);
 
 	//For Unauthenticated User
 	const [email, setEmail] = useState<string>("");
@@ -314,223 +316,117 @@ const Checkout: React.FC = () => {
 	};
 
 	const placeOrderUnauthenticated = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		if(phoneNumber.length === 10){
-try {
-	event.preventDefault();
-	setLoading(true);
-	const productTypes = cart.map((cartItem) => {
-		return {
-			count: cartItem.count,
-			productTypeId: cartItem.productTypeId,
-		};
-	});
+		if (phoneNumber.length === 10) {
+			try {
+				event.preventDefault();
+				setLoading(true);
+				const productTypes = cart.map((cartItem) => {
+					return {
+						count: cartItem.count,
+						productTypeId: cartItem.productTypeId,
+					};
+				});
 
-	const {
-		data: {createOrder},
-	} = await placeOrderMutationUnauthenticated({
-		variables: {
-			currency: "INR",
-			firstName,
-			lastName,
-			email,
-			phoneNumber: `+91${phoneNumber}`,
-			zipcode,
-			lineOne,
-			lineTwo,
-			town,
-			state,
-			productTypes,
-			promoCodeId: activeCoupon ? activeCoupon.couponId : null,
-		},
-	});
-
-	if (createOrder) {
-		const options = {
-			key: "rzp_test_LlLmyaSARCe7Dw", // Enter the Key ID generated from the Dashboard
-			currency: "INR",
-			name: "Indoamerican",
-			amount: "100",
-			description: "Test Transaction",
-			image: "https://example.com/your_logo",
-			order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-			// order_id: "order_GeBMz369ne4rF4",
-			handler: async (response) => {
 				const {
-					data: {code, message},
-				} = await verifyOrder({
+					data: {createOrder},
+				} = await placeOrderMutationUnauthenticated({
 					variables: {
-						razorpayOrderId: createOrder.razorpayOrderId,
-						razorpayPaymentId: response.razorpay_payment_id,
-						razorpaySignature: response.razorpay_signature,
-						orderId: createOrder.order.id,
+						currency: "INR",
+						firstName,
+						lastName,
+						email,
+						phoneNumber: `+91${phoneNumber}`,
+						zipcode,
+						lineOne,
+						lineTwo,
+						town,
+						state,
+						productTypes,
+						promoCodeId: activeCoupon ? activeCoupon.couponId : null,
 					},
 				});
-				if (code === 500 || code === 401) {
-					toast.error("Some error occurred please try again," + message);
-				} else {
-					setLoading(false);
-					setCartStore([]);
-					router.push(`/login`);
-					toast.success("Please login with the password provided in your email");
-				}
-			},
-			prefill: {
-				name: `${firstName} ${lastName}`,
-				email: email,
-				contact: phoneNumber,
-			},
-			notes: {
-				address: `${lineOne} ${lineTwo}`,
-			},
-			theme: {
-				color: "#3399cc",
-			},
-			modal: {
-				ondismiss: async function () {
-					setLoading(false);
-					await updateOrderStatus({
-						variables: {
-							orderId: createOrder.order.id,
-							statusId: 5,
-						},
-					});
-					toast.error("Checkout Gateway closed");
-				},
-			},
-		};
-		//@ts-ignore
-		const paymentObject = new window.Razorpay(options);
-		paymentObject.open();
-		paymentObject.on("payment.failed", async function (response) {
-			await updateOrderStatus({
-				variables: {
-					orderId: createOrder.order.id,
-					statusId: 5,
-				},
-			});
-			toast.success(response.error.reason);
-			// alert(response.error.metadata.order_id);
-			// alert(response.error.metadata.payment_id);
-			setLoading(false);
-		});
-	} else {
-		setLoading(false);
-		toast.error("Some unknown error occurred");
-	}
-} catch (error) {
-	console.log(error.message);
-	setLoading(false);
-try {
-			event.preventDefault();
-			setLoading(true);
-			const productTypes = cart.map((cartItem) => {
-				return {
-					count: cartItem.count,
-					productTypeId: cartItem.productTypeId,
-				};
-			});
 
-			const {
-				data: {createOrder},
-			} = await placeOrderMutationUnauthenticated({
-				variables: {
-					currency: "INR",
-					firstName,
-					lastName,
-					email,
-					phoneNumber: `+91${phoneNumber}`,
-					zipcode,
-					lineOne,
-					lineTwo,
-					town,
-					state,
-					productTypes,
-					promoCodeId: activeCoupon ? activeCoupon.couponId : null,
-				},
-			});
-
-			if (createOrder) {
-				const options = {
-					key: "rzp_test_LlLmyaSARCe7Dw", // Enter the Key ID generated from the Dashboard
-					currency: "INR",
-					name: "Indoamerican",
-					amount: "100",
-					description: "Test Transaction",
-					image: "https://example.com/your_logo",
-					order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-					// order_id: "order_GeBMz369ne4rF4",
-					handler: async (response) => {
-						const {
-							data: {code, message},
-						} = await verifyOrder({
-							variables: {
-								razorpayOrderId: createOrder.razorpayOrderId,
-								razorpayPaymentId: response.razorpay_payment_id,
-								razorpaySignature: response.razorpay_signature,
-								orderId: createOrder.order.id,
-							},
-						});
-						if (code === 500 || code === 401) {
-							toast.error("Some error occurred please try again," + message);
-						} else {
-							setLoading(false);
-							setCartStore([]);
-							router.push(`/login`);
-							toast.success("Please login with the password provided in your email");
-						}
-					},
-					prefill: {
-						name: `${firstName} ${lastName}`,
-						email: email,
-						contact: phoneNumber,
-					},
-					notes: {
-						address: `${lineOne} ${lineTwo}`,
-					},
-					theme: {
-						color: "#3399cc",
-					},
-					modal: {
-						ondismiss: async function () {
-							setLoading(false);
-							await updateOrderStatus({
+				if (createOrder) {
+					const options = {
+						key: "rzp_test_LlLmyaSARCe7Dw", // Enter the Key ID generated from the Dashboard
+						currency: "INR",
+						name: "Indoamerican",
+						amount: "100",
+						description: "Test Transaction",
+						image: "https://example.com/your_logo",
+						order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+						// order_id: "order_GeBMz369ne4rF4",
+						handler: async (response) => {
+							const {
+								data: {code, message},
+							} = await verifyOrder({
 								variables: {
+									razorpayOrderId: createOrder.razorpayOrderId,
+									razorpayPaymentId: response.razorpay_payment_id,
+									razorpaySignature: response.razorpay_signature,
 									orderId: createOrder.order.id,
-									statusId: 5,
 								},
 							});
-							toast.error("Checkout Gateway closed");
+							if (code === 500 || code === 401) {
+								toast.error("Some error occurred please try again," + message);
+							} else {
+								setLoading(false);
+								setCartStore([]);
+								setOrderUserId(createOrder.userId);
+								router.push(`/order/${createOrder.order.id}`);
+								toast.success("Order Placed Successfully");
+							}
 						},
-					},
-				};
-				//@ts-ignore
-				const paymentObject = new window.Razorpay(options);
-				paymentObject.open();
-				paymentObject.on("payment.failed", async function (response) {
-					await updateOrderStatus({
-						variables: {
-							orderId: createOrder.order.id,
-							statusId: 5,
+						prefill: {
+							name: `${firstName} ${lastName}`,
+							email: email,
+							contact: phoneNumber,
 						},
+						notes: {
+							address: `${lineOne} ${lineTwo}`,
+						},
+						theme: {
+							color: "#3399cc",
+						},
+						modal: {
+							ondismiss: async function () {
+								setLoading(false);
+								await updateOrderStatus({
+									variables: {
+										orderId: createOrder.order.id,
+										statusId: 5,
+									},
+								});
+								toast.error("Checkout Gateway closed");
+							},
+						},
+					};
+					//@ts-ignore
+					const paymentObject = new window.Razorpay(options);
+					paymentObject.open();
+					paymentObject.on("payment.failed", async function (response) {
+						await updateOrderStatus({
+							variables: {
+								orderId: createOrder.order.id,
+								statusId: 5,
+							},
+						});
+						toast.success(response.error.reason);
+						// alert(response.error.metadata.order_id);
+						// alert(response.error.metadata.payment_id);
+						setLoading(false);
 					});
-					toast.success(response.error.reason);
-					// alert(response.error.metadata.order_id);
-					// alert(response.error.metadata.payment_id);
+				} else {
 					setLoading(false);
-				});
-			} else {
+					toast.error("Some unknown error occurred");
+				}
+			} catch (error) {
+				console.log(error.message);
 				setLoading(false);
-				toast.error("Some unknown error occurred");
 			}
-		} catch (error) {
-			console.log(error.message);
-			setLoading(false);
-			toast.error(error.message);
-		}}
 		} else {
 			toast.error("Please enter a valid phone number of length 10");
 		}
-		
 	};
 
 	const disabledButton = !email || !firstName || !lastName || !phoneNumber || !lineOne || !lineTwo || !town || !zipcode || !state;

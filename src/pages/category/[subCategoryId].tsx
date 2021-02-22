@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import {useEffect} from "react";
 import Spinner from "../../Components/Utils/Spinner";
+import {GetUserRatingByProductId} from "../../../queries/userQuery";
 
 interface HeaderProps {
 	categories: Categories[];
@@ -281,8 +282,7 @@ const CategoryHeader: React.FC<CategoryHeader> = (props) => {
 										setValueChange(parseInt(event.target.value));
 									}}>
 									<option value={"6"}>Default sorting</option>
-									<option value={"1"}>Sort by popularity</option>
-									<option value={"2"}>Sort by average rating</option>
+									{/* <option value={"2"}>Sort by average rating</option> */}
 									<option value={"3"}>Sort by latest</option>
 									<option value={"4"}>Sort by price: low to high</option>
 									<option value={"5"}>Sort by price: high to low</option>
@@ -400,49 +400,73 @@ const CategorySidebar: React.FC<{
 				<div className="widget-product-wrapper">
 					{/*=======  single widget product  =======*/}
 					{topThreeProductTypes.map((product) => (
-						<div className="single-widget-product-wrapper">
-							<div className="single-widget-product">
-								{/*=======  image  =======*/}
-								<div className="single-widget-product__image">
-									<Link href={`/product/${product.productType.productId}`}>
-										<a>
-											<img src={product.productType.imageUrl} className="img-fluid" alt={product.productType.name} />
-										</a>
-									</Link>
-								</div>
-								{/*=======  End of image  =======*/}
-								{/*=======  content  =======*/}
-								<div className="single-widget-product__content">
-									<div className="single-widget-product__content__top">
-										<h3 className="product-title">
-											<Link href={`/product/${product.productType.productId}`}>
-												<a>{product.productType.name}</a>
-											</Link>
-										</h3>
-										<div className="price">
-											{product.productType.originalPrice && (
-												<span className="main-price discounted">₹{product.productType.originalPrice}</span>
-											)}
-											<span className="discounted-price">₹{product.productType.discountedPrice}</span>
-										</div>
-										<div className="rating">
-											<i className="ion-android-star" />
-											<i className="ion-android-star" />
-											<i className="ion-android-star-outline" />
-											<i className="ion-android-star-outline" />
-											<i className="ion-android-star-outline" />
-										</div>
-									</div>
-								</div>
-								{/*=======  End of content  =======*/}
-							</div>
-						</div>
+						<ProductSideCard product={product} />
 					))}
 				</div>
 
 				{/*=======  End of widget product wrapper  =======*/}
 			</div>
 			{/*=======  End of single sidebar widget  =======*/}
+		</div>
+	);
+};
+
+const ProductSideCard: React.FC<{product: any}> = (props) => {
+	const {product} = props;
+
+
+
+	const apolloClient = initializeApollo();
+	const [rating, setRating] = useState<number>(1);
+
+	useEffect(() => {
+		apolloClient
+			.query({
+				query: GetUserRatingByProductId,
+				variables: {
+					productTypeId: product.productType.id,
+				},
+			})
+			.then(({data}) => {
+				setRating(data.user_ratings_aggregate.aggregate.avg.rating);
+			});
+	}, []);
+
+	return (
+		<div className="single-widget-product-wrapper">
+			<div className="single-widget-product">
+				{/*=======  image  =======*/}
+				<div className="single-widget-product__image">
+					<Link href={`/product/${product.productType.productId}`}>
+						<a>
+							<img src={product.productType.imageUrl} className="img-fluid" alt={product.productType.name} />
+						</a>
+					</Link>
+				</div>
+				{/*=======  End of image  =======*/}
+				{/*=======  content  =======*/}
+				<div className="single-widget-product__content">
+					<div className="single-widget-product__content__top">
+						<h3 className="product-title">
+							<Link href={`/product/${product.productType.productId}`}>
+								<a>{product.productType.name}</a>
+							</Link>
+						</h3>
+						<div className="price">
+							{product.productType.originalPrice && (
+								<span className="main-price discounted">₹{product.productType.originalPrice}</span>
+							)}
+							<span className="discounted-price">₹{product.productType.discountedPrice}</span>
+						</div>
+						<div className="rating">
+							{[1, 2, 3, 4, 5].map((element) => (
+								<i className={element <= rating ? "ion-android-star" : "ion-android-star-outline"} />
+							))}
+						</div>
+					</div>
+				</div>
+				{/*=======  End of content  =======*/}
+			</div>
 		</div>
 	);
 };

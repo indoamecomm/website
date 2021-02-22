@@ -229,7 +229,9 @@ const Header: React.FC<HeaderProps> = (props) => {
 															</Link>
 														</li>
 														<li>
-															<a href="privacy-policy.html">Privacy Policy</a>
+															<Link href="/privacy">
+																<a>Privacy Policy</a>
+															</Link>
 														</li>
 														<li>
 															<Link href="/support">
@@ -410,8 +412,9 @@ const Header: React.FC<HeaderProps> = (props) => {
 															</Link>
 														</li>
 														<li>
-															<a href="privacy-policy.html">Privacy Policy</a>
-														</li>
+	<Link href="/privacy">
+											<a>Privacy Policy</a>
+										</Link>														</li>
 														<li>
 															<Link href="/support">
 																<a>Support</a>

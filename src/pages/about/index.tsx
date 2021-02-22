@@ -14,7 +14,7 @@ interface HeaderProps {
 	testimonials: any[];
 }
 
-const About: React.FC<HeaderProps> = (props: HeaderProps) => {
+const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	const {categories, storeLocations, testimonials} = props;
 
 	return (
@@ -217,7 +217,7 @@ const About: React.FC<HeaderProps> = (props: HeaderProps) => {
 	);
 };
 
-export default About;
+export default index;
 
 export async function getStaticProps() {
 	const apolloClient = initializeApollo();

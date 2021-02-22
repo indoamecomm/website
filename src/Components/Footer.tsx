@@ -61,10 +61,14 @@ const Footer = () => {
 							<nav>
 								<ul>
 									<li>
-										<a href="#">Support Policy</a>
+										<Link href="/support">
+											<a>Support Policy</a>
+										</Link>
 									</li>
 									<li>
-										<a href="#">Privacy Policy</a>
+										<Link href="/privacy">
+											<a>Privacy Policy</a>
+										</Link>
 									</li>
 									<li>
 										<Link href="/faqs">
