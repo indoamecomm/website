@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -18,6 +18,7 @@ import cartContext from "../../Context/cartContext";
 import {useContext} from "react";
 import {useRouter} from "next/router";
 import Link from "next/link";
+import {useScript} from "../../hooks/useScript";
 
 interface HeaderProps {
 	categories: Category[];
@@ -26,6 +27,24 @@ interface HeaderProps {
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	const {categories, storeLocations} = props;
+	const ref = useRef<HTMLDivElement>(null);
+
+	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
+	useScript("/js/vendor/jquery.min.js", ref);
+	useScript("/js/popper.min.js", ref);
+	useScript("/js/plugins.js", ref);
+	useScript("/js/main.js", ref);
+	useScript("/js/bootstrap.min.js", ref);
+
+	useScript("/revolution/js/jquery.themepunch.revolution.min.js", ref);
+	useScript("/revolution/js/jquery.themepunch.tools.min.js", ref);
+	useScript("/revolution/revolution-active.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.kenburn.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.slideanims.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.actions.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.layeranimation.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.navigation.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.parallax.min.js", ref);
 
 	return (
 		<>
@@ -36,14 +55,9 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
-				<link href="/revolution/css/settings.css" rel="stylesheet" />
-				<link href="/revolution/css/navigation.css" rel="stylesheet" />
-				<link href="/revolution/custom-setting.css" rel="stylesheet" />
-				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
-				<script src="/js/vendor/jquery.min.js"></script>
-				<script src="/js/popper.min.js"></script>
-				<script src="/js/bootstrap.min.js"></script>
 			</Head>
+			<div ref={ref}></div>
+
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<div>

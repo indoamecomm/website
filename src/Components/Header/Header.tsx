@@ -210,12 +210,14 @@ const Header: React.FC<HeaderProps> = (props) => {
 															</Link>
 														</li>
 														<li>
-															<a href="https://indamseeds.com/news.html" target="newwindow">
-																Indam News
-															</a>
+															<Link href="/blogs">
+																<a target="newwindow">Indam News</a>
+															</Link>
 														</li>
 														<li>
-															<a href="https://indamseeds.com/Contact.html">Getting in Touch</a>
+															<Link href="/support">
+																<a>Getting in Touch</a>
+															</Link>
 														</li>
 													</ul>
 												</li>
@@ -288,10 +290,12 @@ const Header: React.FC<HeaderProps> = (props) => {
 							{/*Site Mobile Menu Toggle End*/}
 							<ul className="dl-menu dl-menu-toggle">
 								<li>
-									<a href="#">Home</a>
+									<Link href="/">
+										<a>Home</a>
+									</Link>
 								</li>
 								<li>
-									<a href="#">Products</a>
+									<a>Products</a>
 									<ul className="dl-submenu">
 										{categories &&
 											categories.map((category) => (
@@ -311,10 +315,10 @@ const Header: React.FC<HeaderProps> = (props) => {
 									</ul>
 								</li>
 								<li>
-									<a href="#">Others</a>
+									<a>Others</a>
 									<ul className="dl-submenu">
 										<li className="menu-item-has-children">
-											<a href="shop-left-sidebar.html">The Community</a>
+											<a>The Community</a>
 											<ul className="sub-menu mega-menu mega-menu-column-4">
 												<li>
 													<a className="mega-column-title">Seeds</a>
@@ -393,12 +397,14 @@ const Header: React.FC<HeaderProps> = (props) => {
 															</Link>
 														</li>
 														<li>
-															<a href="https://indamseeds.com/news.html" target="newwindow">
-																Indam News
-															</a>
+															<Link href="/blogs">
+																<a target="newwindow">Indam News</a>
+															</Link>
 														</li>
 														<li>
-															<a href="contact.html">Getting in Touch</a>
+															<Link href="/support">
+																<a>Getting in Touch</a>
+															</Link>
 														</li>
 													</ul>
 												</li>
@@ -412,9 +418,10 @@ const Header: React.FC<HeaderProps> = (props) => {
 															</Link>
 														</li>
 														<li>
-	<Link href="/privacy">
-											<a>Privacy Policy</a>
-										</Link>														</li>
+															<Link href="/privacy">
+																<a>Privacy Policy</a>
+															</Link>{" "}
+														</li>
 														<li>
 															<Link href="/support">
 																<a>Support</a>

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -18,6 +18,7 @@ import Link from "next/link";
 import {useEffect} from "react";
 import Spinner from "../../Components/Utils/Spinner";
 import {GetUserRatingByProductId} from "../../../queries/userQuery";
+import {useScript} from "../../hooks/useScript";
 
 interface HeaderProps {
 	categories: Categories[];
@@ -43,7 +44,24 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 		topThreeProductTypes,
 	} = props;
 
-	console.log(products);
+	const ref = useRef<HTMLDivElement>(null);
+
+	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
+	useScript("/js/vendor/jquery.min.js", ref);
+	useScript("/js/popper.min.js", ref);
+	useScript("/js/plugins.js", ref);
+	useScript("/js/main.js", ref);
+	useScript("/js/bootstrap.min.js", ref);
+
+	useScript("/revolution/js/jquery.themepunch.revolution.min.js", ref);
+	useScript("/revolution/js/jquery.themepunch.tools.min.js", ref);
+	useScript("/revolution/revolution-active.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.kenburn.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.slideanims.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.actions.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.layeranimation.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.navigation.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.parallax.min.js", ref);
 	return (
 		<>
 			<Head>
@@ -53,28 +71,9 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
-				<link href="/revolution/css/settings.css" rel="stylesheet" />
-				<link href="/revolution/css/navigation.css" rel="stylesheet" />
-				<link href="/revolution/custom-setting.css" rel="stylesheet" />
-				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
-				<script src="/js/vendor/jquery.min.js"></script>
-				<script src="/js/popper.min.js"></script>
-				<script src="/js/bootstrap.min.js"></script>
-
-				<script src="/js/plugins.js"></script>
-				<script src="/js/main.js"></script>
-
-				<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
-				<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
-				<script src="/revolution/revolution-active.js"></script>
-
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
-				<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 			</Head>
+			<div ref={ref}></div>
+
 			<Header categories={categoriesHeader as Category[]} storeLocations={storeLocations} />
 			<main>
 				<div>
@@ -413,8 +412,6 @@ const CategorySidebar: React.FC<{
 
 const ProductSideCard: React.FC<{product: any}> = (props) => {
 	const {product} = props;
-
-
 
 	const apolloClient = initializeApollo();
 	const [rating, setRating] = useState<number>(1);

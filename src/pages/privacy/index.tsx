@@ -1,11 +1,12 @@
 import Head from "next/head";
-import React from "react";
+import React, {useRef} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
 import {Category, Faq_Titles, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
+import {useScript} from "../../hooks/useScript";
 
 interface FaqsProps {
 	categories: Category[];
@@ -15,7 +16,24 @@ interface FaqsProps {
 
 const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 	const {categories, storeLocations} = props;
+	const ref = useRef<HTMLDivElement>(null);
 
+	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
+	useScript("/js/vendor/jquery.min.js", ref);
+	useScript("/js/popper.min.js", ref);
+	useScript("/js/plugins.js", ref);
+	useScript("/js/main.js", ref);
+	useScript("/js/bootstrap.min.js", ref);
+
+	useScript("/revolution/js/jquery.themepunch.revolution.min.js", ref);
+	useScript("/revolution/js/jquery.themepunch.tools.min.js", ref);
+	useScript("/revolution/revolution-active.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.kenburn.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.slideanims.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.actions.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.layeranimation.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.navigation.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.parallax.min.js", ref);
 	return (
 		<>
 			<Head>
@@ -25,17 +43,9 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
-				<link href="/revolution/css/settings.css" rel="stylesheet" />
-				<link href="/revolution/css/navigation.css" rel="stylesheet" />
-				<link href="/revolution/custom-setting.css" rel="stylesheet" />
-				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
-				<script src="/js/vendor/jquery.min.js"></script>
-				<script src="/js/popper.min.js"></script>
-				<script src="/js/bootstrap.min.js"></script>
-
-				<script src="/js/plugins.js"></script>
-				<script src="/js/main.js"></script>
 			</Head>
+			<div ref={ref}></div>
+
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<BreadCrumb

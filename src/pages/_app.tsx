@@ -11,6 +11,7 @@ import "../../styles/css/plugins.css";
 // import "../../styles/css/bootstrap.min.css";
 import "../../styles/css/navigation.css";
 import "../../public/revolution/custom-setting.css";
+// import "react-accessible-accordion/dist/fancy-example.css";
 
 import {useApollo} from "../apollo";
 import React, {useEffect} from "react";
@@ -26,6 +27,25 @@ import OrderUserContext from "../Context/orderUserContext";
 import {useState} from "react";
 
 // import "../styles/css/plugins.css";
+
+// <script defer src="/js/vendor/modernizr-2.8.3.min.js"></script>
+// 		<script defer src="/js/vendor/jquery.min.js"></script>
+// 		<script defer src="/js/popper.min.js"></script>
+// 		<script defer src="/js/bootstrap.min.js"></script>
+
+// 		<script defer src="/js/plugins.js"></script>
+// 		<script defer src="/js/main.js"></script>
+
+// 		<script defer src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
+// 		<script defer src="/revolution/js/jquery.themepunch.tools.min.js"></script>
+// 		<script defer src="/revolution/revolution-active.js"></script>
+
+// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 
 const MyApp = ({Component, pageProps}: any) => {
 	const client = useApollo(pageProps.initialApolloState);

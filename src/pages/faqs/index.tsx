@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React from "react";
+import React, {useRef} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -8,6 +8,8 @@ import {Category, Faq_Titles, Store_Locations} from "../../generated/graphql";
 import {GetFaqTitles} from "../../../queries/faqQuery";
 import BreadCrumb from "../../Components/BreadCrumb";
 import Link from "next/link";
+import {Accordion, AccordionItem, AccordionItemHeading, AccordionItemButton, AccordionItemPanel} from "react-accessible-accordion";
+import { useScript } from "../../hooks/useScript";
 
 interface FaqsProps {
 	categories: Category[];
@@ -17,7 +19,25 @@ interface FaqsProps {
 
 const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 	const {categories, storeLocations, faqTitles: faqs} = props;
+	const ref = useRef<HTMLDivElement>(null);
 
+	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
+	useScript("/js/vendor/jquery.min.js", ref);
+	useScript("/js/popper.min.js", ref);
+	useScript("/js/plugins.js", ref);
+	useScript("/js/main.js", ref);
+	useScript("/js/bootstrap.min.js", ref);
+
+	useScript("/revolution/js/jquery.themepunch.revolution.min.js", ref);
+	useScript("/revolution/js/jquery.themepunch.tools.min.js", ref);
+	useScript("/revolution/revolution-active.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.kenburn.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.slideanims.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.actions.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.layeranimation.min.js", ref);
+	useScript("/revolution/js/extensions/revolution.extension.navigation.min.js", ref);
+
+	useScript("/revolution/js/extensions/revolution.extension.parallax.min.js", ref);
 	return (
 		<>
 			<Head>
@@ -27,17 +47,9 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
-				<link href="/revolution/css/settings.css" rel="stylesheet" />
-				<link href="/revolution/css/navigation.css" rel="stylesheet" />
-				<link href="/revolution/custom-setting.css" rel="stylesheet" />
-				<script src="/js/vendor/modernizr-2.8.3.min.js"></script>
-				<script src="/js/vendor/jquery.min.js"></script>
-				<script src="/js/popper.min.js"></script>
-				<script src="/js/bootstrap.min.js"></script>
-
-				<script src="/js/plugins.js"></script>
-				<script src="/js/main.js"></script>
 			</Head>
+			<div ref={ref}></div>
+
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<BreadCrumb
@@ -47,11 +59,11 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 					links={[{link: "/", name: "HOME"}]}
 				/>
 
-				<div className="faq-area">
+				<div className="">
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-12">
-								<div className="faq-wrapper">
+								<div className="">
 									{faqs && faqs.map((faq, index) => <Faq key={faq.title + index} faq={faq} />)}
 
 									{/*=======  End of single faq  =======*/}
@@ -98,38 +110,69 @@ export default index;
 const Faq: React.FC<{faq: Faq_Titles}> = (props) => {
 	const {faq} = props;
 	return (
-		<div className="single-faq mb-80">
+		<div className=" single-faq mb-80">
 			<h2 className="faq-title mb-20">{faq.title}</h2>
-			<div className="accordion" id={faq.title.split(" ")[0] + faq.id}>
-				{faq.faqs.map((element) => (
-					<div className="card">
-						<div className="card-header" id={element.answer.split(" ")[0] + element.id}>
-							<h5 className="mb-0">
-								<button
-									className="btn btn-link collapsed"
-									data-toggle="collapse"
-									data-target={`#${element.question.split(" ")[0] + element.id}`}
-									aria-expanded="false"
-									aria-controls={`${element.question}`}>
-									{element.question}
-								</button>
-							</h5>
-						</div>
-						<div
-							id={`${element.question.split(" ")[0] + element.id}`}
-							className="collapse"
-							aria-labelledby={element.answer.split(" ")[0] + element.id}
-							data-parent={`#${faq.title.split(" ")[0] + faq.id}`}>
-							<div className="card-body">
-								<p>{element.answer} </p>
-							</div>
-						</div>
-					</div>
-				))}
+			<div className="accordion">
+				<Accordion allowZeroExpanded>
+					{faq.faqs.map((element) => (
+						<AccordionItem key={element.id} uuid={element.id.toString() + "5"}>
+							<AccordionItemHeading>
+								<AccordionItemButton>
+									<div className="card-header">
+										<h5>
+											<button className="btn btn-link">{element.question}</button>
+										</h5>
+									</div>
+								</AccordionItemButton>
+							</AccordionItemHeading>
+							<AccordionItemPanel>
+								<div className="card-body">
+									<p>{element.answer} </p>
+								</div>
+							</AccordionItemPanel>
+						</AccordionItem>
+					))}
+				</Accordion>
 			</div>
 		</div>
 	);
 };
+
+// const Faq: React.FC<{faq: Faq_Titles}> = (props) => {
+// 	const {faq} = props;
+// 	return (
+// 		<div className="single-faq mb-80">
+// 			<h2 className="faq-title mb-20">{faq.title}</h2>
+// 			<div className="accordion" id={faq.title.split(" ")[0] + faq.id}>
+// 				{faq.faqs.map((element) => (
+// 					<div className="card">
+// 						<div className="card-header" id={element.answer.split(" ")[0] + element.id}>
+// 							<h5 className="mb-0">
+// 								<button
+// 									className="btn btn-link collapsed"
+// 									data-toggle="collapse"
+// 									data-target={`#${element.question.split(" ")[0] + element.id}`}
+// 									aria-expanded="false"
+// 									aria-controls={`${element.question}`}>
+// 									{element.question}
+// 								</button>
+// 							</h5>
+// 						</div>
+// 						<div
+// 							id={`${element.question.split(" ")[0] + element.id}`}
+// 							className="collapse"
+// 							aria-labelledby={element.answer.split(" ")[0] + element.id}
+// 							data-parent={`#${faq.title.split(" ")[0] + faq.id}`}>
+// 							<div className="card-body">
+// 								<p>{element.answer} </p>
+// 							</div>
+// 						</div>
+// 					</div>
+// 				))}
+// 			</div>
+// 		</div>
+// 	);
+// };
 
 export async function getStaticProps() {
 	const apolloClient = initializeApollo();
@@ -146,7 +189,6 @@ export async function getStaticProps() {
 		query: GetFaqTitles,
 	});
 
-
 	return {
 		props: {
 			initialApolloState: apolloClient.cache.extract(),
@@ -154,6 +196,6 @@ export async function getStaticProps() {
 			storeLocations,
 			faqTitles,
 		},
-		revalidate: 10
+		revalidate: 10,
 	};
 }

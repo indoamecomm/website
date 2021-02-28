@@ -43,7 +43,7 @@ const ProductListing: React.FC<ProductListingProps> = (props: ProductListingProp
 									{"breakpoint":479, "settings": {"slidesToShow": 1, "slidesToScroll": 1} }
 								]'>
 								{newProducts.map((productType) => (
-									<Product productType={productType} />
+									<Product productType={productType} key={productType.id} />
 								))}
 							</div>
 							{/*=======  End of single product widget slider  =======*/}
@@ -78,7 +78,7 @@ const ProductListing: React.FC<ProductListingProps> = (props: ProductListingProp
 									{"breakpoint":479, "settings": {"slidesToShow": 1, "slidesToScroll": 1} }
 								]'>
 								{topRated.map((productType) => (
-									<Product productType={productType} />
+									<Product productType={productType} key={productType.id} />
 								))}
 							</div>
 							{/*=======  End of single product widget slider  =======*/}
