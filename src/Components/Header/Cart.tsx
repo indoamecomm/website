@@ -12,6 +12,7 @@ import Spinner from "../Utils/Spinner";
 import CartContext from "../../Context/cartContext";
 import overlayContext from "../../Context/overlayContext";
 import {ConfirmGuestModal} from "../../pages/cart";
+import { useRouter } from "next/router";
 
 export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number => {
 	let subTotal: number = 0;
@@ -32,6 +33,7 @@ const CartItems: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [confirmGuest, setConfirmGuest] = useState<boolean>(false);
 	const apolloClient = initializeApollo();
+	const router = useRouter();
 
 	const getUserCartItem = async () => {
 		try {
@@ -84,13 +86,11 @@ const CartItems: React.FC = () => {
 
 	const proceedToCheckout = () => {
 		setCartActive(false);
-		setConfirmGuest(true);
-		// if (user) {
-		// 	router.push("/checkout");
-		// } else {
-		// 	toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
-		// 	router.push("/login?checkout=true");
-		// }
+		if (user) {
+			router.push("/checkout");
+		} else {
+			setConfirmGuest(true);
+		}
 	};
 
 	return (

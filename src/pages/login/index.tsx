@@ -47,7 +47,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>Login/Register</title>
+				<title>Login/Register | Indoamerica </title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
@@ -163,7 +163,6 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 				toast.error(data.error.message);
 				return setLoading(false);
 			} else if (data && data.id) {
-				console.log(data.id);
 				toast.success("Login Successful");
 				await saveUserCartAndWishlist(data.id);
 				setCart([]);
@@ -171,7 +170,7 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 				if (proceedToCheckout) {
 					router.push("/checkout");
 				} else {
-					router.push("/account");
+					router.push("/account", {query: {id: 1}});
 				}
 			}
 		} catch (error) {
@@ -281,7 +280,6 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 				toast.error(data.error.message);
 				return setLoading(false);
 			} else if (data && data.id) {
-				console.log(data.id);
 				toast.success("Login Successful");
 				await saveUserCartAndWishlist(data.id);
 				setCart([]);
@@ -289,7 +287,7 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 				if (proceedToCheckout) {
 					router.push("/checkout");
 				} else {
-					router.push("/account");
+					router.push("/account", {query: {id: 1}});
 				}
 			}
 		} catch (error) {

@@ -31,7 +31,7 @@ import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
 import {GetProductTypesById} from "../../../queries/productQuery";
 import cartContext from "../../Context/cartContext";
 import OrderUserContext from "../../Context/orderUserContext";
-import { useScript } from "../../hooks/useScript";
+import {useScript} from "../../hooks/useScript";
 
 interface HeaderProps {
 	categories: Category[];
@@ -69,7 +69,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>Checkout</title>
+				<title>Checkout | Indoamerica</title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
@@ -322,7 +322,6 @@ const Checkout: React.FC = () => {
 				toast.error("Some unknown error occurred");
 			}
 		} catch (error) {
-			console.log(error.message);
 			setLoading(false);
 			toast.error(error.message);
 		}
@@ -434,7 +433,6 @@ const Checkout: React.FC = () => {
 					toast.error("Some unknown error occurred");
 				}
 			} catch (error) {
-				console.log(error.message);
 				setLoading(false);
 			}
 		} else {

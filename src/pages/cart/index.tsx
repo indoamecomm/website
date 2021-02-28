@@ -130,6 +130,8 @@ const CartMain: React.FC = () => {
 		}
 	};
 
+	const router = useRouter();
+
 	useEffect(() => {
 		getUserCartItem();
 	}, [user, cartStore]);
@@ -145,14 +147,11 @@ const CartMain: React.FC = () => {
 	};
 
 	const proceedToCheckout = () => {
-		setConfirmGuest(true);
-		//router.push("/checkout");
-		// if (user) {
-		// 	router.push("/checkout");
-		// } else {
-		// 	toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
-		// 	router.push("/login?checkout=true");
-		// }
+		if (user) {
+			router.push("/checkout");
+		} else {
+			setConfirmGuest(true);
+		}
 	};
 
 	return (

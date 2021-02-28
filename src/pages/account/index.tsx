@@ -35,14 +35,12 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	}, []);
 
 	const ref = useRef<HTMLDivElement>(null);
-
 	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
 	useScript("/js/vendor/jquery.min.js", ref);
 	useScript("/js/popper.min.js", ref);
 	useScript("/js/plugins.js", ref);
 	useScript("/js/main.js", ref);
 	useScript("/js/bootstrap.min.js", ref);
-
 	useScript("/revolution/js/jquery.themepunch.revolution.min.js", ref);
 	useScript("/revolution/js/jquery.themepunch.tools.min.js", ref);
 	useScript("/revolution/revolution-active.js", ref);
@@ -58,7 +56,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>Shopping Cart</title>
+				<title>Account | Indoamerica</title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
@@ -104,7 +102,15 @@ const Account: React.FC = () => {
 	const [refetch, setRefetch] = useState<number>(0);
 	const [queryLoading, setQueryLoading] = useState<boolean>(false);
 	const router = useRouter();
+	const [activeTab, setActiveTab] = useState<number>(parseInt(router?.query?.id ? (router?.query?.id as string) : "1"));
+	const [navigationLoading, setNavigationLoading] = useState(false);
 
+	const nestNavigation = async (id: number) => {
+		setNavigationLoading(true);
+		setActiveTab(id);
+		await router.push("/account", {query: {id}});
+		setNavigationLoading(false);
+	};
 	const updateUser = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setDetailsLoading(true);
@@ -148,9 +154,6 @@ const Account: React.FC = () => {
 			toast.error("Passwords do not match");
 		}
 	};
-
-	console.log("Re rendering");
-
 	useEffect(() => {
 		setQueryLoading(true);
 		if (user) {
@@ -172,6 +175,10 @@ const Account: React.FC = () => {
 				});
 		}
 	}, [user, refetch]);
+
+	useEffect(() => {
+		nestNavigation(parseInt(router?.query?.id ? (router?.query?.id as string) : "1"));
+	}, []);
 
 	const logout = async () => {
 		await signOut();
@@ -197,19 +204,42 @@ const Account: React.FC = () => {
 						<div className="row">
 							<div className="col-lg-12 col-md-12">
 								<div className="myaccount-tab-menu nav" role="tablist">
-									<a href="#dashboard" className="active" data-toggle="tab">
+									<a
+										className={activeTab === 1 ? "active" : ""}
+										onClick={() => {
+											nestNavigation(1);
+										}}>
 										Dashboard
 									</a>
-									<a href="#orders" data-toggle="tab">
+									<a
+										className={activeTab === 2 ? "active" : ""}
+										onClick={() => {
+											nestNavigation(2);
+										}}>
 										Orders
 									</a>
-									<a href="#download" data-toggle="tab">
+									<a
+										className={activeTab === 3 ? "active" : ""}
+										data-toggle="tab"
+										onClick={() => {
+											nestNavigation(3);
+										}}>
 										Invoices
 									</a>
-									<a href="#address-edit" data-toggle="tab">
+									<a
+										className={activeTab === 4 ? "active" : ""}
+										data-toggle="tab"
+										onClick={() => {
+											nestNavigation(4);
+										}}>
 										address
 									</a>
-									<a href="#account-info" data-toggle="tab">
+									<a
+										className={activeTab === 5 ? "active" : ""}
+										data-toggle="tab"
+										onClick={() => {
+											nestNavigation(5);
+										}}>
 										Account Details
 									</a>
 									<a onClick={() => setLogoutModal(true)}> Logout</a>
@@ -217,272 +247,294 @@ const Account: React.FC = () => {
 							</div>
 							{/* My Account Tab Menu End */}
 							{/* My Account Tab Content Start */}
-							<div className="col-lg-12 col-md-12">
-								<div className="tab-content" id="myaccountContent">
-									{/* Single Tab Content Start */}
-									<div className="tab-pane fade show active" id="dashboard" role="tabpanel">
-										<div className="myaccount-content">
-											<h3>Dashboard</h3>
-											<div className="welcome">
-												<p>
-													Hello, &nbsp;
-													<strong>
-														{firstName} {lastName}
-													</strong>
-												</p>
-											</div>
-											<p className="mb-0">
-												From your account dashboard. you can easily check &amp; view your recent orders, manage your
-												shipping and billing addresses and edit your password and account details.
-											</p>
-										</div>
-									</div>
-									{/* Single Tab Content End */}
-									{/* Single Tab Content Start */}
-									<div className="tab-pane fade" id="orders" role="tabpanel">
-										<div className="myaccount-content">
-											<h3>Orders</h3>
-											<div className="myaccount-table table-responsive text-center">
-												{orders && orders.length > 0 ? (
-													<table className="table table-bordered">
-														<thead className="thead-light">
-															<tr>
-																<th>Order Id</th>
-																<th>Date</th>
-																<th>Status</th>
-																<th>Total</th>
-																<th>Action</th>
-															</tr>
-														</thead>
-
-														<tbody>
-															{orders.map((order) => (
-																<tr key={order.id}>
-																	<td>{order.id}</td>
-																	<td>{format(new Date(order.createdAt), "MMM d, y")}</td>
-																	<td>{order.order_status.name}</td>
-																	<td>₹{order.totalAmount}</td>
-																	<td>
-																		<Link href={`/order/${order.id}`}>
-																			<a className="check-btn sqr-btn ">View</a>
-																		</Link>
-																	</td>
-																</tr>
-															))}
-														</tbody>
-													</table>
-												) : (
-													<p>No orders yet</p>
-												)}
-											</div>
-										</div>
-									</div>
-									{/* Single Tab Content End */}
-									{/* Single Tab Content Start */}
-									<div className="tab-pane fade" id="download" role="tabpanel">
-										<div className="myaccount-content">
-											<h3>Invoices</h3>
-											<div className="myaccount-table table-responsive text-center">
-												{orders && orders.length > 0 ? (
-													<table className="table table-bordered">
-														<thead className="thead-light">
-															<tr>
-																<th>Invoice Id</th>
-																<th>Date</th>
-																<th>Status</th>
-																<th>Total</th>
-																<th>Action</th>
-															</tr>
-														</thead>
-														<tbody>
-															{orders.map(
-																(order) =>
-																	order.statusId === 6 && <InvoiceItem key={order.id} order={order} />
-															)}
-														</tbody>
-													</table>
-												) : (
-													<p>No invoices yet</p>
-												)}
-											</div>
-										</div>
-									</div>
-									{/* Single Tab Content End */}
-									{/* Single Tab Content Start */}
-									<div className="tab-pane fade" id="payment-method" role="tabpanel">
-										<div className="myaccount-content">
-											<h3>Payment Method</h3>
-											<p className="saved-message">You Can't Saved Your Payment Method yet.</p>
-										</div>
-									</div>
-									{/* Single Tab Content End */}
-									<div className="tab-pane fade" id="address-edit" role="tabpanel">
-										<div className="myaccount-content">
-											<div className="d-flex justify-content-between">
-												<h2>Addresses</h2>
-												<a
-													className="button-outline"
-													onClick={() => {
-														setOpenAddressModal(true);
-													}}>
-													add Address
-												</a>
-											</div>
-											<h4>&nbsp;</h4>
-											{!queryLoading ? (
-												<>
-													{addresses && addresses.length > 0 ? (
-														addresses.map((address) => (
-															<address key={address.id}>
-																<div className="d-flex justify-content-between pb-0 mb-0">
-																	<p>
-																		<strong>{address.name}</strong>
-																	</p>
-																	<a
-																		className="button-outline"
-																		onClick={() => {
-																			setAddressEditData(address);
-																			setOpenAddressModal(true);
-																		}}>
-																		edit
-																	</a>
-																</div>
-																<p>
-																	{address.lineOne}, <br />
-																	{address.lineTwo}, <br />
-																	{address.town} {address.state}, <br />
-																	{address.zipcode}
-																</p>
-															</address>
-														))
-													) : (
-														<p>No Address added yet</p>
-													)}
-												</>
-											) : (
-												<Spinner width="50px" height="50px" />
-											)}
-										</div>
-									</div>
-									{/* Single Tab Content Start */}
-									<div className="tab-pane fade" id="account-info" role="tabpanel">
-										<div className="myaccount-content">
-											<h3>Account Details</h3>
-											<div className="account-details-form">
-												<form onSubmit={updateUser}>
-													<div className="row">
-														<div className="col-lg-6">
-															<div className="single-input-item">
-																<label htmlFor="first-name" className="required">
-																	First Name
-																</label>
-																<input
-																	type="text"
-																	id="first-name"
-																	name="first name"
-																	value={firstName}
-																	onChange={(event) => setFirstName(event.target.value)}
-																/>
-															</div>
-														</div>
-														<div className="col-lg-6">
-															<div className="single-input-item">
-																<label htmlFor="last-name" className="required">
-																	Last Name
-																</label>
-																<input
-																	type="text"
-																	id="last-name"
-																	name="last name"
-																	value={lastName}
-																	onChange={(event) => setLastName(event.target.value)}
-																/>
-															</div>
-														</div>
-													</div>
-
-													<div className="single-input-item" style={{cursor: "not-allowed", opacity: 0.7}}>
-														<label htmlFor="email" className="required" style={{cursor: "disabled"}}>
-															Email Address
-														</label>
-														<input type="email" id="email" value={email} disabled={true} />
-													</div>
-													{!detailsLoading ? (
-														<div className="single-input-item mb-4">
-															<button className="check-btn sqr-btn" type="submit">
-																Save Changes
-															</button>
-														</div>
-													) : (
-														<div className="single-input-item mb-4 ml-4">
-															<Spinner width="30px" height="30px" />
-														</div>
-													)}
-												</form>
-												<form className="mt-2" style={{marginTop: "3em"}} onSubmit={changePassword}>
-													<fieldset>
-														<legend>Password change</legend>
-														<div className="single-input-item">
-															<label htmlFor="current-pwd" className="required">
-																Current Password
-															</label>
-															<input
-																type="password"
-																id="current-pwd"
-																name="current password"
-																value={currentPassword}
-																onChange={(event) => setCurrentPassword(event.target.value)}
-															/>
-														</div>
-														<div className="row">
-															<div className="col-lg-6">
-																<div className="single-input-item">
-																	<label htmlFor="new-pwd" className="required">
-																		New Password
-																	</label>
-																	<input
-																		type="password"
-																		id="new-pwd"
-																		name="new password"
-																		value={newPassword}
-																		onChange={(event) => setNewPassword(event.target.value)}
-																	/>
-																</div>
-															</div>
-															<div className="col-lg-6">
-																<div className="single-input-item">
-																	<label htmlFor="confirm-pwd" className="required">
-																		Confirm Password
-																	</label>
-																	<input
-																		type="password"
-																		id="confirm-pwd"
-																		name="confirm password"
-																		value={confirmPassword}
-																		onChange={(event) => setConfirmPassword(event.target.value)}
-																	/>
-																</div>
-															</div>
-														</div>
-													</fieldset>
-													{!passwordLoading ? (
-														<div className="single-input-item mb-4">
-															<button className="check-btn sqr-btn" type="submit">
-																Change Password
-															</button>
-														</div>
-													) : (
-														<div className="single-input-item mb-4 ml-4">
-															<Spinner width="30px" height="30px" />
-														</div>
-													)}
-												</form>
-											</div>
-										</div>
-									</div>{" "}
-									{/* Single Tab Content End */}
+							{navigationLoading ? (
+								<div className="col-lg-12 col-md-12 d-flex justify-content-center mt-20">
+									<Spinner width="40px" height="40px" />
 								</div>
-							</div>
+							) : (
+								<>
+									<div className="col-lg-12 col-md-12">
+										<div className="tab-content" id="myaccountContent">
+											{/* Single Tab Content Start */}
+											{activeTab === 1 && (
+												<div className="tab-pane show active" id="dashboard" role="tabpanel">
+													<div className="myaccount-content">
+														<h3>Dashboard</h3>
+														<div className="welcome">
+															<p>
+																Hello, &nbsp;
+																<strong>
+																	{firstName} {lastName}
+																</strong>
+															</p>
+														</div>
+														<p className="mb-0">
+															From your account dashboard. you can easily check &amp; view your recent orders,
+															manage your shipping and billing addresses and edit your password and account
+															details.
+														</p>
+													</div>
+												</div>
+											)}
+											{/* Single Tab Content End */}
+											{/* Single Tab Content Start */}
+											{activeTab === 2 && (
+												<div className="tab-pane  show active " id="orders" role="tabpanel">
+													<div className="myaccount-content">
+														<h3>Orders</h3>
+														<div className="myaccount-table table-responsive text-center">
+															{orders && orders.length > 0 ? (
+																<table className="table table-bordered">
+																	<thead className="thead-light">
+																		<tr>
+																			<th>Order Id</th>
+																			<th>Date</th>
+																			<th>Status</th>
+																			<th>Total</th>
+																			<th>Action</th>
+																		</tr>
+																	</thead>
+
+																	<tbody>
+																		{orders.map((order) => (
+																			<tr key={order.id}>
+																				<td>{order.id}</td>
+																				<td>{format(new Date(order.createdAt), "MMM d, y")}</td>
+																				<td>{order.order_status.name}</td>
+																				<td>₹{order.totalAmount}</td>
+																				<td>
+																					<Link href={`/order/${order.id}`}>
+																						<a className="check-btn sqr-btn ">View</a>
+																					</Link>
+																				</td>
+																			</tr>
+																		))}
+																	</tbody>
+																</table>
+															) : (
+																<p>No orders yet</p>
+															)}
+														</div>
+													</div>
+												</div>
+											)}
+											{/* Single Tab Content End */}
+											{/* Single Tab Content Start */}
+											{activeTab === 3 && (
+												<div className="tab-pane  show active" id="download" role="tabpanel">
+													<div className="myaccount-content">
+														<h3>Invoices</h3>
+														<div className="myaccount-table table-responsive text-center">
+															{orders && orders.length > 0 ? (
+																<table className="table table-bordered">
+																	<thead className="thead-light">
+																		<tr>
+																			<th>Invoice Id</th>
+																			<th>Date</th>
+																			<th>Status</th>
+																			<th>Total</th>
+																			<th>Action</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		{orders.map(
+																			(order) =>
+																				order.statusId === 6 && (
+																					<InvoiceItem key={order.id} order={order} />
+																				)
+																		)}
+																	</tbody>
+																</table>
+															) : (
+																<p>No invoices yet</p>
+															)}
+														</div>
+													</div>
+												</div>
+											)}{" "}
+											{/* Single Tab Content End */}
+											{/* Single Tab Content Start */}
+											{/* Single Tab Content End */}
+											{activeTab === 4 && (
+												<div className="tab-pane  show active" id="address-edit" role="tabpanel">
+													<div className="myaccount-content">
+														<div className="d-flex justify-content-between">
+															<h2>Addresses</h2>
+															<a
+																className="button-outline"
+																onClick={() => {
+																	setOpenAddressModal(true);
+																}}>
+																add Address
+															</a>
+														</div>
+														<h4>&nbsp;</h4>
+														{!queryLoading ? (
+															<>
+																{addresses && addresses.length > 0 ? (
+																	addresses.map((address) => (
+																		<address key={address.id}>
+																			<div className="d-flex justify-content-between pb-0 mb-0">
+																				<p>
+																					<strong>{address.name}</strong>
+																				</p>
+																				<a
+																					className="button-outline"
+																					onClick={() => {
+																						setAddressEditData(address);
+																						setOpenAddressModal(true);
+																					}}>
+																					edit
+																				</a>
+																			</div>
+																			<p>
+																				{address.lineOne}, <br />
+																				{address.lineTwo}, <br />
+																				{address.town} {address.state}, <br />
+																				{address.zipcode}
+																			</p>
+																		</address>
+																	))
+																) : (
+																	<p>No Address added yet</p>
+																)}
+															</>
+														) : (
+															<Spinner width="50px" height="50px" />
+														)}
+													</div>
+												</div>
+											)}{" "}
+											{/* Single Tab Content Start */}
+											{activeTab === 5 && (
+												<div className="tab-pane  show active" id="account-info" role="tabpanel">
+													<div className="myaccount-content">
+														<h3>Account Details</h3>
+														<div className="account-details-form">
+															<form onSubmit={updateUser}>
+																<div className="row">
+																	<div className="col-lg-6">
+																		<div className="single-input-item">
+																			<label htmlFor="first-name" className="required">
+																				First Name
+																			</label>
+																			<input
+																				type="text"
+																				id="first-name"
+																				name="first name"
+																				value={firstName}
+																				onChange={(event) => setFirstName(event.target.value)}
+																			/>
+																		</div>
+																	</div>
+																	<div className="col-lg-6">
+																		<div className="single-input-item">
+																			<label htmlFor="last-name" className="required">
+																				Last Name
+																			</label>
+																			<input
+																				type="text"
+																				id="last-name"
+																				name="last name"
+																				value={lastName}
+																				onChange={(event) => setLastName(event.target.value)}
+																			/>
+																		</div>
+																	</div>
+																</div>
+
+																<div
+																	className="single-input-item"
+																	style={{cursor: "not-allowed", opacity: 0.7}}>
+																	<label
+																		htmlFor="email"
+																		className="required"
+																		style={{cursor: "disabled"}}>
+																		Email Address
+																	</label>
+																	<input type="email" id="email" value={email} disabled={true} />
+																</div>
+																{!detailsLoading ? (
+																	<div className="single-input-item mb-4">
+																		<button className="check-btn sqr-btn" type="submit">
+																			Save Changes
+																		</button>
+																	</div>
+																) : (
+																	<div className="single-input-item mb-4 ml-4">
+																		<Spinner width="30px" height="30px" />
+																	</div>
+																)}
+															</form>
+															<form className="mt-2" style={{marginTop: "3em"}} onSubmit={changePassword}>
+																<fieldset>
+																	<legend>Password change</legend>
+																	<div className="single-input-item">
+																		<label htmlFor="current-pwd" className="required">
+																			Current Password
+																		</label>
+																		<input
+																			type="password"
+																			id="current-pwd"
+																			name="current password"
+																			value={currentPassword}
+																			onChange={(event) => setCurrentPassword(event.target.value)}
+																		/>
+																	</div>
+																	<div className="row">
+																		<div className="col-lg-6">
+																			<div className="single-input-item">
+																				<label htmlFor="new-pwd" className="required">
+																					New Password
+																				</label>
+																				<input
+																					type="password"
+																					id="new-pwd"
+																					name="new password"
+																					value={newPassword}
+																					onChange={(event) => setNewPassword(event.target.value)}
+																				/>
+																			</div>
+																		</div>
+																		<div className="col-lg-6">
+																			<div className="single-input-item">
+																				<label htmlFor="confirm-pwd" className="required">
+																					Confirm Password
+																				</label>
+																				<input
+																					type="password"
+																					id="confirm-pwd"
+																					name="confirm password"
+																					value={confirmPassword}
+																					onChange={(event) =>
+																						setConfirmPassword(event.target.value)
+																					}
+																				/>
+																			</div>
+																		</div>
+																	</div>
+																</fieldset>
+																{!passwordLoading ? (
+																	<div className="single-input-item mb-4">
+																		<button className="check-btn sqr-btn" type="submit">
+																			Change Password
+																		</button>
+																	</div>
+																) : (
+																	<div className="single-input-item mb-4 ml-4">
+																		<Spinner width="30px" height="30px" />
+																	</div>
+																)}
+															</form>
+														</div>
+													</div>
+												</div>
+											)}
+											{/* Single Tab Content End */}
+										</div>
+									</div>
+								</>
+							)}
 						</div>
 					</div>
 				</div>
@@ -703,7 +755,6 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 										style={{width: "100%"}}
 										type="text"
 										placeholder="Line Two"
-										required
 										value={lineTwo}
 										name="Line Two"
 										onChange={(event) => setLineTwo(event.target.value)}

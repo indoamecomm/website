@@ -39,7 +39,7 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>Frequently Asked Questions </title>
+				<title>Privacy Policy | Indoamerica </title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />

@@ -9,7 +9,7 @@ import {GetFaqTitles} from "../../../queries/faqQuery";
 import BreadCrumb from "../../Components/BreadCrumb";
 import Link from "next/link";
 import {Accordion, AccordionItem, AccordionItemHeading, AccordionItemButton, AccordionItemPanel} from "react-accessible-accordion";
-import { useScript } from "../../hooks/useScript";
+import {useScript} from "../../hooks/useScript";
 
 interface FaqsProps {
 	categories: Category[];
@@ -43,7 +43,7 @@ const index: React.FC<FaqsProps> = (props: FaqsProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>Frequently Asked Questions </title>
+				<title>Frequently Asked Questions | Indoamerica</title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />

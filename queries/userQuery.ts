@@ -355,7 +355,7 @@ export const CheckCouponValidity = gql`
 
 
 export const InsertAddress = gql`
-	mutation InsertAddress($lineOne: String!, $lineTwo: String!, $state: String!, $town: String!, $userId: bigint!, $zipCode: String!, $name: String!) {
+	mutation InsertAddress($lineOne: String!, $lineTwo: String, $state: String!, $town: String!, $userId: bigint!, $zipCode: String!, $name: String!) {
 		insert_addresses(objects: {countryId: 1, lineOne: $lineOne, lineTwo:  $lineTwo, state: $state, town: $town, userId: $userId,  name: $name,zipcode: $zipCode}) {
 			affected_rows
 		}
@@ -365,7 +365,7 @@ export const InsertAddress = gql`
 
 
 export const UpdateAddress = gql`
-	mutation UpdateAddress($lineOne: String!, $lineTwo: String!, $state: String!, $town: String!, $addressId: bigint!, $zipCode: String!, $name: String!) {
+	mutation UpdateAddress($lineOne: String!, $lineTwo: String, $state: String!, $town: String!, $addressId: bigint!, $zipCode: String!, $name: String!) {
 		update_addresses(_set: { lineOne: $lineOne, lineTwo: $lineTwo, state: $state, town: $town, zipcode: $zipCode, name: $name }, where: { id: { _eq: $addressId } }) {
 			affected_rows
 		}

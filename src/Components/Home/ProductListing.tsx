@@ -161,7 +161,7 @@ const Product: React.FC<{productType: ProductType}> = (props) => {
 						</div>
 						<div className="rating">
 							{[1, 2, 3, 4, 5].map((element) => (
-								<i className={element <= ratings ? "ion-android-star" : "ion-android-star-outline"} />
+								<i className={element <= ratings ? "ion-android-star" : "ion-android-star-outline"} key={element} />
 							))}
 						</div>
 					</div>

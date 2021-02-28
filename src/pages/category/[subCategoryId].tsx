@@ -122,7 +122,6 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 	const [limit, setLimit] = useState<number>(offset);
 
 	useEffect(() => {
-		console.log(products, "Products");
 		setFilteredProducts(products);
 	}, [products]);
 

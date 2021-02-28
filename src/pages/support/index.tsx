@@ -41,7 +41,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>Customer Support</title>
+				<title>Customer Support | Indoamerica</title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
