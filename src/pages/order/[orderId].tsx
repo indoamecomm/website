@@ -18,7 +18,7 @@ import {InsertUserRatings, UpdateUserRatings} from "../../../queries/productQuer
 import {useMutation} from "@apollo/client";
 import toast, {Toaster} from "react-hot-toast";
 import Spinner from "../../Components/Utils/Spinner";
-import { useScript } from "../../hooks/useScript";
+import {useScript} from "../../hooks/useScript";
 
 interface HeaderProps {
 	categories: Category[];
@@ -86,34 +86,42 @@ const CartMain: React.FC = () => {
 	const {orderId} = router.query;
 	const {orderUserId} = useContext(OrderUserContext);
 	const [refetch, setRefetch] = useState<number>(1);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const getUserCartItem = async () => {
-		if (orderUserId) {
-			const {
-				data: {orders},
-			} = await apolloClient.query({
-				query: GetOrderByUserId,
-				variables: {
-					userId: orderUserId,
-					orderId,
-					expiry: new Date().toISOString(),
-				},
-				fetchPolicy: "network-only",
-			});
-			setOrder(orders[0]);
-		} else if (user) {
-			const {
-				data: {orders},
-			} = await apolloClient.query({
-				query: GetOrderByUserId,
-				variables: {
-					userId: user.id,
-					orderId,
-					expiry: new Date().toISOString(),
-				},
-				fetchPolicy: "network-only",
-			});
-			setOrder(orders[0]);
+		try {
+			setLoading(true);
+			if (orderUserId) {
+				const {
+					data: {orders},
+				} = await apolloClient.query({
+					query: GetOrderByUserId,
+					variables: {
+						userId: orderUserId,
+						orderId,
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
+				});
+				setOrder(orders[0]);
+			} else if (user) {
+				const {
+					data: {orders},
+				} = await apolloClient.query({
+					query: GetOrderByUserId,
+					variables: {
+						userId: user.id,
+						orderId,
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
+				});
+				setOrder(orders[0]);
+			}
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -121,7 +129,6 @@ const CartMain: React.FC = () => {
 	const couponValue = order && order.coupon && order.coupon.value;
 
 	useEffect(() => {
-		console.log("refetchCalled");
 		getUserCartItem();
 	}, [user, refetch]);
 
@@ -130,44 +137,49 @@ const CartMain: React.FC = () => {
 			<Toaster position={"bottom-center"} />
 
 			<div className="container">
-				<div className="row">
-					<div className="col-lg-12 mb-30">
-						{/*=======  cart table  =======*/}
-						{order ? (
-							<div className="cart-table-container">
-								<table className="cart-table">
-									<thead>
-										<tr>
-											<th className="product-name" colSpan={2}>
-												Product
-											</th>
-											<th className="product-price">Price</th>
-											<th className="product-quantity">Quantity</th>
-											<th className="product-subtotal">Total</th>
-											<th className="product-remove">Rate</th>
-										</tr>
-									</thead>
-									<tbody>
-										{order &&
-											order.order_product_types &&
-											order.order_product_types.map((orderProduct) => (
-												<CartProduct orderProduct={orderProduct} key={orderProduct.id} setRefetch={setRefetch} />
-											))}
-									</tbody>
-								</table>
-							</div>
-						) : (
-							<p className="d-flex justify-content-center">Order not found</p>
-						)}
-						{/*=======  End of cart table  =======*/}
-					</div>
-					{order && (
-						<>
-							<div className="col-lg-12 mb-80">
-								{/*=======  coupon area  =======*/}
-								<div className="cart-coupon-area pb-30">
-									<div className="row align-items-center">
-										{/* <div className="col-lg-6 mb-md-30 mb-sm-30">
+				{!loading ? (
+					<div className="row">
+						<div className="col-lg-12 mb-30">
+							{/*=======  cart table  =======*/}
+							{order ? (
+								<div className="cart-table-container">
+									<table className="cart-table">
+										<thead>
+											<tr>
+												<th className="product-name" colSpan={2}>
+													Your Order ID: {orderId}
+												</th>
+												<th className="product-price">Price</th>
+												<th className="product-quantity">Quantity</th>
+												<th className="product-subtotal">Total</th>
+												<th className="product-remove">Rate</th>
+											</tr>
+										</thead>
+										<tbody>
+											{order &&
+												order.order_product_types &&
+												order.order_product_types.map((orderProduct) => (
+													<CartProduct
+														orderProduct={orderProduct}
+														key={orderProduct.id}
+														setRefetch={setRefetch}
+													/>
+												))}
+										</tbody>
+									</table>
+								</div>
+							) : (
+								<p className="d-flex justify-content-center">Order not found</p>
+							)}
+							{/*=======  End of cart table  =======*/}
+						</div>
+						{order && (
+							<>
+								<div className="col-lg-12 mb-80">
+									{/*=======  coupon area  =======*/}
+									<div className="cart-coupon-area pb-30">
+										<div className="row align-items-center">
+											{/* <div className="col-lg-6 mb-md-30 mb-sm-30">
 											<table className="cart-calculation-table mb-30">
 												<tbody>
 													<tr>
@@ -182,81 +194,86 @@ const CartMain: React.FC = () => {
 											</table>
 										</div> */}
 
-										{
-											//@ts-ignore
-											order.coupon && (
-												<div className="col-lg-6 text-left text-lg-right">
-													{/*=======  update cart button  =======*/}
-													<table className="cart-calculation-table mb-30">
-														<tbody>
-															<tr>
-																<th>Coupon</th>
-																{/* {@ts-ignore} */}
-																<td className="total">-{couponValue}%</td>
-															</tr>
-														</tbody>
-													</table>
-													{/*=======  End of update cart button  =======*/}
-												</div>
-											)
-										}
-										<div className="col-lg-6 text-left text-lg-right">
-											{/*=======  update cart button  =======*/}
-											<table className="cart-calculation-table mb-30">
-												<tbody>
-													<tr>
-														<th>TOTAL</th>
-														<td className="total">₹{order.totalAmount}</td>
-													</tr>
-												</tbody>
-											</table>
-											{/*=======  End of update cart button  =======*/}
+											{
+												//@ts-ignore
+												order.coupon && (
+													<div className="col-lg-6 text-left text-lg-right">
+														{/*=======  update cart button  =======*/}
+														<table className="cart-calculation-table mb-30">
+															<tbody>
+																<tr>
+																	<th>Coupon</th>
+																	{/* {@ts-ignore} */}
+																	<td className="total">-{couponValue}%</td>
+																</tr>
+															</tbody>
+														</table>
+														{/*=======  End of update cart button  =======*/}
+													</div>
+												)
+											}
+											<div className="col-lg-6 text-left text-lg-right">
+												{/*=======  update cart button  =======*/}
+												<table className="cart-calculation-table mb-30">
+													<tbody>
+														<tr>
+															<th>TOTAL</th>
+															<td className="total">₹{order.totalAmount}</td>
+														</tr>
+													</tbody>
+												</table>
+												{/*=======  End of update cart button  =======*/}
+											</div>
 										</div>
 									</div>
+									{/*=======  End of coupon area  =======*/}
 								</div>
-								{/*=======  End of coupon area  =======*/}
-							</div>
-							<div className="col-lg-12 mb-80">
-								<table className="cart-table">
-									<thead>
-										<tr>
-											<th className="product-name" colSpan={2}>
-												Address
-											</th>
-											<th className="product-name" colSpan={2}>
-												Order Status
-											</th>
-										</tr>
-									</thead>
-									<tbody className="">
-										<tr>
-											<td colSpan={2}>
-												<div className="col-12">
-													<p>{order.address?.lineOne}</p>
-												</div>
-												<div className="col-12">
-													<p>{order.address?.lineTwo}</p>
-												</div>
-												<div className="col-md-12 col-12">
-													<p>{order.address?.town}</p>
-												</div>
-												<div className="col-md-12 col-12">
-													<p>{order.address?.state}</p>
-												</div>
-												<div className="col-md-12 col-12">
-													<p>{order.address?.zipcode}</p>
-												</div>
-											</td>
-											<td colSpan={2} style={{verticalAlign: "top"}}>
-												<h3>{order.order_status.name}</h3>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</>
-					)}
-				</div>
+								<div className="col-lg-12 mb-80">
+									<table className="cart-table">
+										<thead>
+											<tr>
+												<th className="product-name" colSpan={2}>
+													Address
+												</th>
+												<th className="product-name" colSpan={2}>
+													Order Status
+												</th>
+											</tr>
+										</thead>
+										<tbody className="">
+											<tr>
+												<td colSpan={2}>
+													<div className="col-12">
+														<p>{order.address?.lineOne}</p>
+													</div>
+													<div className="col-12">
+														<p>{order.address?.lineTwo}</p>
+													</div>
+													<div className="col-md-12 col-12">
+														<p>{order.address?.town}</p>
+													</div>
+													<div className="col-md-12 col-12">
+														<p>{order.address?.state}</p>
+													</div>
+													<div className="col-md-12 col-12">
+														<p>{order.address?.zipcode}</p>
+													</div>
+												</td>
+												<td colSpan={2} style={{verticalAlign: "top"}}>
+													<h3>{order.order_status.name}</h3>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</>
+						)}
+					</div>
+				) : (
+					<div className="d-flex justify-content-center mt-40">
+						<Spinner width="40px" height="40px" />
+					</div>
+				)}
 			</div>
 		</div>
 	);
@@ -310,50 +327,11 @@ const CartProduct: React.FC<{orderProduct: Order_Product_Types; setRefetch: (num
 			</td>
 			<td className="total-price">
 				<button className="lezada-button lezada-button--medium" style={{margin: 0}} onClick={() => setRatingsModal(true)}>
-					Rate
+					{orderProduct.product_type.user_ratings.length > 0 ? "Edit Rating" : "Rate"}
 				</button>
 			</td>
 		</tr>
 	);
-};
-
-export async function getStaticProps() {
-	const apolloClient = initializeApollo();
-
-	const {
-		data: {categories, store_locations: storeLocations},
-	} = await apolloClient.query({
-		query: GetHeaderData,
-	});
-
-	return {
-		props: {
-			initialApolloState: apolloClient.cache.extract(),
-			categories,
-			storeLocations,
-		},
-	};
-}
-
-export const getStaticPaths = async () => {
-	const apolloClient = initializeApollo();
-
-	// Get the paths we want to pre-render based on posts
-	const {
-		data: {orders},
-	} = await apolloClient.query({
-		query: GetOrders,
-	});
-	const paths =
-		orders &&
-		orders.length > 0 &&
-		orders.map((order: Order) => ({
-			params: {orderId: order.id.toString()},
-		}));
-
-	// We'll pre-render only these paths at build time.
-	// { fallback: false } means other routes should 404.
-	return {paths, fallback: true};
 };
 
 interface ModalProps {
@@ -505,4 +483,42 @@ const RatingsModal: React.FC<ModalProps> = (props) => {
 			</div>
 		</Modal>
 	);
+};
+export async function getStaticProps() {
+	const apolloClient = initializeApollo();
+
+	const {
+		data: {categories, store_locations: storeLocations},
+	} = await apolloClient.query({
+		query: GetHeaderData,
+	});
+
+	return {
+		props: {
+			initialApolloState: apolloClient.cache.extract(),
+			categories,
+			storeLocations,
+		},
+	};
+}
+
+export const getStaticPaths = async () => {
+	const apolloClient = initializeApollo();
+
+	// Get the paths we want to pre-render based on posts
+	const {
+		data: {orders},
+	} = await apolloClient.query({
+		query: GetOrders,
+	});
+	const paths =
+		orders &&
+		orders.length > 0 &&
+		orders.map((order: Order) => ({
+			params: {orderId: order.id.toString()},
+		}));
+
+	// We'll pre-render only these paths at build time.
+	// { fallback: false } means other routes should 404.
+	return {paths, fallback: true};
 };

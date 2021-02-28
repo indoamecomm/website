@@ -19,6 +19,7 @@ import {useContext} from "react";
 import {useRouter} from "next/router";
 import Link from "next/link";
 import {useScript} from "../../hooks/useScript";
+import Modal from "react-modal";
 
 interface HeaderProps {
 	categories: Category[];
@@ -83,9 +84,9 @@ const CartMain: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 
 	const {cart: cartStore} = useContext(cartContext);
-	const router = useRouter();
 
 	const apolloClient = initializeApollo();
+	const [confirmGuest, setConfirmGuest] = useState<boolean>(false);
 
 	const getUserCartItem = async () => {
 		try {
@@ -144,8 +145,8 @@ const CartMain: React.FC = () => {
 	};
 
 	const proceedToCheckout = () => {
-		router.push("/checkout");
-
+		setConfirmGuest(true);
+		//router.push("/checkout");
 		// if (user) {
 		// 	router.push("/checkout");
 		// } else {
@@ -156,6 +157,7 @@ const CartMain: React.FC = () => {
 
 	return (
 		<div className="shopping-cart-area mb-130">
+			<ConfirmGuestModal open={confirmGuest} setOpen={setConfirmGuest} />
 			<Toaster position="bottom-center" />
 			<div className="container">
 				<div className="row">
@@ -397,3 +399,60 @@ export async function getStaticProps() {
 		},
 	};
 }
+interface ModalProps {
+	open: boolean;
+	setOpen: (value: boolean) => void;
+	data?: any;
+	setData?: any;
+	userId?: number;
+	setRefetch?: (value: any) => void;
+	refetch?: number;
+}
+
+export const ConfirmGuestModal: React.FC<ModalProps> = (props) => {
+	const {open, setOpen} = props;
+	const router = useRouter();
+
+	return (
+		<Modal overlayClassName="overlay" className="modal__main modal-logout" isOpen={open}>
+			<div className="close">
+				<h2 className="modal__title">Proceed to Checkout ?</h2>
+				<img
+					src="images/website/cross.svg"
+					alt="Close"
+					className="close-img"
+					onClick={() => {
+						setOpen(false);
+					}}
+				/>
+			</div>
+			<div className="modal__content">
+				<div className="row text-center">
+					<div className="col-12">
+						<button
+							className="lezada-button lezada-button--medium mt-20 mx-auto"
+							type="button"
+							onClick={() => {
+								router.push("/checkout");
+								setOpen(false);
+							}}>
+							Continue as Guest?
+						</button>
+					</div>
+					<div className="col-12">
+						<button
+							className="lezada-button lezada-button--medium mt-20 mx-auto"
+							type="button"
+							onClick={() => {
+								router.push("/login?checkout=true");
+								setOpen(false);
+								toast.success("Please login before you proceed to Checkout, Don't worry your cart will saved ");
+							}}>
+							Login
+						</button>
+					</div>
+				</div>
+			</div>
+		</Modal>
+	);
+};

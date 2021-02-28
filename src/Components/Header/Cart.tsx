@@ -10,8 +10,8 @@ import {useAuth} from "../../hooks/useAuth";
 import {getDiscountedPrice} from "../Product/ProductTypes";
 import Spinner from "../Utils/Spinner";
 import CartContext from "../../Context/cartContext";
-import {useRouter} from "next/router";
 import overlayContext from "../../Context/overlayContext";
+import {ConfirmGuestModal} from "../../pages/cart";
 
 export const getSubTotal = (cartItems: Cart[], couponValue: number = 0): number => {
 	let subTotal: number = 0;
@@ -30,8 +30,7 @@ const CartItems: React.FC = () => {
 	const {cart: cartStore} = useContext(CartContext);
 	const {cartActive, setCartActive} = useContext(overlayContext);
 	const [loading, setLoading] = useState<boolean>(false);
-
-	const router = useRouter();
+	const [confirmGuest, setConfirmGuest] = useState<boolean>(false);
 	const apolloClient = initializeApollo();
 
 	const getUserCartItem = async () => {
@@ -85,8 +84,7 @@ const CartItems: React.FC = () => {
 
 	const proceedToCheckout = () => {
 		setCartActive(false);
-		router.push("/checkout");
-
+		setConfirmGuest(true);
 		// if (user) {
 		// 	router.push("/checkout");
 		// } else {
@@ -97,6 +95,8 @@ const CartItems: React.FC = () => {
 
 	return (
 		<div className={`cart-overlay ${cartActive ? "active-cart-overlay" : ""}`} id="cart-overlay">
+			<ConfirmGuestModal open={confirmGuest} setOpen={setConfirmGuest} />
+
 			<div className={`cart-overlay-close ${cartActive ? "active" : "inactive"} `} />
 			<div className="cart-overlay-content">
 				{/*=======  close icon  =======*/}

@@ -442,7 +442,7 @@ const Checkout: React.FC = () => {
 		}
 	};
 
-	const disabledButton = !email || !firstName || !lastName || !phoneNumber || !lineOne || !lineTwo || !town || !zipcode || !state;
+	const disabledButton = !email || !firstName || !lastName || !phoneNumber || !lineOne || !town || !zipcode || !state;
 
 	const checkCoupon = async () => {
 		setCouponLoading(true);
