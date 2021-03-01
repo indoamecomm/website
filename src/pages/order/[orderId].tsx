@@ -327,7 +327,9 @@ const CartProduct: React.FC<{orderProduct: Order_Product_Types; setRefetch: (num
 			</td>
 			<td className="total-price">
 				<button className="lezada-button lezada-button--medium" style={{margin: 0}} onClick={() => setRatingsModal(true)}>
-					{orderProduct.product_type.user_ratings.length > 0 ? "Edit Rating" : "Rate"}
+					{orderProduct.product_type.user_ratings.length > 0
+						? `Edit Rating(${orderProduct.product_type.user_ratings[0].rating})`
+						: "Rate"}
 				</button>
 			</td>
 		</tr>
