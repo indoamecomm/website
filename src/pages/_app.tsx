@@ -23,7 +23,7 @@ import WishlistContext from "../Context/wishlistContext";
 import CartContext from "../Context/cartContext";
 import OverlayContext from "../Context/overlayContext";
 import OrderUserContext from "../Context/orderUserContext";
-
+import tawkTo from "tawkto-react";
 import {useState} from "react";
 
 // import "../styles/css/plugins.css";
@@ -47,6 +47,9 @@ import {useState} from "react";
 // 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
 // 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
 
+const tawkToPropertyId = "605c4afbf7ce18270933bbd2";
+const tawkToKey = "1f1k89q7l";
+
 const MyApp = ({Component, pageProps}: any) => {
 	const client = useApollo(pageProps.initialApolloState);
 	const [wishlist, setWishlist] = useLocalStorage("wishlist", []);
@@ -60,6 +63,9 @@ const MyApp = ({Component, pageProps}: any) => {
 			const rootEl: any = document.getElementById("__next");
 			Modal.setAppElement(rootEl);
 		}
+
+		tawkTo(tawkToPropertyId, tawkToKey);
+
 		// Modal.setAppElement(rootEl);
 	}, []);
 

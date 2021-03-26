@@ -5,7 +5,19 @@ class MyDocument extends Document {
 		const initialProps = await Document.getInitialProps(ctx);
 		return {...initialProps};
 	}
-
+// <!--Start of Tawk.to Script-->
+// <script type="text/javascript">
+// var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+// (function(){
+// var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+// s1.async=true;
+// s1.src='https://embed.tawk.to/605c4afbf7ce18270933bbd2/1f1k89q7l';
+// s1.charset='UTF-8';
+// s1.setAttribute('crossorigin','*');
+// s0.parentNode.insertBefore(s1,s0);
+// })();
+// </script>
+// <!--End of Tawk.to Script-->
 	
 	render() {
 		return (
@@ -28,6 +40,10 @@ class MyDocument extends Document {
 						href="https://fonts.googleapis.com/css?family=Spectral:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap"
 						rel="stylesheet"
 					/>
+
+					
+
+					
 				</Head>
 				<body>
 					<Main />

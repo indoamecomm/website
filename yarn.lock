@@ -7636,6 +7636,11 @@ tar-stream@^2.1.4:
     inherits "^2.0.3"
     readable-stream "^3.1.1"
 
+tawkto-react@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/tawkto-react/-/tawkto-react-2.0.3.tgz#e644b6c0aa30f0c8dd31a64b858fa8e3302d9ff8"
+  integrity sha512-KnTMAEA/DJNKlWNa4T7uB6+EzvgTXaEagJRGf7hPBTzMyGHARQQl4LRUi0rLPsss5dDW5ZigiORpmwHCRxk4VA==
+
 teeny-request@^7.0.0:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/teeny-request/-/teeny-request-7.0.1.tgz#bdd41fdffea5f8fbc0d29392cb47bec4f66b2b4c"
