@@ -85,6 +85,7 @@ export default index;
 const Account: React.FC = () => {
 	const {user, changePassword: changePass, signOut} = useAuth();
 	const apolloClient = initializeApollo();
+
 	const [orders, setOrders] = useState<any[] | null>(null);
 	const [addresses, setAddresses] = useState<any | null>(null);
 	const [firstName, setFirstName] = useState<string>("");
@@ -93,7 +94,6 @@ const Account: React.FC = () => {
 	const [currentPassword, setCurrentPassword] = useState<string>("");
 	const [newPassword, setNewPassword] = useState<string>("");
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
-	const [updateUserAccount] = useMutation(UpdateUserAccountDetails);
 	const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
 	const [passwordLoading, setPasswordLoading] = useState<boolean>(false);
 	const [openAddressModal, setOpenAddressModal] = useState<boolean>(false);
@@ -114,14 +114,15 @@ const Account: React.FC = () => {
 	const updateUser = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setDetailsLoading(true);
-
-		updateUserAccount({
-			variables: {
-				userId: user.id,
-				firstName,
-				lastName,
-			},
-		})
+		apolloClient
+			.mutate({
+				mutation: UpdateUserAccountDetails,
+				variables: {
+					userId: user.id,
+					firstName,
+					lastName,
+				},
+			})
 			.then(({data: {update_users}}) => {
 				setDetailsLoading(false);
 				if (update_users.affected_rows > 0) {
@@ -135,6 +136,27 @@ const Account: React.FC = () => {
 
 				toast.error(error.message);
 			});
+
+		// updateUserAccount({
+		// 	variables: {
+		// 		userId: user.id,
+		// 		firstName,
+		// 		lastName,
+		// 	},
+		// })
+		// 	.then(({data: {update_users}}) => {
+		// 		setDetailsLoading(false);
+		// 		if (update_users.affected_rows > 0) {
+		// 			toast.success("Details Update Successfully");
+		// 			setRefetch(() => refetch + 1);
+		// 		}
+		// 		setRefetch(() => refetch + 1);
+		// 	})
+		// 	.catch((error) => {
+		// 		setDetailsLoading(false);
+
+		// 		toast.error(error.message);
+		// 	});
 	};
 
 	const changePassword = (event: React.FormEvent<HTMLFormElement>) => {

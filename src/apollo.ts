@@ -1,40 +1,70 @@
 import { useMemo } from 'react'
 import { ApolloClient, InMemoryCache, NormalizedCacheObject, split } from '@apollo/client'
 import { getMainDefinition } from '@apollo/client/utilities';
-
+import { auth } from "./config/firebase";
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
-const createIsomorphLink = () => {
+const { WebSocketLink } = require('apollo-link-ws');
+
+
+let tokenHeader: string | null | undefined = null;
+
+const getFirebaseToken = async () => {
+
+	const token = await auth.currentUser?.getIdToken(true)
+	tokenHeader = token;
+
+	const headers: any = {};
+
+	if (token) {
+		headers.Authorization = `Bearer ${token}`;
+	}
+
+	return headers;
+}
+
+
+
+
+const createIsomorphLink = (token) => {
 	// if (typeof window === 'undefined') {
 
 	// } else {
 
-	const { WebSocketLink } = require('apollo-link-ws');
+
+
 
 
 	const wsLink = process.browser
 		? new WebSocketLink({
 			uri: 'wss://indoam.herokuapp.com/v1/graphql',
 			options: {
+				lazy: true,
 				reconnect: true,
 				timeout: 10000,
+				connectionParams: async () => {
 
-				connectionParams: () => ({
-					headers: {
-						"x-hasura-admin-secret": "indoame@321"
+					return {
+						// return {
+						headers: token ? {
+							Authorization: `Bearer ${token}`
+						} : {},
+						//}
 					}
-				})
+				},
 			},
 		}) : null;
+
+
 
 	const { HttpLink } = require('@apollo/client/link/http')
 	const httpLink = new HttpLink({
 		uri: 'https://indoam.herokuapp.com/v1/graphql',
 		credentials: 'same-origin',
-		ssrMode: true,
-		headers: {
-			"x-hasura-admin-secret": "indoame@321"
-		}, defaultOptions: {
+		headers: token ? {
+			Authorization: `Bearer ${token}`
+		} : {},
+		defaultOptions: {
 			watchQuery: {
 				fetchPolicy: "network-only",
 			},
@@ -62,107 +92,46 @@ const createIsomorphLink = () => {
 }
 
 
-function createApolloClient() {
+function createApolloClient(token) {
 	return new ApolloClient({
-		ssrMode: typeof window === 'undefined',
-		link: createIsomorphLink(),
+		ssrMode: true,
+		link: createIsomorphLink(token),
 		cache: new InMemoryCache(),
 	})
 }
 
 export function initializeApollo(initialState: NormalizedCacheObject | null = null) {
-	const _apolloClient = apolloClient ?? createApolloClient()
 
-	// If your page has Next.js data fetching methods that use Apollo Client, the initial state
-	// gets hydrated here
-	if (initialState) {
-		_apolloClient.cache.restore(initialState)
-	}
-	// For SSG and SSR always create a new Apollo Client
-	if (typeof window === 'undefined') return _apolloClient
-	// Create the Apollo Client once in the client
-	if (!apolloClient) apolloClient = _apolloClient
 
-	return _apolloClient
+	return getApolloClient(initialState, tokenHeader);
 }
 
 export function useApollo(initialState: NormalizedCacheObject) {
-	const store = useMemo(() => initializeApollo(initialState), [initialState])
+	const store = useMemo(() => initializeApollo(initialState), [initialState, tokenHeader])
 	return store
 }
 
 
+const getApolloClient = (initialState, header) => {
+	getFirebaseToken();
 
-// // import fetch from 'isomorphic-unfetch'
-// import {
-// 	ApolloClient,
-// 	// ApolloLink,
-// 	// ApolloProvider,
-// 	HttpLink,
-// 	InMemoryCache,
-// 	NormalizedCacheObject,
+	const _apolloClient = createApolloClient(header);
+	// If your page has Next.js data fetching methods that use Apollo Client, the initial state
+	// gets hydrated here
+	if (initialState) {
+		// Get existing cache, loaded during client side data fetching
+		const existingCache = _apolloClient.extract();
 
-// } from "@apollo/client";
-// // import { onError } from 'apollo-link-error'
-// import { WebSocketLink } from 'apollo-link-ws'
-// import { SubscriptionClient } from 'subscriptions-transport-ws'
+		// Restore the cache using the data passed from
+		// getStaticProps/getServerSideProps combined with the existing cached data
+		_apolloClient.cache.restore({ ...existingCache, ...initialState });
+	}
 
+	// For SSG and SSR always create a new Apollo Client
+	if (typeof window === "undefined") return _apolloClient;
 
-// // import auth0 from './auth0';
-// let accessToken: string | null = null
-// // const requestAccessToken = async () => {
-// // 	if (accessToken) return
-// // 	const res = await fetch(`${process.env.APP_HOST}/api/session`)
-// // 	if (res.ok) {
-// // 		const json = await res.json()
-// // 		accessToken = json.accessToken
-// // 	} else {
-// // 		accessToken = 'public'
-// // 	}
-// // }
-// // // remove cached token on 401 from the server
-// // const resetTokenLink = onError(({ networkError }) => {
-// // 	if (networkError && networkError.name === 'ServerError' && networkError.statusCode === 401) {
-// // 		accessToken = null
-// // 	}
-// // })
+	// Create the Apollo Client once in the client
+	if (!apolloClient) apolloClient = _apolloClient;
+	return _apolloClient;
+}
 
-
-// const createHttpLink: any = (headers: any) => {
-// 	const httpLink = new HttpLink({
-// 		uri: 'https://ready-panda-91.hasura.app/v1/graphql',
-// 		credentials: 'include',
-// 		headers, // auth token is fetched on the server side
-// 		fetch,
-// 	})
-// 	return httpLink;
-// }
-// const createWSLink = () => {
-// 	return new WebSocketLink(
-// 		new SubscriptionClient('wss://ready-panda-91.hasura.app/v1/graphql', {
-// 			lazy: true,
-// 			reconnect: true,
-// 			connectionParams: async () => {
-// 				return {
-// 					headers: {
-// 						authorization: accessToken ? `Bearer ${accessToken}` : '',
-// 					},
-// 				}
-// 			},
-// 		})
-// 	)
-// }
-// export default function createApolloClient(initialState: NormalizedCacheObject, headers: any) {
-// 	const ssrMode = typeof window === 'undefined'
-// 	let link: any
-// 	if (ssrMode) {
-// 		link = createHttpLink(headers) // executed on server
-// 	} else {
-// 		link = createWSLink() // executed on client
-// 	}
-// 	return new ApolloClient({
-// 		ssrMode,
-// 		link,
-// 		cache: new InMemoryCache().restore(initialState),
-// 	})
-// }

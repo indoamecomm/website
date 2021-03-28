@@ -17,6 +17,10 @@ export const useAuth: any = () => {
 	return useContext(authContext);
 };
 
+
+
+
+
 // Provider hook that creates an auth object and handles it's state
 const useAuthProvider = () => {
 	const apolloClient = initializeApollo();
@@ -86,6 +90,9 @@ const useAuthProvider = () => {
 		return () => unsub();
 	}, []);
 
+
+
+
 	const signIn = ({email, password}: any) => {
 		return auth
 			.signInWithEmailAndPassword(email, password)
@@ -140,6 +147,9 @@ const useAuthProvider = () => {
 		setUser(null);
 		return auth.signOut();
 	};
+
+
+	
 	return {
 		user,
 		signIn,
@@ -148,5 +158,6 @@ const useAuthProvider = () => {
 		changePassword,
 		signOut,
 		signUp,
+		auth
 	};
 };

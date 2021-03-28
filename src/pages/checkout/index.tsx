@@ -64,6 +64,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	useScript("/revolution/js/extensions/revolution.extension.layeranimation.min.js", ref);
 	useScript("/revolution/js/extensions/revolution.extension.navigation.min.js", ref);
 	useScript("/revolution/js/extensions/revolution.extension.parallax.min.js", ref);
+	// useScript("https://checkout.razorpay.com/v1/checkout.js")
 	return (
 		<>
 			<Head>
@@ -73,7 +74,6 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
-				<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 				<link rel="icon" href="/images/favicon.ico" />
 			</Head>
 			<div ref={ref}></div>
@@ -91,19 +91,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				</div>
 			</main>
 			<Footer />
-			<script src="/js/plugins.js"></script>
-			<script src="/js/main.js"></script>
-
-			<script src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
-			<script src="/revolution/js/jquery.themepunch.tools.min.js"></script>
-			<script src="/revolution/revolution-active.js"></script>
-
-			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
-			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
-			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
-			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
-			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
-			<script type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
+			
 		</>
 	);
 };
@@ -365,10 +353,10 @@ const Checkout: React.FC = () => {
 						name: "Indoamerican",
 						amount: "100",
 						description: "Test Transaction",
-						image: "https://example.com/your_logo",
+						image: "/images/logo.png",
 						order_id: createOrder.razorpayOrderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
 						// order_id: "order_GeBMz369ne4rF4",
-						handler: async (response) => {
+						handler: async (response: any) => {
 							const {
 								data: {code, message},
 							} = await verifyOrder({
@@ -385,6 +373,7 @@ const Checkout: React.FC = () => {
 								setLoading(false);
 								setCartStore([]);
 								setOrderUserId(createOrder.userId);
+								console.log(createOrder.order.id);
 								router.push(`/order/${createOrder.order.id}`);
 								toast.success("Order Placed Successfully");
 							}

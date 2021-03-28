@@ -89,7 +89,7 @@ const CartMain: React.FC = () => {
 	const [confirmGuest, setConfirmGuest] = useState<boolean>(false);
 
 	const getUserCartItem = async () => {
-		try {
+		try {1
 			if (user) {
 				const data = await apolloClient.subscribe({
 					query: GetUserCartSubscription,
@@ -284,7 +284,7 @@ const CartProduct: React.FC<{cart: Cart}> = (props) => {
 				setCartStore([...newCartStore]);
 			}
 		} catch (error) {
-			toast.success(error.message);
+			toast.error(error.message);
 		}
 	};
 
@@ -426,7 +426,7 @@ export const ConfirmGuestModal: React.FC<ModalProps> = (props) => {
 				/>
 			</div>
 			<div className="modal__content">
-				<div className="row text-center">
+				<div className="row text-center w-100">
 					<div className="col-12">
 						<button
 							className="lezada-button lezada-button--medium mt-20 mx-auto"

@@ -170,7 +170,7 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 				if (proceedToCheckout) {
 					router.push("/checkout");
 				} else {
-					router.push("/account", {query: {id: 1}});
+					router.push("/account?id=1");
 				}
 			}
 		} catch (error) {
@@ -287,7 +287,7 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 				if (proceedToCheckout) {
 					router.push("/checkout");
 				} else {
-					router.push("/account", {query: {id: 1}});
+					router.push("/account?id=1");
 				}
 			}
 		} catch (error) {

@@ -39,16 +39,19 @@ const ProductTypes: React.FC<{
 
 	const checkCartExist = async () => {
 		if (user) {
+			console.log("Calling subscription");
 			const data = await apolloClient.subscribe({
 				query: GetUserCartCount,
 				variables: {
 					userId: user.id,
 					productTypeId: productType.id,
 				},
+				fetchPolicy: "network-only",
 			});
 
 			if (data) {
 				data.subscribe(({data: {users_aggregate}}) => {
+					console.log(users_aggregate);
 					setCartExists(users_aggregate.aggregate.count > 0);
 				});
 				// setCartItems(data.data.cart);
@@ -66,6 +69,7 @@ const ProductTypes: React.FC<{
 					userId: user.id,
 					productTypeId: productType.id,
 				},
+				fetchPolicy: "network-only",
 			});
 
 			if (data) {
@@ -136,7 +140,15 @@ const ProductTypes: React.FC<{
 		try {
 			if (user) {
 				setWishlistLoading(true);
+
 				if (!wishlistExists) {
+					await apolloClient.mutate({
+						mutation: InsertWishlist,
+						variables: {
+							userId: user.id,
+							productTypeId: productType.id,
+						},
+					});
 					const {
 						data: {insert_wishlists},
 					} = await insertWishlist({

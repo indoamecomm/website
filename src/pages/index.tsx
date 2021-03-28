@@ -85,7 +85,7 @@ const Home: React.FC<HomeProps> = (props: HomeProps) => {
 			<main>
 				<Banner shopCollection={shopCollection} highlyUsed={highlyUsed} />
 				<SectionTitle />
-				<Deal dealOfTheDay={dealOfTheDay} />
+				{dealOfTheDay && <Deal dealOfTheDay={dealOfTheDay} />}
 				<PromotedBanner promotedBanner={promotedBanners} />
 				<PersonalizedListing />
 				<ProductListing featuredProducts={featuredProducts} newProducts={newProducts} topRated={topRated} />
@@ -210,6 +210,8 @@ export const getStaticProps: GetStaticProps = async () => {
 		},
 	});
 
+	console.log(deal_of_the_day);
+
 	const {
 		data: {newProducts, featuredProducts, topRated},
 	} = await apolloClient.query({
@@ -237,7 +239,7 @@ export const getStaticProps: GetStaticProps = async () => {
 			shopCollection,
 			highlyUsed,
 			promotedBanners,
-			dealOfTheDay: deal_of_the_day[0],
+			dealOfTheDay: deal_of_the_day.length > 0 ? deal_of_the_day[0] : null,
 			newProducts,
 			featuredProducts,
 			featuredProduct,

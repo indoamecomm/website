@@ -28,30 +28,11 @@ import {useState} from "react";
 
 // import "../styles/css/plugins.css";
 
-// <script defer src="/js/vendor/modernizr-2.8.3.min.js"></script>
-// 		<script defer src="/js/vendor/jquery.min.js"></script>
-// 		<script defer src="/js/popper.min.js"></script>
-// 		<script defer src="/js/bootstrap.min.js"></script>
-
-// 		<script defer src="/js/plugins.js"></script>
-// 		<script defer src="/js/main.js"></script>
-
-// 		<script defer src="/revolution/js/jquery.themepunch.revolution.min.js"></script>
-// 		<script defer src="/revolution/js/jquery.themepunch.tools.min.js"></script>
-// 		<script defer src="/revolution/revolution-active.js"></script>
-
-// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
-// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
-// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.actions.min.js"></script>
-// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
-// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
-// 		<script defer type="text/javascript" src="/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
-
 const tawkToPropertyId = "605c4afbf7ce18270933bbd2";
 const tawkToKey = "1f1k89q7l";
 
 const MyApp = ({Component, pageProps}: any) => {
-	const client = useApollo(pageProps.initialApolloState);
+	const client =  useApollo(pageProps.initialApolloState);
 	const [wishlist, setWishlist] = useLocalStorage("wishlist", []);
 	const [cart, setCart] = useLocalStorage("cart", []);
 	const [wishlistActive, setWishlistActive] = useState<boolean>(false);
