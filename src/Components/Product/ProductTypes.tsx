@@ -32,7 +32,7 @@ const ProductTypes: React.FC<{
 	const [url, setUrl] = useState<string>("");
 
 	const [insertToUserCart] = useMutation(InsertToUserCart);
-	const [insertWishlist] = useMutation(InsertWishlist);
+	// const [insertWishlist] = useMutation(InsertWishlist);
 	const [deleteWishlist] = useMutation(DeleteWishlistByUserId);
 	const {wishlist, setWishlist} = useContext(WishlistContext);
 	const {cart: cartStore, setCart: setCartStore} = useContext(CartContext);
@@ -142,21 +142,23 @@ const ProductTypes: React.FC<{
 				setWishlistLoading(true);
 
 				if (!wishlistExists) {
-					await apolloClient.mutate({
+					const {
+						data: {insert_wishlists},
+					} =	await apolloClient.mutate({
 						mutation: InsertWishlist,
 						variables: {
 							userId: user.id,
 							productTypeId: productType.id,
 						},
 					});
-					const {
-						data: {insert_wishlists},
-					} = await insertWishlist({
-						variables: {
-							userId: user.id,
-							productTypeId: productType.id,
-						},
-					});
+					// const {
+					// 	data: {insert_wishlists},
+					// } = await insertWishlist({
+					// 	variables: {
+					// 		userId: user.id,
+					// 		productTypeId: productType.id,
+					// 	},
+					// });
 					if (insert_wishlists && insert_wishlists.affected_rows > 0) {
 						toast.success("Product added to your wishlist successfully");
 					} else {

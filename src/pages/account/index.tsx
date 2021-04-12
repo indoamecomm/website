@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, {useRef} from "react";
+import React, {useContext, useRef} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -8,7 +8,7 @@ import {Category, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
 import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
-import {GetAccountDetails, InsertAddress, UpdateAddress, UpdateUserAccountDetails} from "../../../queries/userQuery";
+import {GetAccountDetails, InsertAddress, InsertUserCartAndWishlist, UpdateAddress, UpdateUserAccountDetails} from "../../../queries/userQuery";
 import {useState} from "react";
 import {format} from "date-fns";
 import {useMutation} from "@apollo/client";
@@ -20,6 +20,8 @@ import Link from "next/link";
 import {PDFDownloadLink} from "@react-pdf/renderer";
 import Invoice from "../../Components/Invoice/Invoice";
 import {useScript} from "../../hooks/useScript";
+import cartContext from "../../Context/cartContext";
+import wishlistContext from "../../Context/wishlistContext";
 
 interface HeaderProps {
 	categories: Category[];
@@ -104,6 +106,9 @@ const Account: React.FC = () => {
 	const router = useRouter();
 	const [activeTab, setActiveTab] = useState<number>(parseInt(router?.query?.id ? (router?.query?.id as string) : "1"));
 	const [navigationLoading, setNavigationLoading] = useState(false);
+	const {cart, setCart} = useContext(cartContext);
+	const {wishlist, setWishlist} = useContext(wishlistContext);
+
 
 	const nestNavigation = async (id: number) => {
 		setNavigationLoading(true);
@@ -111,6 +116,41 @@ const Account: React.FC = () => {
 		await router.push("/account", {query: {id}});
 		setNavigationLoading(false);
 	};
+
+	const saveUserCartAndWishlist = async (userId: number) => {
+		const cartItems = cart.map((element) => {
+			return {
+				count: element.count,
+				productTypeId: element.productTypeId,
+				userId,
+			};
+		});
+		const wishlistItems = wishlist.map((element) => {
+			return {
+				productTypeId: element,
+				userId,
+			};
+		});
+
+		 await apolloClient.mutate({
+			mutation: InsertUserCartAndWishlist,
+			variables: {
+				insertCart: cartItems,
+				insertWishlist: wishlistItems,
+			},
+		});
+		setCart([]);
+		return setWishlist([]);
+	};
+
+	useEffect(() => {
+		if(cart.length > 0 || wishlist.length > 0){
+			saveUserCartAndWishlist(user.id);
+		}
+	},[])
+
+
+
 	const updateUser = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setDetailsLoading(true);

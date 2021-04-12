@@ -140,17 +140,17 @@ interface AuthFormProps {
 	setLoginActive: (value: boolean) => void;
 	proceedToCheckout: boolean;
 	setProceedToCheckout: (boolean) => void;
-	saveUserCartAndWishlist: (userId: number) => void;
+	saveUserCartAndWishlist: (userId: number) => any;
 }
 
 const LoginForm: React.FC<AuthFormProps> = (props) => {
-	const {setLoginActive, proceedToCheckout, saveUserCartAndWishlist} = props;
+	const {setLoginActive, proceedToCheckout} = props;
 	const {signIn, sendPasswordResetEmail} = useAuth();
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
-	const {setCart} = useContext(cartContext);
-	const {setWishlist} = useContext(wishlistContext);
+	// const {setCart} = useContext(cartContext);
+	// const {setWishlist} = useContext(wishlistContext);
 	const router = useRouter();
 
 	const login = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -164,9 +164,12 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 				return setLoading(false);
 			} else if (data && data.id) {
 				toast.success("Login Successful");
-				await saveUserCartAndWishlist(data.id);
-				setCart([]);
-				setWishlist([]);
+				// setTimeout(async () => {
+				// 	// await saveUserCartAndWishlist(data.id);
+				// 	setCart([]);
+				// 	setWishlist([]);
+
+				// }, 1000);
 				if (proceedToCheckout) {
 					router.push("/checkout");
 				} else {
@@ -252,7 +255,7 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 };
 
 const SignUpForm: React.FC<AuthFormProps> = (props) => {
-	const {setLoginActive, proceedToCheckout, saveUserCartAndWishlist} = props;
+	const {setLoginActive, proceedToCheckout} = props;
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -261,8 +264,8 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 	const [lastName, setLastName] = useState<string>("");
 
 	const [loading, setLoading] = useState<boolean>(false);
-	const {setCart} = useContext(cartContext);
-	const {setWishlist} = useContext(wishlistContext);
+	// const {setCart} = useContext(cartContext);
+	// const {setWishlist} = useContext(wishlistContext);
 	const router = useRouter();
 	const {signUp} = useAuth();
 
@@ -281,9 +284,9 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 				return setLoading(false);
 			} else if (data && data.id) {
 				toast.success("Login Successful");
-				await saveUserCartAndWishlist(data.id);
-				setCart([]);
-				setWishlist([]);
+				// await saveUserCartAndWishlist(data.id);
+				// setCart([]);
+				// setWishlist([]);
 				if (proceedToCheckout) {
 					router.push("/checkout");
 				} else {

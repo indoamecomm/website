@@ -10,16 +10,14 @@ const { WebSocketLink } = require('apollo-link-ws');
 let tokenHeader: string | null | undefined = null;
 
 const getFirebaseToken = async () => {
-
 	const token = await auth.currentUser?.getIdToken(true)
 	tokenHeader = token;
-
+	console.log("Token", token);
 	const headers: any = {};
 
 	if (token) {
 		headers.Authorization = `Bearer ${token}`;
 	}
-
 	return headers;
 }
 
@@ -31,13 +29,9 @@ const createIsomorphLink = (token) => {
 
 	// } else {
 
-
-
-
-
 	const wsLink = process.browser
 		? new WebSocketLink({
-			uri: 'wss://indoam.herokuapp.com/v1/graphql',
+			uri: 'wss://api.indamseeds.com/v1/graphql',
 			options: {
 				lazy: true,
 				reconnect: true,
@@ -59,7 +53,7 @@ const createIsomorphLink = (token) => {
 
 	const { HttpLink } = require('@apollo/client/link/http')
 	const httpLink = new HttpLink({
-		uri: 'https://indoam.herokuapp.com/v1/graphql',
+		uri: 'https://api.indamseeds.com/v1/graphql',
 		credentials: 'same-origin',
 		headers: token ? {
 			Authorization: `Bearer ${token}`
