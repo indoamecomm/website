@@ -12,7 +12,6 @@ let tokenHeader: string | null | undefined = null;
 const getFirebaseToken = async () => {
 	const token = await auth.currentUser?.getIdToken(true)
 	tokenHeader = token;
-	console.log("Token", token);
 	const headers: any = {};
 
 	if (token) {
