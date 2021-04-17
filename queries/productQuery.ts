@@ -26,6 +26,7 @@ export const GetProductDetailsById = gql`
 			imageUrl
 			name
 			originalPrice
+			quantity
 			plant
 			remark
 			duration

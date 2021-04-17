@@ -27,6 +27,7 @@ const Wishlist = () => {
 			setLoading(false);
 
 			if (user) {
+				console.log("User authenticated get wishlist");
 				const data = await apolloClient.subscribe({
 					query: GetUserWishlist,
 					variables: {
@@ -60,7 +61,7 @@ const Wishlist = () => {
 				setWishlistItems(newItems);
 			}
 		} catch (error) {
-			toast.error(error.message);
+			toast.error(error.message + ", Error occurred while fetching wishlists");
 		} finally {
 			setLoading(false);
 		}
@@ -125,6 +126,7 @@ const WishlistItem: React.FC<{wishlist: Wishlists}> = (props) => {
 	const {wishlist: wishlistStore, setWishlist: setWishlistStore} = useContext(WishlistContext);
 
 	const deleteWishlistItem = async () => {
+		console.log(user);
 		try {
 			if (user) {
 				setLoading(true);
@@ -143,6 +145,7 @@ const WishlistItem: React.FC<{wishlist: Wishlists}> = (props) => {
 					toast.error("Some unknown error occurred");
 				}
 			} else {
+				console.log("Inside delete without user");
 				let newWishlist: any = [...wishlistStore];
 				newWishlist = newWishlist.filter((item) => item !== wishlist.product_type.id);
 				setWishlistStore(newWishlist);

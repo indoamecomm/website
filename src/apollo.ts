@@ -23,8 +23,9 @@ const getFirebaseToken = async () => {
 
 
 
-const createIsomorphLink = (token) => {
+const createIsomorphLink = (token: any) => {
 	// if (typeof window === 'undefined') {
+
 
 	// } else {
 
@@ -41,7 +42,9 @@ const createIsomorphLink = (token) => {
 						// return {
 						headers: token ? {
 							Authorization: `Bearer ${token}`
-						} : {},
+						} : {
+							"X-Hasura-Role": "pvc"
+						},
 						//}
 					}
 				},
@@ -56,7 +59,9 @@ const createIsomorphLink = (token) => {
 		credentials: 'same-origin',
 		headers: token ? {
 			Authorization: `Bearer ${token}`
-		} : {},
+		} : {
+			"X-Hasura-Role": "pvc"
+		},
 		defaultOptions: {
 			watchQuery: {
 				fetchPolicy: "network-only",

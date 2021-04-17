@@ -144,7 +144,7 @@ const ProductTypes: React.FC<{
 				if (!wishlistExists) {
 					const {
 						data: {insert_wishlists},
-					} =	await apolloClient.mutate({
+					} = await apolloClient.mutate({
 						mutation: InsertWishlist,
 						variables: {
 							userId: user.id,
@@ -162,7 +162,7 @@ const ProductTypes: React.FC<{
 					if (insert_wishlists && insert_wishlists.affected_rows > 0) {
 						toast.success("Product added to your wishlist successfully");
 					} else {
-						toast.error("Some unknown error occurred");
+						toast.error("Some unknown error occurred while adding wishlist");
 					}
 				} else {
 					const {
@@ -194,7 +194,7 @@ const ProductTypes: React.FC<{
 				setWishlist(newWishlist);
 			}
 		} catch (error) {
-			toast.error(error.message);
+			toast.error(error.message + "Error Occurred while adding product to wishlist");
 		} finally {
 			setWishlistLoading(false);
 		}
@@ -257,6 +257,15 @@ const ProductTypes: React.FC<{
 									<span style={{textTransform: "capitalize"}}>
 										{productType.product_seasons.map((season) => season.season.name).join(" | ")}
 									</span>
+									<br />
+									<br />
+								</>
+							)}
+							{productType.quantity && (
+								<>
+									<strong>Quantity</strong>
+									<br />
+									<span>{productType.quantity}</span>
 									<br />
 									<br />
 								</>

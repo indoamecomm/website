@@ -333,40 +333,6 @@ const Header: React.FC<HeaderProps> = (props) => {
 															))}
 													</ul>
 												</li>
-												{/* <li>
-													<a className="mega-column-title">Greens</a>
-													<ul className="mega-sub-menu">
-														<li>
-															<a href="shop-product-basic.html">Herbs </a>
-														</li>
-														<li>
-															<a href="shop-product-fullwidth.html">Organic</a>
-														</li>
-														<li>
-															<a href="shop-product-sticky-details.html">Microgreens</a>
-														</li>
-													</ul>
-												</li> */}
-												{/* <li>
-													<a className="mega-column-title">Collections</a>
-													<ul className="mega-sub-menu">
-														<li>
-															<a href="shop-product-basic.html">Add Ons</a>
-														</li>
-														<li>
-															<a href="shop-product-fullwidth.html">Combo Pack</a>
-														</li>
-														<li>
-															<a href="shop-product-sticky-details.html">DIY Kits</a>
-														</li>
-														<li>
-															<a href="shop-product-with-sidebar.html">Tools</a>
-														</li>
-														<li>
-															<a href="shop-product-extra-content.html">Everything Else</a>
-														</li>
-													</ul>
-												</li> */}
 												<li>
 													<a className="mega-column-title">View By</a>
 													<ul className="mega-sub-menu">

@@ -10710,6 +10710,7 @@ export type Product_Type = {
   user_ratings_aggregate: User_Ratings_Aggregate;
   /** An array relationship */
   wishlists: Array<Wishlists>;
+  quantity: Maybe<Scalars['String']>;
   /** An aggregated array relationship */
   wishlists_aggregate: Wishlists_Aggregate;
 };

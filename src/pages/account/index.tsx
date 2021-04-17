@@ -8,7 +8,13 @@ import {Category, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
 import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
-import {GetAccountDetails, InsertAddress, InsertUserCartAndWishlist, UpdateAddress, UpdateUserAccountDetails} from "../../../queries/userQuery";
+import {
+	GetAccountDetails,
+	InsertAddress,
+	InsertUserCartAndWishlist,
+	UpdateAddress,
+	UpdateUserAccountDetails,
+} from "../../../queries/userQuery";
 import {useState} from "react";
 import {format} from "date-fns";
 import {useMutation} from "@apollo/client";
@@ -37,6 +43,8 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	}, []);
 
 	const ref = useRef<HTMLDivElement>(null);
+
+
 	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
 	useScript("/js/vendor/jquery.min.js", ref);
 	useScript("/js/popper.min.js", ref);
@@ -109,13 +117,18 @@ const Account: React.FC = () => {
 	const {cart, setCart} = useContext(cartContext);
 	const {wishlist, setWishlist} = useContext(wishlistContext);
 
-
 	const nestNavigation = async (id: number) => {
 		setNavigationLoading(true);
 		setActiveTab(id);
 		await router.push("/account", {query: {id}});
 		setNavigationLoading(false);
 	};
+
+	useEffect(() => {
+		if (!user) {
+			router.push("/login");
+		}
+	}, [user]);
 
 	const saveUserCartAndWishlist = async (userId: number) => {
 		const cartItems = cart.map((element) => {
@@ -132,7 +145,7 @@ const Account: React.FC = () => {
 			};
 		});
 
-		 await apolloClient.mutate({
+		await apolloClient.mutate({
 			mutation: InsertUserCartAndWishlist,
 			variables: {
 				insertCart: cartItems,
@@ -144,12 +157,10 @@ const Account: React.FC = () => {
 	};
 
 	useEffect(() => {
-		if(cart.length > 0 || wishlist.length > 0){
+		if (user && (cart.length > 0 || wishlist.length > 0)) {
 			saveUserCartAndWishlist(user.id);
 		}
-	},[])
-
-
+	}, [user]);
 
 	const updateUser = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();

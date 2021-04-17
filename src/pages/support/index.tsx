@@ -19,7 +19,10 @@ interface HeaderProps {
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	const {categories, storeLocations} = props;
 	const ref = useRef<HTMLDivElement>(null);
-
+	useScript(
+		"https://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.22&key=AIzaSyChs2QWiAhnzz0a4OEhzqCXwx_qA9ST_lE",
+		ref
+	);
 	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
 	useScript("/js/vendor/jquery.min.js", ref);
 	useScript("/js/popper.min.js", ref);
@@ -36,6 +39,8 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	useScript("/revolution/js/extensions/revolution.extension.layeranimation.min.js", ref);
 	useScript("/revolution/js/extensions/revolution.extension.navigation.min.js", ref);
 	useScript("/revolution/js/extensions/revolution.extension.parallax.min.js", ref);
+	useScript("/js/map.js", ref);
+
 	return (
 		<>
 			<Head>
@@ -129,13 +134,16 @@ const Support: React.FC = () => {
 					</div>
 					{/*=======  End of single map  =======*/}
 					{/*=======  single map  =======*/}
-					<div className="single-map mb-md-30 mb-sm-30">
+					<div className="single-map mb-md-30 mb-sm-30 ml-2">
 						<div className="google-map google-map--style-3" id="google-map-four" />
 					</div>
 					{/*=======  End of single map  =======*/}
 					{/*=======  single map  =======*/}
-					<div className="single-map mb-md-30 mb-sm-30">
+					<div className="single-map mb-md-30 mb-sm-30 ml-2">
 						<div className="google-map google-map--style-3" id="google-map-five" />
+					</div>
+					<div className="single-map mb-md-30 mb-sm-30 ml-2">
+						<div className="google-map google-map--style-3" id="google-map-six" />
 					</div>
 					{/*=======  End of single map  =======*/}
 				</div>

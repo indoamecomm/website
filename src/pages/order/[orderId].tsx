@@ -6,7 +6,7 @@ import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
 import {Category, Order, Orders, Order_Product_Types, Store_Locations} from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
-import {GetOrderByUserId, GetOrders} from "../../../queries/userQuery";
+import {CancelOrder, GetOrderByUserId, GetOrders, InsertUserCart} from "../../../queries/userQuery";
 import {useAuth} from "../../hooks/useAuth";
 
 import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
@@ -88,7 +88,11 @@ const CartMain: React.FC = () => {
 	const [refetch, setRefetch] = useState<number>(1);
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const getUserCartItem = async () => {
+	const [cancelOrderModal, setCancelOrderModal] = useState<boolean>(false);
+
+	const [reOrderLoading, setReOrderLoading] = useState<boolean>(false);
+
+	const getUserOrder = async () => {
 		try {
 			setLoading(true);
 			if (orderUserId) {
@@ -129,14 +133,54 @@ const CartMain: React.FC = () => {
 	const couponValue = order && order.coupon && order.coupon.value;
 
 	useEffect(() => {
-		getUserCartItem();
+		getUserOrder();
 	}, [user, refetch]);
+
+	const reOrder = async () => {
+		// console.log(order?.order_product_types);
+		// order?.order_product_types.forEach((product) => {
+		// 	console.log(product);
+		// })
+
+		setReOrderLoading(true);
+		const cartItems = order?.order_product_types.map((product) => {
+			return {
+				count: product.count,
+				productTypeId: product.product_type.id,
+				userId: user.id,
+			};
+		});
+		const {
+			data: {insert_cart},
+		} = await apolloClient.mutate({
+			mutation: InsertUserCart,
+			variables: {
+				insertCart: cartItems,
+			},
+		});
+
+		if (insert_cart && insert_cart.affected_rows > 0) {
+			toast.success("Redirecting you to cart");
+			router.push("/cart");
+		} else {
+			toast.error("Some error occurred while reordering items");
+		}
+
+		setReOrderLoading(false);
+	};
 
 	return (
 		<div className="shopping-cart-area mb-130">
 			<Toaster position={"bottom-center"} />
 
 			<div className="container">
+				<CancelModal
+					open={cancelOrderModal}
+					setOpen={setCancelOrderModal}
+					orderId={orderId ? parseInt(orderId.toString()) : 0}
+					refetch={getUserOrder}
+				/>
+
 				{!loading ? (
 					<div className="row">
 						<div className="col-lg-12 mb-30">
@@ -179,21 +223,6 @@ const CartMain: React.FC = () => {
 									{/*=======  coupon area  =======*/}
 									<div className="cart-coupon-area pb-30">
 										<div className="row align-items-center">
-											{/* <div className="col-lg-6 mb-md-30 mb-sm-30">
-											<table className="cart-calculation-table mb-30">
-												<tbody>
-													<tr>
-														<td className="subtotal">Coupon</td>
-														<td className="subtotal">25</td>
-													</tr>
-													<tr>
-														<td className="subtotal">Coupon</td>
-														<td className="subtotal">25</td>
-													</tr>
-												</tbody>
-											</table>
-										</div> */}
-
 											{
 												//@ts-ignore
 												order.coupon && (
@@ -228,6 +257,27 @@ const CartMain: React.FC = () => {
 									</div>
 									{/*=======  End of coupon area  =======*/}
 								</div>
+
+								<div className="w-75 d-flex justify-content-between p-5 mx-auto mb-4">
+									{(order.order_status.id === 1 || order.order_status.id === 6) && (
+										<button
+											className="lezada-button-danger lezada-button--xl"
+											style={{margin: 0}}
+											onClick={() => {
+												setCancelOrderModal(true);
+											}}>
+											CANCEL
+										</button>
+									)}
+									{!reOrderLoading ? (
+										<button className="lezada-button lezada-button--xl" style={{margin: 0}} onClick={reOrder}>
+											REORDER
+										</button>
+									) : (
+										<Spinner width="40px" height="40px" />
+									)}
+								</div>
+
 								<div className="col-lg-12 mb-80">
 									<table className="cart-table">
 										<thead>
@@ -523,4 +573,76 @@ export const getStaticPaths = async () => {
 	// We'll pre-render only these paths at build time.
 	// { fallback: false } means other routes should 404.
 	return {paths, fallback: true};
+};
+
+interface CancelModalProps {
+	open: boolean;
+	setOpen: (value: boolean) => void;
+	orderId: number;
+	refetch: () => void;
+}
+
+const CancelModal: React.FC<CancelModalProps> = (props) => {
+	const {orderId, open, setOpen, refetch} = props;
+	const client = initializeApollo();
+	const [loading, setLoading] = useState<boolean>(false);
+
+	const cancelOrder = async () => {
+		setLoading(true);
+		const {
+			data: {update_orders},
+		} = await client.mutate({
+			mutation: CancelOrder,
+			variables: {
+				orderId,
+			},
+		});
+
+		if (update_orders && update_orders.affected_rows > 0) {
+			refetch();
+			toast.success("Order cancelled successfully");
+		} else {
+			toast.error("Some error occurred while cancelling your order");
+		}
+
+		setLoading(false);
+
+		setOpen(false);
+	};
+
+	return (
+		<Modal overlayClassName="overlay" className="modal__main modal-logout" isOpen={open}>
+			<div className="close">
+				<h2 className="modal__title">Cancel Order ?</h2>
+				<img
+					src="/images/website/cross.svg"
+					alt="Close"
+					className="close-img"
+					onClick={() => {
+						setOpen(false);
+					}}
+				/>
+			</div>
+			<div className="modal__content">
+				<h1 className="modal__header">Are you sure cancel this order?</h1>
+				<div className="row text-center">
+					{!loading ? (
+						<button
+							className="lezada-button lezada-button--medium mt-20 mx-auto"
+							type="button"
+							onClick={() => {
+								//@ts-ignore
+								cancelOrder();
+							}}>
+							Yes
+						</button>
+					) : (
+						<div className="d-flex justify-content-center mt-40 mx-auto">
+							<Spinner width="40px" height="40px" />
+						</div>
+					)}
+				</div>
+			</div>
+		</Modal>
+	);
 };

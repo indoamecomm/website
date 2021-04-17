@@ -418,6 +418,15 @@ export const InsertUserCartAndWishlist = gql`
 `;
 
 
+export const InsertUserCart = gql`
+	mutation InsertUserCartAndWishlist($insertCart: [cart_insert_input!]!) {
+		insert_cart(objects: $insertCart) {
+			affected_rows
+		}
+	}
+# { productTypeId: 10, userId: 0, count: 0 }
+`;
+
 
 export const GetOrderByUserId = gql`
 
@@ -529,6 +538,15 @@ export const GetUserRatingByProductId = gql`
 				rating
 			}
 			}
+		}
+	}
+`;
+
+
+export const CancelOrder = gql`
+	mutation CancelOrder($orderId: bigint!) {
+		update_orders(where: {id: {_eq: $orderId}}, _set: {statusId: 3}) {
+			affected_rows
 		}
 	}
 `;
