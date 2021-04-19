@@ -92,10 +92,10 @@ const Header: React.FC<HeaderProps> = (props) => {
 										<a href="#">English</a>
 									</li>
 									<li>
-										<a href="#">Kannada</a>
+										<a href="#">Kannada (coming soon)</a>
 									</li>
 									<li>
-										<a href="#">Hindi</a>
+										<a href="#">Hindi (coming soon)</a>
 									</li>
 								</ul>
 							</div>
