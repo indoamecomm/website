@@ -196,6 +196,6 @@ export async function getStaticProps() {
 			storeLocations,
 			faqTitles,
 		},
-		revalidate: 10,
+		revalidate: 1,
 	};
 }

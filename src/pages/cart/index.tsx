@@ -89,7 +89,8 @@ const CartMain: React.FC = () => {
 	const [confirmGuest, setConfirmGuest] = useState<boolean>(false);
 
 	const getUserCartItem = async () => {
-		try {1
+		try {
+			1;
 			if (user) {
 				const data = await apolloClient.subscribe({
 					query: GetUserCartSubscription,
@@ -396,6 +397,7 @@ export async function getStaticProps() {
 			categories,
 			storeLocations,
 		},
+		revalidate: 1,
 	};
 }
 interface ModalProps {

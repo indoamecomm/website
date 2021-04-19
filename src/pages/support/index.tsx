@@ -324,5 +324,6 @@ export async function getStaticProps() {
 			categories,
 			storeLocations,
 		},
+		revalidate: 1,
 	};
 }

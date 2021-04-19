@@ -173,5 +173,6 @@ export const getStaticProps: GetStaticProps = async ({params}) => {
 			product,
 			productTypesRecommendation,
 		},
+		revalidate: 1,
 	};
 };

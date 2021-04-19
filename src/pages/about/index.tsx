@@ -238,6 +238,6 @@ export async function getStaticProps() {
 			storeLocations,
 			testimonials,
 		},
-		revalidate: 10,
+		revalidate: 1,
 	};
 }

@@ -207,5 +207,6 @@ export async function getStaticProps() {
 			blogs,
 			count: blogs_aggregate.aggregate.count,
 		},
+		revalidate: 1,
 	};
 }
