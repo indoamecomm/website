@@ -722,8 +722,12 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 		try {
 			event.preventDefault();
 			setLoading(true);
+
+			const  newClient = initializeApollo();
+
 			if (!address) {
-				const {data} = await addAddress({
+				const {data} = await newClient.mutate({
+					mutation: InsertAddress,
 					variables: {
 						lineOne,
 						lineTwo,
