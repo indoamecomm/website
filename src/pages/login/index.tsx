@@ -81,7 +81,6 @@ const Login: React.FC = () => {
 	const [proceedToCheckout, setProceedToCheckout] = useState<boolean>(false);
 	const {cart} = useContext(cartContext);
 	const {wishlist} = useContext(wishlistContext);
-	const apolloClient = initializeApollo();
 
 	useEffect(() => {
 		setProceedToCheckout(checkout === "true");
@@ -102,7 +101,8 @@ const Login: React.FC = () => {
 			};
 		});
 
-		return await apolloClient.mutate({
+		const newClient = initializeApollo();
+		return await newClient.mutate({
 			mutation: InsertUserCartAndWishlist,
 			variables: {
 				insertCart: cartItems,
