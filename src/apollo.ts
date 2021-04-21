@@ -23,7 +23,7 @@ const getFirebaseToken = async () => {
 
 
 
-const createIsomorphLink = (token: any) => {
+const createIsomorphLink =  (token: any) => {
 	// if (typeof window === 'undefined') {
 
 

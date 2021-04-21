@@ -134,6 +134,7 @@ const CartMain: React.FC = () => {
 
 	useEffect(() => {
 		getUserOrder();
+		console.log(user);
 	}, [user, refetch]);
 
 	const reOrder = async () => {
@@ -258,25 +259,27 @@ const CartMain: React.FC = () => {
 									{/*=======  End of coupon area  =======*/}
 								</div>
 
-								<div className="w-75 d-flex justify-content-between p-5 mx-auto mb-4">
-									{(order.order_status.id === 1 || order.order_status.id === 6) && (
-										<button
-											className="lezada-button-danger lezada-button--xl"
-											style={{margin: 0}}
-											onClick={() => {
-												setCancelOrderModal(true);
-											}}>
-											CANCEL
-										</button>
-									)}
-									{!reOrderLoading ? (
-										<button className="lezada-button lezada-button--xl" style={{margin: 0}} onClick={reOrder}>
-											REORDER
-										</button>
-									) : (
-										<Spinner width="40px" height="40px" />
-									)}
-								</div>
+								{user && user.firebaseUUID && (
+									<div className="w-75 d-flex justify-content-between p-5 mx-auto mb-4">
+										{(order.order_status.id === 1 || order.order_status.id === 6) && (
+											<button
+												className="lezada-button-danger lezada-button--xl"
+												style={{margin: 0}}
+												onClick={() => {
+													setCancelOrderModal(true);
+												}}>
+												CANCEL
+											</button>
+										)}
+										{!reOrderLoading ? (
+											<button className="lezada-button lezada-button--xl" style={{margin: 0}} onClick={reOrder}>
+												REORDER
+											</button>
+										) : (
+											<Spinner width="40px" height="40px" />
+										)}
+									</div>
+								)}
 
 								<div className="col-lg-12 mb-80">
 									<table className="cart-table">

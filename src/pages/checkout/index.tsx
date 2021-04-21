@@ -91,7 +91,6 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 				</div>
 			</main>
 			<Footer />
-			
 		</>
 	);
 };
@@ -103,7 +102,6 @@ const Checkout: React.FC = () => {
 	const [cart, setCart] = useState<Cart[]>([]);
 	const [userDetails, setUserDetails] = useState<User>();
 
-	const apolloClient = initializeApollo();
 
 	const [placeOrderMutation] = useMutation(CreateOrder);
 	const [placeOrderMutationUnauthenticated] = useMutation(CreateOrderUnauthenticated);
@@ -134,73 +132,78 @@ const Checkout: React.FC = () => {
 	const [zipcode, setZipcode] = useState<string>("");
 	const [town, setTown] = useState<string>("");
 	const [state, setState] = useState<string>("");
+	const apolloClient = initializeApollo();
 
 	// const [lineOne, setLineOne] = useState<string>("");
 
 	const router = useRouter();
 
 	const getUserCartItem = async () => {
-		if (user) {
-			setQueryLoading(true);
-			const {
-				data: {users},
-			} = await apolloClient.query({
-				query: GetUserCartDetails,
-				variables: {
-					userId: user.id,
-					expiry: new Date().toISOString(),
-				},
-				fetchPolicy: "network-only",
-			});
-			if (users && users.length > 0) {
-				setUserDetails(users[0]);
+		try {
+			if (user) {
+				setQueryLoading(true);
+				const {
+					data: {users},
+				} = await apolloClient.query({
+					query: GetUserCartDetails,
+					variables: {
+						userId: user.id,
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
+				});
+				if (users && users.length > 0) {
+					setUserDetails(users[0]);
 
-				// let newCarts: any[] = [];
-				// let cartCopy: any[] = [];
+					// let newCarts: any[] = [];
+					// let cartCopy: any[] = [];
 
-				// let newUniqueCarts: any[] = [];
+					// let newUniqueCarts: any[] = [];
 
-				// newUniqueCarts = users[0].carts.filter(function (currentObject) {
-				// 	if (currentObject.productTypeId in newCarts) {
-				// 		cartCopy[currentObject.productTypeId] = {
-				// 			...cartCopy[currentObject.productTypeId],
-				// 			count: cartCopy[currentObject.productTypeId].count + currentObject.count,
-				// 		};
-				// 		return false;
-				// 	} else {
-				// 		newCarts[currentObject.productTypeId] = true;
-				// 		cartCopy[currentObject.productTypeId] = currentObject;
-				// 		return true;
-				// 	}
-				// });
+					// newUniqueCarts = users[0].carts.filter(function (currentObject) {
+					// 	if (currentObject.productTypeId in newCarts) {
+					// 		cartCopy[currentObject.productTypeId] = {
+					// 			...cartCopy[currentObject.productTypeId],
+					// 			count: cartCopy[currentObject.productTypeId].count + currentObject.count,
+					// 		};
+					// 		return false;
+					// 	} else {
+					// 		newCarts[currentObject.productTypeId] = true;
+					// 		cartCopy[currentObject.productTypeId] = currentObject;
+					// 		return true;
+					// 	}
+					// });
 
-				// cartCopy = cartCopy.filter((element) => element.id);
-				setCart(removeDuplicatesProductTypes(users[0].carts));
+					// cartCopy = cartCopy.filter((element) => element.id);
+					setCart(removeDuplicatesProductTypes(users[0].carts));
 
-				// if (users[0].addresses.length > 0) {
-				// 	setActiveAddress(users[0].addresses[0]);
-				// }
+					// if (users[0].addresses.length > 0) {
+					// 	setActiveAddress(users[0].addresses[0]);
+					// }
+				}
+				setQueryLoading(false);
+			} else {
+				const {
+					data: {product_type},
+				} = await apolloClient.query({
+					query: GetProductTypesById,
+					variables: {
+						productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
+						expiry: new Date().toISOString(),
+					},
+					fetchPolicy: "network-only",
+				});
+				const newItems = product_type.map((product, index) => ({
+					id: `${product.id}${index}`,
+					count: cartStore[index].count,
+					productTypeId: product.id,
+					product_type: JSON.parse(JSON.stringify(product)),
+				}));
+
+				setCart(removeDuplicatesProductTypes(newItems));
 			}
-			setQueryLoading(false);
-		} else {
-			const {
-				data: {product_type},
-			} = await apolloClient.query({
-				query: GetProductTypesById,
-				variables: {
-					productTypeArray: cartStore.map((element) => element.productTypeId) ?? [],
-					expiry: new Date().toISOString(),
-				},
-				fetchPolicy: "network-only",
-			});
-			const newItems = product_type.map((product, index) => ({
-				id: `${product.id}${index}`,
-				count: cartStore[index].count,
-				productTypeId: product.id,
-				product_type: JSON.parse(JSON.stringify(product)),
-			}));
-
-			setCart(removeDuplicatesProductTypes(newItems));
+		} catch (error) {
+			toast.error(error.message);
 		}
 	};
 

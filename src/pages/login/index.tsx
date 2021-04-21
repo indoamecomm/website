@@ -88,14 +88,14 @@ const Login: React.FC = () => {
 	}, [checkout]);
 
 	const saveUserCartAndWishlist = async (userId: number) => {
-		const cartItems = cart.map((element) => {
+		const cartItems = cart.map((element: any) => {
 			return {
 				count: element.count,
 				productTypeId: element.productTypeId,
 				userId,
 			};
 		});
-		const wishlistItems = wishlist.map((element) => {
+		const wishlistItems = wishlist.map((element: any) => {
 			return {
 				productTypeId: element,
 				userId,
@@ -144,7 +144,7 @@ interface AuthFormProps {
 }
 
 const LoginForm: React.FC<AuthFormProps> = (props) => {
-	const {setLoginActive, proceedToCheckout} = props;
+	const {setLoginActive, proceedToCheckout, saveUserCartAndWishlist} = props;
 	const {signIn, sendPasswordResetEmail} = useAuth();
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
@@ -171,6 +171,11 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 
 				// }, 1000);
 				if (proceedToCheckout) {
+					try {
+						await saveUserCartAndWishlist(data.id);
+					} catch (error) {
+						console.log(error);
+					}
 					router.push("/checkout");
 				} else {
 					router.push("/account?id=1");
@@ -255,13 +260,14 @@ const LoginForm: React.FC<AuthFormProps> = (props) => {
 };
 
 const SignUpForm: React.FC<AuthFormProps> = (props) => {
-	const {setLoginActive, proceedToCheckout} = props;
+	const {setLoginActive, proceedToCheckout, saveUserCartAndWishlist} = props;
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
 	const [phoneNumber, setPhoneNumber] = useState<string>("");
 	const [firstName, setFirstName] = useState<string>("");
 	const [lastName, setLastName] = useState<string>("");
+	const {signIn} = useAuth();
 
 	const [loading, setLoading] = useState<boolean>(false);
 	// const {setCart} = useContext(cartContext);
@@ -283,11 +289,18 @@ const SignUpForm: React.FC<AuthFormProps> = (props) => {
 				toast.error(data.error.message);
 				return setLoading(false);
 			} else if (data && data.id) {
+				const userData = await signIn({email, password});
+
 				toast.success("Login Successful");
 				// await saveUserCartAndWishlist(data.id);
 				// setCart([]);
 				// setWishlist([]);
 				if (proceedToCheckout) {
+					try {
+						await saveUserCartAndWishlist(userData.id);
+					} catch (error) {
+						console.log(error);
+					}
 					router.push("/checkout");
 				} else {
 					router.push("/account?id=1");

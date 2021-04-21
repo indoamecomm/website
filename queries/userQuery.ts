@@ -513,7 +513,7 @@ query VerifyIfOrderBelongsToUser($orderId: bigint!, $email: String!) {
 		}
 		}
 	}
-	}
+}
 
 `;
 
