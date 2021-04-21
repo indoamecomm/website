@@ -58,6 +58,10 @@ query GetAccountDetails($userId: bigint!) {
       town
 	  zipcode
     }
+	coupon {
+      code
+      value
+    }
   }
   addresses: addresses(where: {userId: {_eq: $userId}}, order_by: {id: asc}) {
     id

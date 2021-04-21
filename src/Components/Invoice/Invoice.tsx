@@ -38,6 +38,7 @@ const Invoice: React.FC<any> = ({invoice}) => (
 			<BillTo invoice={invoice} />
 			<InvoiceItemsTable invoice={invoice} />
 			<InvoiceThankYouMsg />
+			
 		</Page>
 	</Document>
 );

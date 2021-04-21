@@ -1,5 +1,6 @@
 import React, {Fragment} from "react";
 import {Text, View, StyleSheet} from "@react-pdf/renderer";
+import {calculateTotal} from "./InvoiceTableFooter";
 
 const borderColor = "#90e5fc";
 const styles = StyleSheet.create({
@@ -39,13 +40,20 @@ const styles = StyleSheet.create({
 	},
 });
 
-const InvoiceTableRow = ({items}) => {
-	const rows = items.map((item) => (
+const InvoiceTableRow: React.FC<{items: any; couponCode: string; couponPercentage: number}> = ({items, couponCode, couponPercentage}) => {
+	const newItems = couponCode
+		? [...items, {id: 0, product_type: {name: `Coupon : ${couponCode}`, discountPrice: `${couponPercentage} %`}, count: 1}]
+		: [...items];
+
+	console.log(newItems);
+	const rows = newItems.map((item) => (
 		<View style={styles.row} key={item.id}>
 			<Text style={styles.description}>{item.product_type.name}</Text>
 			<Text style={styles.qty}>{item.count}</Text>
 			<Text style={styles.rate}>{item.product_type.discountedPrice}</Text>
-			<Text style={styles.amount}>{(item.count * item.product_type.discountedPrice).toFixed(2)}</Text>
+			<Text style={styles.amount}>
+				{item.id ? (item.count * item.product_type.discountedPrice).toFixed(2) : -calculateTotal(items) * (couponPercentage / 100)}
+			</Text>
 		</View>
 	));
 	return <Fragment>{rows}</Fragment>;

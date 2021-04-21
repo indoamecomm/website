@@ -44,7 +44,6 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 
 	const ref = useRef<HTMLDivElement>(null);
 
-
 	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
 	useScript("/js/vendor/jquery.min.js", ref);
 	useScript("/js/popper.min.js", ref);
@@ -650,6 +649,8 @@ const InvoiceItem: React.FC<{order: any}> = (props) => {
 			`${order.address.lineOne}, ${order.address.lineTwo}, ${order.address.state}, ${order.address.town}, ${order.address.zipcode}`,
 		trans_date: order && format(new Date(order.createdAt), "MMM d, y"),
 		items: order && order.order_product_types,
+		couponName: order?.coupon?.code,
+		couponValue: order?.coupon?.value,
 	};
 
 	const [ready, setReady] = useState<boolean>(false);
@@ -722,7 +723,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 			event.preventDefault();
 			setLoading(true);
 
-			const  newClient = initializeApollo();
+			const newClient = initializeApollo();
 
 			if (!address) {
 				const {data} = await newClient.mutate({

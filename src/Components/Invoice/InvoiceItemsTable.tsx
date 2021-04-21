@@ -20,9 +20,9 @@ const styles = StyleSheet.create({
 const InvoiceItemsTable = ({invoice}) => (
 	<View style={styles.tableContainer}>
 		<InvoiceTableHeader />
-		<InvoiceTableRow items={invoice.items} />
+		<InvoiceTableRow items={invoice.items} couponCode={invoice.couponName} couponPercentage={invoice.couponValue} />
 		<InvoiceTableBlankSpace rowsCount={tableRowsCount - invoice.items.length} />
-		<InvoiceTableFooter items={invoice.items} />
+		<InvoiceTableFooter items={invoice.items} couponPercentage={invoice.couponValue} />
 	</View>
 );
 

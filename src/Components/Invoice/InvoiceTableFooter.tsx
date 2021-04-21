@@ -25,15 +25,20 @@ const styles = StyleSheet.create({
 		paddingRight: 8,
 	},
 });
-
-const InvoiceTableFooter = ({items}) => {
-	const total = items
+export const calculateTotal = (items: any): number => {
+	return items
 		.map((item) => item.product_type.discountedPrice * item.count)
 		.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+};
+
+const InvoiceTableFooter: React.FC<{items: any; couponPercentage: number}> = ({items, couponPercentage}) => {
 	return (
 		<View style={styles.row}>
 			<Text style={styles.description}>TOTAL</Text>
-			<Text style={styles.total}>{Number.parseFloat(total).toFixed(2)}</Text>
+			<Text style={styles.total}>
+				{Number.parseFloat(calculateTotal(items).toString()) -
+					calculateTotal(items) * (couponPercentage ? couponPercentage / 100 : 0)}
+			</Text>
 		</View>
 	);
 };
