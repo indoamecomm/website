@@ -19,7 +19,7 @@ import {
 } from "../../../queries/userQuery";
 import {useState} from "react";
 import {getSubTotal} from "../../Components/Header/Cart";
-import {useMutation} from "@apollo/client";
+import {useApolloClient, useMutation} from "@apollo/client";
 import toast, {Toaster} from "react-hot-toast";
 import Modal from "react-modal";
 import Spinner from "../../Components/Utils/Spinner";
@@ -107,7 +107,7 @@ const Checkout: React.FC = () => {
 	const [placeOrderMutationUnauthenticated] = useMutation(CreateOrderUnauthenticated);
 
 	const [verifyOrder] = useMutation(VerifyPayment);
-	const [deleteCart] = useMutation(DeleteUserCart);
+	// const [deleteCart] = useMutation(DeleteUserCart);
 	const [updateOrderStatus] = useMutation(UpdateOrderStatus);
 
 	const [loading, setLoading] = useState<boolean>(false);
@@ -133,6 +133,20 @@ const Checkout: React.FC = () => {
 	const [town, setTown] = useState<string>("");
 	const [state, setState] = useState<string>("");
 	const apolloClient = initializeApollo();
+
+
+	const deleteCart = async () => {
+		const newClient = initializeApollo();
+
+		await newClient.mutate({
+			mutation: DeleteUserCart,
+			variables: {
+				userId: user.id
+			}
+		})
+		
+	}
+
 
 	// const [lineOne, setLineOne] = useState<string>("");
 
@@ -258,11 +272,7 @@ const Checkout: React.FC = () => {
 						if (code === 500 || code === 401) {
 							toast.error("Some error occurred please try again," + message);
 						} else {
-							await deleteCart({
-								variables: {
-									userId: user.id,
-								},
-							});
+							await deleteCart();
 							setLoading(false);
 
 							router.push(`/order/${createOrder.order.id}`);
