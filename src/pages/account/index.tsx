@@ -694,7 +694,6 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 	const [zip, setZip] = useState<string>("");
 	const [town, setTown] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
-	const [addAddress] = useMutation(InsertAddress);
 	const [editAddress] = useMutation(UpdateAddress);
 
 	useEffect(() => {
