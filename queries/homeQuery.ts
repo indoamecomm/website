@@ -120,11 +120,13 @@ export const GetDealOfTheDay = gql`
 			productTypeId
 			product_type {
 				id
+				imageUrl
 				discountedPrice
 				productId
 			}
 			product {
 				id
+				imageUrl
 				productTypes_aggregate {
 					aggregate {
 						avg {

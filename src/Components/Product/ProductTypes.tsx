@@ -217,8 +217,10 @@ const ProductTypes: React.FC<{
 							<h2>{productType.name}</h2>
 						</div>
 						<div className="shop-product__price mb-30">
-							{productType.originalPrice && (
-								<span className="main-price discounted">&#8377; {productType.originalPrice}</span>
+							{productType.originalPrice && productType.originalPrice > 0 ? (
+								<span className="main-price discounted">&#8377; Hello {productType.originalPrice}</span>
+							) : (
+								<span />
 							)}
 							<span className="discounted-price">&#8377; {getDiscountedPrice(productType)}</span>
 						</div>
@@ -230,6 +232,16 @@ const ProductTypes: React.FC<{
 									{productType.plant}
 									<br />
 									<br />{" "}
+								</>
+							)}
+
+							{productType.type && (
+								<>
+									<strong>Type</strong>
+									<br />
+									{productType.type}
+									<br />
+									<br />
 								</>
 							)}
 							{productType.duration && (
@@ -266,6 +278,43 @@ const ProductTypes: React.FC<{
 									<strong>Quantity</strong>
 									<br />
 									<span>{productType.quantity}</span>
+									<br />
+									<br />
+								</>
+							)}
+
+							{productType.exposure && (
+								<>
+									<strong>Exposure</strong>
+									<br />
+									<span>{productType.exposure}</span>
+									<br />
+									<br />
+								</>
+							)}
+							{productType.height && (
+								<>
+									<strong>Height</strong>
+									<br />
+									<span>{productType.height}</span>
+									<br />
+									<br />
+								</>
+							)}
+							{productType.spread && (
+								<>
+									<strong>Spread</strong>
+									<br />
+									<span>{productType.spread}</span>
+									<br />
+									<br />
+								</>
+							)}
+							{productType.spacing && (
+								<>
+									<strong>Spacing</strong>
+									<br />
+									<span>{productType.spacing}</span>
 									<br />
 									<br />
 								</>

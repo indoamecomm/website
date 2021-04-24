@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, {useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import {GetHeaderData} from "../../../queries/homeQuery";
 import {initializeApollo} from "../../apollo";
 import Footer from "../../Components/Footer";
@@ -15,6 +15,7 @@ import {GetProductDetailsById, GetProducts, GetRecommendations} from "../../../q
 import {GetStaticProps} from "next";
 import ProductTypes from "../../Components/Product/ProductTypes";
 import {useScript} from "../../hooks/useScript";
+import {useRouter} from "next/router";
 
 interface ProductProps {
 	categories: Category[];
@@ -28,6 +29,13 @@ interface ProductProps {
 const index: React.FC<ProductProps> = (props: ProductProps) => {
 	const {categories, storeLocations, productDescription, seasons, product, productTypesRecommendation} = props;
 	const ref = useRef<HTMLDivElement>(null);
+	const router = useRouter();
+
+	useEffect(() => {
+		if (!product) {
+			router.push("/404");
+		}
+	}, []);
 
 	useScript("/js/vendor/modernizr-2.8.3.min.js", ref);
 	useScript("/js/vendor/jquery.min.js", ref);
@@ -51,7 +59,7 @@ const index: React.FC<ProductProps> = (props: ProductProps) => {
 			<Head>
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-				<title>{product.name} | IndoAmerica</title>
+				<title>{product?.name} | IndoAmerica</title>
 				<meta name="description" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/images/favicon.ico" />
@@ -60,30 +68,30 @@ const index: React.FC<ProductProps> = (props: ProductProps) => {
 			<Header categories={categories} storeLocations={storeLocations} />
 			<main>
 				<BreadCrumb
-					backgroundImage={product.coverImageUrl}
-					title={product.name}
-					finalName={product.name}
+					backgroundImage={product?.coverImageUrl}
+					title={product?.name}
+					finalName={product?.name}
 					links={[
 						{link: "/", name: "HOME"},
-						{link: `/category/${product.subCategoryId}`, name: product.sub_category.name.toUpperCase()},
+						{link: `/category/${product?.subCategoryId}`, name: product?.sub_category?.name.toUpperCase()},
 					]}
 				/>
-				<ProductHeader seasons={seasons} productTypesLength={product.productTypes.length} />
+				<ProductHeader seasons={seasons} productTypesLength={product?.productTypes.length} />
 				<ProductDescription {...productDescription} />
 				<div className="shop-page-wrapper mt-100 mb-100">
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-12">
-								{product.productTypes.map((productType, index) => (
+								{product?.productTypes.map((productType, index) => (
 									<ProductTypes
-										key={productType.id}
+										key={productType?.id}
 										productType={productType}
 										leftOrient={index % 2 === 0}
-										subCategory={product.sub_category.name}
+										subCategory={product?.sub_category.name}
 									/>
 								))}
 
-								<ProductInstruction instructionTitles={product.instruction_titles} />
+								<ProductInstruction instructionTitles={product?.instruction_titles ?? []} />
 							</div>
 						</div>
 						{/*=======  End of shop product content  =======*/}
@@ -94,7 +102,7 @@ const index: React.FC<ProductProps> = (props: ProductProps) => {
 				</div>
 				{/*=============================================            slider area         ==============================================*/}
 				{/*=====  End of slider area  ======*/}
-				<ProductRecommendation productTypesRecommendation={productTypesRecommendation} />
+				<ProductRecommendation productTypesRecommendation={productTypesRecommendation ?? []} />
 			</main>
 			<Footer />
 		</>
@@ -120,7 +128,7 @@ export async function getStaticPaths() {
 
 	// We'll pre-render only these paths at build time.
 	// { fallback: false } means other routes should 404.
-	return {paths, fallback: false};
+	return {paths, fallback: true};
 }
 
 export const getStaticProps: GetStaticProps = async ({params}) => {
@@ -150,16 +158,16 @@ export const getStaticProps: GetStaticProps = async ({params}) => {
 			productId: params ? params.productId : null,
 		},
 	});
-	const product: Product = products[0];
+	const product: Product = products[0] ?? null;
 	const productDescription: ProductDescriptionProps = {
-		name: product.name,
-		categoryName: product.sub_category.name,
-		description: product.description,
-		nutritiveValue: product.nutritiveValue,
-		productImage: product.imageUrl,
+		name: product?.name ?? null,
+		categoryName: product?.sub_category.name ?? null,
+		description: product?.description ?? null,
+		nutritiveValue: product?.nutritiveValue ?? null,
+		productImage: product?.imageUrl ?? null,
 	};
-	let seasonArray: any = product.productTypes.map((productType) => productType.product_seasons.map((season) => season.season.name));
-	seasonArray = [].concat(...seasonArray);
+	let seasonArray: any = product?.productTypes?.map((productType) => productType?.product_seasons.map((season) => season.season.name));
+	seasonArray = [].concat(...(seasonArray ?? []));
 	const seasonSet = new Set(seasonArray);
 	const seasons = [...seasonSet].join(" | ");
 

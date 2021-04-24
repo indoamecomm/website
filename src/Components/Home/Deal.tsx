@@ -14,7 +14,7 @@ const Deal: React.FC<{dealOfTheDay: Deal_Of_The_Day}> = (props) => {
 							<div className="row align-items-center">
 								<div className="col-12 col-xl-5 col-lg-3">
 									<div className="countdown-image text-center">
-										<img src="/images/test/06.png" className="img-fluid" alt="" />
+										<img src={getDealImage(dealOfTheDay)} className="img-fluid" alt="" />
 									</div>
 								</div>
 								<div className=" col-12 col-xl-7 col-lg-9">
@@ -23,7 +23,8 @@ const Deal: React.FC<{dealOfTheDay: Deal_Of_The_Day}> = (props) => {
 										<div className="deal-countdown" data-countdown={formateDate(dealOfTheDay.expiry)} />
 										<Link href={getDealLink(dealOfTheDay)}>
 											<a className="lezada-button lezada-button--medium lezada-button--icon--left">
-												<i className="icon-left ion-ios-cart" /> Only ₹ {getDiscountedPrice(dealOfTheDay)}
+												{/* <i className="icon-left ion-ios-cart" /> Only ₹ {getDiscountedPrice(dealOfTheDay)} */}
+												<i className="icon-left ion-ios-cart" /> View now
 											</a>
 										</Link>
 									</div>
@@ -41,7 +42,6 @@ export default Deal;
 
 const formateDate = (isoDate: string): string => {
 	const date = new Date(isoDate);
-
 
 	return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 };
@@ -66,6 +66,18 @@ export const getDealLink = (deal: Deal_Of_The_Day): string => {
 		link = `/product/${deal.product_type?.productId}`;
 	} else if (deal.productId) {
 		link = `/product/${deal.productId}`;
+	}
+
+	return link;
+};
+
+const getDealImage = (deal: Deal_Of_The_Day): string => {
+	let link = "";
+
+	if (deal.productTypeId) {
+		link = deal.product_type?.imageUrl ?? "";
+	} else if (deal.productId) {
+		link = deal.product?.imageUrl ?? "";
 	}
 
 	return link;

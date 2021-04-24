@@ -21,10 +21,12 @@ const ProductDescription: React.FC<ProductDescriptionProps> = (props) => {
 							<h1>{name}</h1>
 							<p className="label">{categoryName}</p>
 							<p className="description">{description}</p>
-							<p>
-								<strong>Nutritive value : </strong>
-								{nutritiveValue}
-							</p>
+							{nutritiveValue && nutritiveValue.trim().length > 2 && (
+								<p>
+									<strong>Nutritive value : </strong>
+									{nutritiveValue}
+								</p>
+							)}
 						</div>
 					</div>
 					<div className="col-md-6 pl-60 pl-sm-15 pl-xs-15 pl-xxs-15 mb-30">

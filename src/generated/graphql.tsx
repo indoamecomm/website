@@ -10711,6 +10711,12 @@ export type Product_Type = {
   /** An array relationship */
   wishlists: Array<Wishlists>;
   quantity: Maybe<Scalars['String']>;
+    exposure: Maybe<Scalars['String']>;
+  height: Maybe<Scalars['String']>;
+  spacing: Maybe<Scalars['String']>;
+  spread: Maybe<Scalars['String']>;
+  type: Maybe<Scalars['String']>;
+
   /** An aggregated array relationship */
   wishlists_aggregate: Wishlists_Aggregate;
 };

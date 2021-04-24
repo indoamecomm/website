@@ -29,6 +29,11 @@ export const GetProductDetailsById = gql`
 			quantity
 			plant
 			remark
+			spacing
+			spread 
+			height 
+			exposure
+			type
 			duration
 			product {
 				deal_of_the_days(where: {enable: {_eq: true}, expiry: {_gt: $expiry}}) {

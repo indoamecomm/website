@@ -20,7 +20,7 @@ const BreadCrumb: React.FC<BreadCrumbProps> = (props) => {
 			<div className="container">
 				<div className="row">
 					<div className="col-lg-12">
-						<h1 className="breadcrumb-title">{title}</h1>
+						<h1 className="breadcrumb-title" style={{color: "white"}}>{title}</h1>
 						{/*=======  breadcrumb list  =======*/}
 						<ul className="breadcrumb-list">
 							{links.map(({link, name}, index) => (

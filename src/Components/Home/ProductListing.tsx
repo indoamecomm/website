@@ -155,7 +155,11 @@ const Product: React.FC<{productType: ProductType}> = (props) => {
 							</Link>
 						</h3>
 						<div className="price">
-							{productType.originalPrice && <span className="main-price discounted">₹{productType.originalPrice}</span>}
+							{productType.originalPrice ? (
+								<span className="main-price discounted">₹{productType.originalPrice}</span>
+							) : (
+								<span />
+							)}
 							{/*@ts-ignore*/}
 							<span className="discounted-price">₹{getDiscountedPrice(productType)}</span>
 						</div>

@@ -41,8 +41,10 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 							{/*=======  End of slider image  =======*/}
 							{/*=======  slider content  =======*/}
 							<div className="slider-content">
-								<div className="color-title color-title--red">Vegetable Seeds</div>
-								<div className="main-title">
+								<div className="color-title color-title--white" style={{color: "#FFFFFF"}}>
+									Vegetable Seeds
+								</div>
+								<div className="main-title" style={{color: "#FFFFFF"}}>
 									{productType.product.name} <br /> {productType.name}
 								</div>
 								<Link href={`/product/${productType.productId}`}>

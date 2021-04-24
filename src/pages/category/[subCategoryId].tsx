@@ -30,7 +30,7 @@ interface HeaderProps {
 	productCount: number;
 	topThreeProductTypes: Product_Type[];
 }
-const offset = 6;
+const offset = 10;
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 	const {
@@ -449,9 +449,9 @@ const ProductSideCard: React.FC<{product: any}> = (props) => {
 							</Link>
 						</h3>
 						<div className="price">
-							{product.productType.originalPrice && (
+							{product.productType.originalPrice ? (
 								<span className="main-price discounted">₹{product.productType.originalPrice}</span>
-							)}
+							) : <span/>}
 							<span className="discounted-price">₹{product.productType.discountedPrice}</span>
 						</div>
 						<div className="rating">
@@ -471,6 +471,14 @@ const CategoryCard: React.FC<{product: Product}> = (props) => {
 	const {
 		product: {name, hoverImageUrl, imageUrl, description, productTypes_aggregate, id},
 	} = props;
+
+	const minDiscountedPrice = productTypes_aggregate.aggregate?.min?.discountedPrice ?? null;
+	const maxDiscountedPrice = productTypes_aggregate.aggregate?.max?.discountedPrice;
+	const minOriginalPrice = productTypes_aggregate.aggregate?.min?.originalPrice;
+	const maxOriginalPrice = productTypes_aggregate.aggregate?.max?.originalPrice;
+
+	console.log(minDiscountedPrice, maxDiscountedPrice);
+
 	return (
 		<div className="col-12 col-lg-is-5 col-md-6 col-sm-6 mb-45 hot new sale">
 			<div className="single-product">
@@ -497,8 +505,20 @@ const CategoryCard: React.FC<{product: Product}> = (props) => {
 						</Link>
 					</div>
 					<div className="price">
-						<span className="main-price discounted">{`₹${productTypes_aggregate.aggregate?.min?.originalPrice} - ₹${productTypes_aggregate.aggregate?.max?.originalPrice}`}</span>
-						<span className="discounted-price">{`₹${productTypes_aggregate.aggregate?.min?.discountedPrice} - ₹${productTypes_aggregate.aggregate?.max?.discountedPrice}`}</span>
+						{minOriginalPrice ? (
+							<span className="main-price discounted">
+								{minOriginalPrice !== maxOriginalPrice
+									? `₹${minOriginalPrice} - ₹${maxOriginalPrice}`
+									: `₹${minOriginalPrice}`}
+							</span>
+						) : (
+							<span />
+						)}
+						<span className="discounted-price">
+							{minDiscountedPrice !== maxDiscountedPrice
+								? `₹${minDiscountedPrice} - ₹${maxDiscountedPrice}`
+								: `₹${minDiscountedPrice}`}
+						</span>
 					</div>
 				</div>
 				{/*=======  End of single product content  =======*/}
@@ -524,8 +544,22 @@ const CategoryCard: React.FC<{product: Product}> = (props) => {
 						</h3>
 					</div>
 					<div className="price">
-						<span className="main-price discounted">{`₹${productTypes_aggregate.aggregate?.min?.originalPrice} - ₹${productTypes_aggregate.aggregate?.max?.originalPrice}`}</span>
-						<span className="discounted-price">{`₹${productTypes_aggregate.aggregate?.min?.discountedPrice} - ₹${productTypes_aggregate.aggregate?.max?.discountedPrice}`}</span>
+						<div className="price">
+							{minOriginalPrice ? (
+								<span className="main-price discounted">
+									{minOriginalPrice !== maxOriginalPrice
+										? `₹${minOriginalPrice} - ₹${maxOriginalPrice}`
+										: `₹${minOriginalPrice}`}
+								</span>
+							) : (
+								<span />
+							)}
+							<span className="discounted-price">
+								{minDiscountedPrice !== maxDiscountedPrice
+									? `₹${minDiscountedPrice} - ₹${maxDiscountedPrice}`
+									: `₹${minDiscountedPrice}`}
+							</span>
+						</div>
 					</div>
 					<p className="short-desc">{description}</p>
 

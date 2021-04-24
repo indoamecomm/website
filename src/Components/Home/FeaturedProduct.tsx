@@ -14,6 +14,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 
 	const featuredProduct = featuredProducts.banners[0];
 
+	const description = splitSentence(featuredProduct.description ?? "", 8);
 
 	return (
 		<div className="cabinet-revslider-area mt-50 mt-md-30 mt-sm-30 mb-100 mb-md-80 mb-sm-80">
@@ -320,7 +321,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 											data-y="['top','top','top','top']"
 											data-voffset="['368','283','262','250']"
 											data-fontsize="['15','15','15','14']"
-											data-width="none"
+											data-width="20px"
 											data-height="none"
 											data-whitespace="nowrap"
 											data-type="text"
@@ -333,15 +334,19 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 											data-paddingleft="[0,0,0,0]"
 											style={{
 												zIndex: 13,
-												whiteSpace: "nowrap",
+												whiteSpace: "normal",
 												fontSize: "15px",
 												lineHeight: "26px",
 												fontWeight: 400,
 												color: "#7e7e7e",
 												letterSpacing: "0.5px",
+												width: "5rem",
+												maxWidth: "30ch",
 												fontFamily: "Work Sans",
 											}}>
-											{featuredProduct.description}
+											{description.split("\n").map((i, key) => {
+												return <div key={key}>{i}</div>;
+											})}
 										</div>
 										{/* LAYER NR. 10 */}
 										<div
@@ -350,7 +355,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 											data-x="['left','left','left','left']"
 											data-hoffset="['282','91','89','29']"
 											data-y="['top','top','top','top']"
-											data-voffset="['478','384','364','349']"
+											data-voffset="['600','384','364','349']"
 											data-width="none"
 											data-height="none"
 											data-whitespace="nowrap"
@@ -404,4 +409,34 @@ const SplitWordToSentence: React.FC<{word: string}> = (props) => {
 			{word.split(" ").slice(2).join(" ")}
 		</span>
 	);
+};
+
+const splitSentence = (word: string, length: number): string => {
+	const sentenceArray = word.split(" ");
+	let sentenceSplitArray: any[] = [];
+	let finalString = "";
+
+	for (let i = 0; i < sentenceArray.length; i = i + length) {
+		let subSetArray: string[] = [];
+		createArrayFromRange(i + 1, i + length).forEach((index) => {
+			subSetArray.push(sentenceArray[index]);
+		});
+		sentenceSplitArray.push(subSetArray);
+	}
+
+	sentenceSplitArray.forEach((sentence) => {
+		finalString += sentence.join(" ") + "\n";
+	});
+	console.log(finalString);
+
+	return finalString;
+};
+
+const createArrayFromRange = (startNumber: number, endNumber: number): number[] => {
+	let newArray: number[] = [];
+
+	for (let i = startNumber; i <= endNumber; i++) {
+		newArray.push(i);
+	}
+	return newArray;
 };

@@ -183,8 +183,10 @@ const WishlistItem: React.FC<{wishlist: Wishlists}> = (props) => {
 					</Link>
 				</h5>
 				<p>
-					{wishlist.product_type.originalPrice && (
+					{wishlist.product_type.originalPrice ? (
 						<span className="main-price discounted">₹{wishlist.product_type.originalPrice} </span>
+					) : (
+						<span />
 					)}
 					&nbsp;&nbsp;
 					<span className="discounted-price">₹{getDiscountedPrice(wishlist.product_type)}</span>
