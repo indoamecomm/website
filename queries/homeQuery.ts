@@ -8,6 +8,7 @@ export const GetHeaderData = gql`
 			subCategories: sub_categories(order_by: {id: asc}) {
 				id
 				name
+				isDeleted
 			}
 		}
 		store_locations(order_by: {id: asc}) {

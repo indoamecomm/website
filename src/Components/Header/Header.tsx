@@ -1,10 +1,10 @@
 import Link from "next/link";
-import React, {useContext, useEffect} from "react";
-import {useState} from "react";
-import {GetUserTotalCartCount, GetUserTotalWishlistCount} from "../../../queries/userQuery";
-import {initializeApollo} from "../../apollo";
-import {Category, Store_Locations} from "../../generated/graphql";
-import {useAuth} from "../../hooks/useAuth";
+import React, { useContext, useEffect } from "react";
+import { useState } from "react";
+import { GetUserTotalCartCount, GetUserTotalWishlistCount } from "../../../queries/userQuery";
+import { initializeApollo } from "../../apollo";
+import { Category, Store_Locations } from "../../generated/graphql";
+import { useAuth } from "../../hooks/useAuth";
 import Cart from "./Cart";
 import Wishlist from "./Wishlist";
 import wishlistContext from "../../Context/wishlistContext";
@@ -17,16 +17,16 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
-	const {categories, storeLocations} = props;
+	const { categories, storeLocations } = props;
 	const [cartCount, setCartCount] = useState<number>(0);
-	const {cart: cartStore} = useContext(cartContext);
-	const {wishlist} = useContext(wishlistContext);
+	const { cart: cartStore } = useContext(cartContext);
+	const { wishlist } = useContext(wishlistContext);
 
-	const {setWishlistActive, setCartActive} = useContext(overlayContext);
+	const { setWishlistActive, setCartActive } = useContext(overlayContext);
 
 	const [wishlistCount, setWishlistCount] = useState<number>(0);
 
-	const {user} = useAuth();
+	const { user } = useAuth();
 
 	const apolloClient = initializeApollo();
 	const getCartCount = async () => {
@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 		});
 
 		if (data) {
-			data.subscribe(({data: {cart_aggregate}}) => {
+			data.subscribe(({ data: { cart_aggregate } }) => {
 				setCartCount(cart_aggregate.aggregate.count);
 			});
 			// setCartItems(data.data.cart);
@@ -61,7 +61,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 		});
 
 		if (data) {
-			data.subscribe(({data: {wishlists_aggregate}}) => {
+			data.subscribe(({ data: { wishlists_aggregate } }) => {
 				setWishlistCount(wishlists_aggregate.aggregate.count);
 			});
 			// setCartItems(data.data.cart);
@@ -443,7 +443,7 @@ interface HeaderCategoryCardProps {
 }
 
 const HeaderCategoryCard: React.FC<HeaderCategoryCardProps> = (props: HeaderCategoryCardProps) => {
-	const {category, isMobile} = props;
+	const { category, isMobile } = props;
 
 	return (
 		<li>
@@ -455,9 +455,9 @@ const HeaderCategoryCard: React.FC<HeaderCategoryCardProps> = (props: HeaderCate
 					category &&
 					category.subCategories?.map((subCategory) => (
 						<li key={subCategory?.id}>
-							<Link href={`/category/${subCategory?.id}`}>
+							{subCategory?.isDeleted ? <a>{subCategory?.name}</a> : <Link href={`/category/${subCategory?.id}`}>
 								<a>{subCategory?.name}</a>
-							</Link>
+							</Link>}
 						</li>
 					))
 				) : (
@@ -476,7 +476,7 @@ interface HeaderStoreLocationProps {
 }
 
 const HeaderStoreLocations: React.FC<HeaderStoreLocationProps> = (props: HeaderStoreLocationProps) => {
-	const {isMobile} = props;
+	const { isMobile } = props;
 
 	return (
 		<li>
