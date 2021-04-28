@@ -35,8 +35,8 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 					<div className="decor-single-slider" key={productType.id}>
 						<div className="decor-single-slider-content">
 							{/*=======  slider image  =======*/}
-							<div className="slider-image">
-								<img src={productType.recommendedCoverImage ?? ""} className="img-fluid" alt="" />
+							<div className="slider-image" style={{background: 'black', overflow: 'hidden'}}>
+								<img style={{"opacity": '0.6'}} src={productType.recommendedCoverImage ?? ""} className="img-fluid" alt="" />
 							</div>
 							{/*=======  End of slider image  =======*/}
 							{/*=======  slider content  =======*/}

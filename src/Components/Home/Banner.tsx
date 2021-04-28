@@ -40,7 +40,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 								<div
 									id="rev_slider_13_1"
 									className="rev_slider fullwidthabanner"
-									style={{display: "none"}}
+									//style={{display: "none", background: 'black', overflow: 'hidden'}}
 									data-version="5.4.7">
 									<ul>
 										<li
@@ -68,6 +68,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 											data-param10
 											data-description>
 											<img
+												style={{opacity: '0.7'}}
 												src={shopCollection1?.image ?? undefined}
 												alt={shopCollection1?.title ?? undefined}
 												// data-lazyload={"/images/revimages/transparent.png"}
@@ -114,7 +115,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 													fontSize: "24px",
 													lineHeight: "36px",
 													fontWeight: 600,
-													color: "#333333",
+													color: "#ffffff",
 													letterSpacing: "5px",
 													fontFamily: "Work Sans",
 												}}>
@@ -147,7 +148,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 													fontSize: "56px",
 													lineHeight: "70px",
 													fontWeight: 300,
-													color: "#333333",
+													color: "#ffffff",
 													letterSpacing: "0px",
 													fontFamily: "Work Sans",
 												}}>
@@ -186,7 +187,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 													cursor: "pointer",
 												}}>
 												<Link href={getBannerLink(shopCollection1.bannerProducts[0])}>
-													<a className="revslider-button-red">{shopCollection1.title}</a>
+													<a style={{color: '#ffffff'}} className="revslider-button-red">{shopCollection1.title}</a>
 												</Link>
 											</div>
 										</li>
@@ -496,17 +497,18 @@ const Banner: React.FC<BannerProps> = (props) => {
 						<div className="row">
 							<div className="col-lg-12 mb-40">
 								{/*=======  hover zoom banner  =======*/}
-								<div className="single-banner single-banner--hoverzoom">
+								<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverzoom">
 									<Link href={getBannerLink(highlyUsed1.bannerProducts[0])}>
 										<a>
 											<img
+											style={{opacity: '0.7'}}
 												src={highlyUsed1.image as string}
 												className="img-fluid"
 												alt={highlyUsed1.title as string}
 											/>
 											<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
 												<SplitWordToSentence word={highlyUsed1.title as string} />
-												<span className="price">&#8377; {highlyUsed1.cost}</span>
+												<span style={{color: '#ffffff'}} className="price">&#8377; {highlyUsed1.cost}</span>
 											</span>
 										</a>
 									</Link>
@@ -515,18 +517,19 @@ const Banner: React.FC<BannerProps> = (props) => {
 							</div>
 							<div className="col-lg-12">
 								{/*=======  hover zoom banner  =======*/}
-								<div className="single-banner single-banner--hoverzoom">
+								<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverzoom">
 									<Link href={getBannerLink(highlyUsed2.bannerProducts[0])}>
 										<a>
 											{" "}
 											<img
+											style={{opacity: '0.7'}}
 												src={highlyUsed2.image as string}
 												className="img-fluid"
 												alt={highlyUsed2.title as string}
 											/>
 											<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
 												<SplitWordToSentence word={highlyUsed2.title as string} />
-												<span className="price">&#8377; {highlyUsed2.cost}</span>
+												<span style={{color: '#ffffff'}} className="price">&#8377; {highlyUsed2.cost}</span>
 											</span>
 										</a>
 									</Link>
@@ -547,7 +550,7 @@ const SplitWordToSentence: React.FC<{word: string}> = (props) => {
 	const {word} = props;
 
 	return (
-		<span className="name">
+		<span style={{color: '#ffffff'}} className="name">
 			{word.split(" ")[0]} {word.split(" ")[1]}
 			<br />
 			{word.split(" ").slice(2).join(" ")}

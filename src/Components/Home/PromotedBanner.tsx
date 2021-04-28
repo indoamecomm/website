@@ -18,15 +18,15 @@ const PromotedBanner: React.FC<PromotedBannerProps> = (props) => {
 				<div className="row">
 					<div className="col-md-6 mb-30">
 						{/*=======  single banner  =======*/}
-						<div className="single-banner single-banner--hoverborder">
+						<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverborder">
 							<Link href={getBannerLink(promotedBanner1.bannerProducts[0])}>
 								<a className="banner-link" />
 							</Link>
-							<img src={promotedBanner1?.image ?? undefined} className="img-fluid" alt="" />
+							<img style={{opacity: '0.7'}} src={promotedBanner1?.image ?? undefined} className="img-fluid" alt="" />
 							<div className="banner-content banner-content--black-left">
 								<p>
-									<span className="big-text">{promotedBanner1.title}</span>{" "}
-									<span className="small-text d-block">{promotedBanner1.heading}</span>
+									<span style={{color: 'white'}} className="big-text">{promotedBanner1.title}</span>{" "}
+									<span style={{color: 'white'}} className="small-text d-block">{promotedBanner1.heading}</span>
 								</p>
 							</div>
 						</div>
@@ -34,16 +34,16 @@ const PromotedBanner: React.FC<PromotedBannerProps> = (props) => {
 					</div>
 					<div className="col-md-6 mb-30">
 						{/*=======  single banner  =======*/}
-						<div className="single-banner single-banner--hoverborder">
+						<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverborder">
 							<Link href={getBannerLink(promotedBanner2.bannerProducts[0])}>
 								<a className="banner-link" />
 							</Link>
 
-							<img src={promotedBanner2?.image ?? undefined} className="img-fluid" alt="" />
+							<img style={{opacity: '0.7'}} src={promotedBanner2?.image ?? undefined} className="img-fluid" alt="" />
 							<div className="banner-content banner-content--black-left">
 								<p>
-									<span className="big-text">{promotedBanner2.title}</span>{" "}
-									<span className="small-text d-block">{promotedBanner2.heading}</span>
+									<span style={{color: 'white'}} className="big-text">{promotedBanner2.title}</span>{" "}
+									<span style={{color: 'white'}} className="small-text d-block">{promotedBanner2.heading}</span>
 								</p>
 							</div>
 						</div>
