@@ -1,9 +1,15 @@
-import Link from "next/link";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Product_Type} from "../../generated/graphql";
 
 const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[]}> = (props) => {
 	const {productTypesRecommendation: productTypes} = props;
+	const [rootUrl, setRootUrl] = useState<string>("");
+
+	useEffect(() => {
+		let location = window.location;
+		setRootUrl(location.toString().split("product")[0]);
+	}, []);
+
 	return (
 		<div className="slider-area mb-80 mb-md-60 mb-sm-60 pb-0">
 			{/*=======  slider-wrapper  =======*/}
@@ -35,8 +41,8 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 					<div className="decor-single-slider" key={productType.id}>
 						<div className="decor-single-slider-content">
 							{/*=======  slider image  =======*/}
-							<div className="slider-image" style={{background: 'black', overflow: 'hidden'}}>
-								<img style={{"opacity": '0.6'}} src={productType.recommendedCoverImage ?? ""} className="img-fluid" alt="" />
+							<div className="slider-image" style={{background: "black", overflow: "hidden"}}>
+								<img style={{opacity: "0.6"}} src={productType.recommendedCoverImage ?? ""} className="img-fluid" alt="" />
 							</div>
 							{/*=======  End of slider image  =======*/}
 							{/*=======  slider content  =======*/}
@@ -47,9 +53,12 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 								<div className="main-title" style={{color: "#FFFFFF"}}>
 									{productType.product.name} <br /> {productType.name}
 								</div>
-								<Link href={`/product/${productType.productId}`}>
-									<a className="lezada-button lezada-button--medium">shop now</a>
-								</Link>
+								<a
+									className="lezada-button lezada-button--medium"
+									href={`${rootUrl}product/${productType.productId}`}
+									target="_blank">
+									shop now
+								</a>
 							</div>
 							{/*=======  End of slider content  =======*/}
 						</div>
