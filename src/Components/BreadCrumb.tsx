@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import styles from './breadcrumb.module.css';
 
 interface linkType {
 	link: string;
