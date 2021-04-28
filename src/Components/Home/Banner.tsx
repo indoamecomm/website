@@ -11,8 +11,8 @@ const Banner: React.FC<BannerProps> = (props) => {
 	const {shopCollection, highlyUsed} = props;
 
 	const shopCollection1 = shopCollection[0].banners[0];
-	const shopCollection2 = shopCollection[0].banners[1];
-	const shopCollection3 = shopCollection[0].banners[2];
+	//const shopCollection2 = shopCollection[0].banners[1];
+	//const shopCollection3 = shopCollection[0].banners[2];
 
 	const highlyUsed1 = highlyUsed[0].banners[0];
 	const highlyUsed2 = highlyUsed[0].banners[1];
@@ -191,7 +191,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 											</div>
 										</li>
 										{/* SLIDE  */}
-										<li
+										{/* <li
 											data-index="rs-34"
 											data-transition="fadefromright,fadefromleft,fadefromtop,fadefrombottom,fadetoleftfadefromright,fadetorightfadefromleft,fadetotopfadefrombottom,fadetobottomfadefromtop"
 											data-slotamount="default,default,default,default,default,default,default,default"
@@ -215,7 +215,6 @@ const Banner: React.FC<BannerProps> = (props) => {
 											data-param9
 											data-param10
 											data-description>
-											{/* MAIN IMAGE */}
 											<img
 												src={shopCollection2.image ?? undefined}
 												alt={shopCollection2?.title ?? undefined}
@@ -235,8 +234,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 												className="rev-slidebg"
 												data-no-retina
 											/>
-											{/* LAYERS */}
-											{/* LAYER NR. 4 */}
+											
 											<div
 												className="tp-caption   tp-resizeme"
 												id="slide-34-layer-13"
@@ -269,7 +267,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 												}}>
 												{shopCollection2.title}
 											</div>
-											{/* LAYER NR. 5 */}
+											
 											<div
 												className="tp-caption   tp-resizeme"
 												id="slide-34-layer-3"
@@ -302,7 +300,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 												}}>
 												{shopCollection2.title}
 											</div>
-											{/* LAYER NR. 6 */}
+											
 											<div
 												className="tp-caption button-under-line rev-btn  tp-resizeme"
 												id="slide-34-layer-20"
@@ -339,8 +337,9 @@ const Banner: React.FC<BannerProps> = (props) => {
 												</Link>
 											</div>
 										</li>
+										 */}
 										{/* SLIDE  */}
-										<li
+										{/* <li
 											data-index="rs-35"
 											data-transition="curtain-1,curtain-2,curtain-3,slideremoveup,slideremovedown,slideremoveright,slideremoveleft,slideremovehorizontal,slideremovevertical"
 											data-slotamount="default,default,default,default,default,default,default,default,default"
@@ -364,7 +363,6 @@ const Banner: React.FC<BannerProps> = (props) => {
 											data-param9
 											data-param10
 											data-description>
-											{/* MAIN IMAGE */}
 											<img
 												src={shopCollection3.image ?? undefined}
 												alt={shopCollection3?.title ?? undefined}
@@ -384,8 +382,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 												className="rev-slidebg"
 												data-no-retina
 											/>
-											{/* LAYERS */}
-											{/* LAYER NR. 7 */}
+										
 											<div
 												className="tp-caption   tp-resizeme"
 												id="slide-35-layer-13"
@@ -418,7 +415,6 @@ const Banner: React.FC<BannerProps> = (props) => {
 												}}>
 												{shopCollection3.heading}
 											</div>
-											{/* LAYER NR. 8 */}
 											<div
 												className="tp-caption   tp-resizeme"
 												id="slide-35-layer-3"
@@ -451,7 +447,6 @@ const Banner: React.FC<BannerProps> = (props) => {
 												}}>
 												{shopCollection3.title ?? ""}
 											</div>
-											{/* LAYER NR. 9 */}
 											<div
 												className="tp-caption button-under-line rev-btn  tp-resizeme"
 												id="slide-35-layer-20"
@@ -488,6 +483,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 												</Link>
 											</div>
 										</li>
+									 */}
 									</ul>
 									<div className="tp-bannertimer tp-bottom" style={{visibility: "hidden"}} />{" "}
 								</div>

@@ -111,6 +111,14 @@ const index: React.FC<ProductProps> = (props: ProductProps) => {
 
 export default index;
 
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
 export async function getStaticPaths() {
 	// Call an external API endpoint to get posts
 	const apolloClient = initializeApollo();
@@ -133,7 +141,7 @@ export async function getStaticPaths() {
 
 export const getStaticProps: GetStaticProps = async ({params}) => {
 	const apolloClient = initializeApollo();
-
+	
 	const {
 		data: {categories, store_locations: storeLocations},
 	} = await apolloClient.query({
@@ -150,15 +158,18 @@ export const getStaticProps: GetStaticProps = async ({params}) => {
 		},
 	});
 
+	const product: Product = products[0] ?? null;
+
 	const {
 		data: {product_type: productTypesRecommendation},
 	} = await apolloClient.query({
 		query: GetRecommendations,
 		variables: {
 			productId: params ? params.productId : null,
+			subCategoryId: product ? product?.subCategoryId: -1
 		},
 	});
-	const product: Product = products[0] ?? null;
+	
 	const productDescription: ProductDescriptionProps = {
 		name: product?.name ?? null,
 		categoryName: product?.sub_category.name ?? null,
@@ -179,7 +190,7 @@ export const getStaticProps: GetStaticProps = async ({params}) => {
 			productDescription,
 			seasons,
 			product,
-			productTypesRecommendation,
+			productTypesRecommendation: shuffle(productTypesRecommendation.concat()),
 		},
 		revalidate: 1,
 	};

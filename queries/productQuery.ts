@@ -14,7 +14,7 @@ export const GetProductDetailsById = gql`
 			id
 			name
 			}
-			productTypes {
+			productTypes(where: {isDeleted: {_eq: false}}) {
 				id
 				SKU
 				deal_of_the_days(where: {enable: {_eq: true},  expiry: {_gt: $expiry}}) {
@@ -78,8 +78,8 @@ export const GetProducts = gql`
 `;
 
 export const GetRecommendations = gql`
-	query GetProductRecommendations($productId: Int!) {
-		product_type(limit: 5, where: {productId: {_neq: $productId}}) {
+	query GetProductRecommendations($productId: Int!, $subCategoryId: Int!) {
+		product_type(limit: 20, where: {_and: [{productId: {_neq: $productId}}, {product: {subCategoryId: {_eq: $subCategoryId}}}, {isDeleted: {_eq: false}}]}) {
 			id
 			name
 			recommendedCoverImage
@@ -109,7 +109,7 @@ export const GetProductsByCategoryId = gql`
 		discount
 		enable
 		}
-		productTypes_aggregate {
+		productTypes_aggregate(where: {isDeleted: {_eq: false}}) {
 		aggregate {
 			max {
 			discountedPrice
@@ -145,7 +145,7 @@ export const GetCategories = gql`
 					count
 					}
 				}
-				products {
+				products(where: {isDeleted: {_eq: false}}) {
 					id
 					name
 				}
@@ -177,11 +177,16 @@ export const GetSubCategoriesDetails = gql`
 
 
 export const GetSeasons = gql`
-	query GetSeasons {
-		seasons(order_by: { id: asc }, where: { isDeleted: { _eq: false } }) {
+	query GetSeasons($subCategoryId: Int!) {
+		seasons(order_by: {id: asc}, where: {isDeleted: {_eq: false}}) {
 			id
 			name
-		}
+			product_seasons_aggregate(where: {product_type: {isDeleted: {_eq: false}, product: {subCategoryId: {_eq: $subCategoryId}}}}) {
+				aggregate {
+				count
+			  }
+			}
+		  }
 	}
 `;
 
@@ -206,7 +211,7 @@ export const InsertWishlist = gql`
 
 export const GetProductTypesById = gql`
 	query GetProductTypesById($productTypeArray: [Int!], $expiry: timestamptz!) {
-		product_type(where: { id: { _in: $productTypeArray } }) {
+		product_type(where: {_and: [{id: {_in: $productTypeArray}}, {isDeleted: {_eq: false}}]}) {
 			id
 			imageUrl
 			name

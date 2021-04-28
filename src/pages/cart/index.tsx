@@ -419,7 +419,7 @@ export const ConfirmGuestModal: React.FC<ModalProps> = (props) => {
 			<div className="close">
 				<h2 className="modal__title">Proceed to Checkout ?</h2>
 				<img
-					src="images/website/cross.svg"
+					src="https://firebasestorage.googleapis.com/v0/b/indoamerican-dev.appspot.com/o/cross.svg?alt=media&token=bced83e3-6ff8-47e5-bada-f478a1c99401"
 					alt="Close"
 					className="close-img"
 					onClick={() => {

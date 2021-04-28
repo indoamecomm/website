@@ -3220,16 +3220,16 @@ nav.site-nav > ul > li ul.mega-menu-column-5 > li .mega-sub-menu li:last-child a
 	line-height: 1.5;
 }
 .breadcrumb-list__item a {
-	color: #999999;
+	color: #f1f1f1;
 }
 .breadcrumb-list__item:after {
 	right: 0;
 	content: "/";
 	margin: 0 5px 0 10px;
-	color: #004032;
+	color: #f1f1f1;
 }
 .breadcrumb-list__item--active {
-	color: #004032;
+	color: #f1f1f1;
 	text-transform: uppercase;
 }
 .breadcrumb-list__item--active:after {

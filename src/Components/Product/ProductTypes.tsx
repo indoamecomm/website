@@ -1,14 +1,14 @@
-import {useMutation} from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Link from "next/link";
 import React from "react";
-import {useEffect, useContext} from "react";
-import {useState} from "react";
-import toast, {Toaster} from "react-hot-toast";
-import {InsertToUserCart, InsertWishlist} from "../../../queries/productQuery";
-import {DeleteWishlistByUserId, GetUserCartCount, GetUserWishlistCount} from "../../../queries/userQuery";
-import {initializeApollo} from "../../apollo";
-import {Product_Type} from "../../generated/graphql";
-import {useAuth} from "../../hooks/useAuth";
+import { useEffect, useContext } from "react";
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { InsertToUserCart, InsertWishlist } from "../../../queries/productQuery";
+import { DeleteWishlistByUserId, GetUserCartCount, GetUserWishlistCount } from "../../../queries/userQuery";
+import { initializeApollo } from "../../apollo";
+import { Product_Type } from "../../generated/graphql";
+import { useAuth } from "../../hooks/useAuth";
 import WishlistContext from "../../Context/wishlistContext";
 import Spinner from "../Utils/Spinner";
 import CartContext from "../../Context/cartContext";
@@ -18,7 +18,7 @@ const ProductTypes: React.FC<{
 	leftOrient: boolean;
 	subCategory: string;
 }> = (props) => {
-	const {productType, leftOrient, subCategory} = props;
+	const { productType, leftOrient, subCategory } = props;
 	const apolloClient = initializeApollo();
 
 	const [loading, setLoading] = useState<boolean>(false);
@@ -27,15 +27,15 @@ const ProductTypes: React.FC<{
 	const [cartExists, setCartExists] = useState<boolean>(false);
 	const [wishlistExists, setWishlistExists] = useState<boolean>(false);
 
-	const {user} = useAuth();
+	const { user } = useAuth();
 	const [count, setCount] = useState<number>(1);
 	const [url, setUrl] = useState<string>("");
 
 	const [insertToUserCart] = useMutation(InsertToUserCart);
 	// const [insertWishlist] = useMutation(InsertWishlist);
 	const [deleteWishlist] = useMutation(DeleteWishlistByUserId);
-	const {wishlist, setWishlist} = useContext(WishlistContext);
-	const {cart: cartStore, setCart: setCartStore} = useContext(CartContext);
+	const { wishlist, setWishlist } = useContext(WishlistContext);
+	const { cart: cartStore, setCart: setCartStore } = useContext(CartContext);
 
 	const checkCartExist = async () => {
 		if (user) {
@@ -50,7 +50,7 @@ const ProductTypes: React.FC<{
 			});
 
 			if (data) {
-				data.subscribe(({data: {users_aggregate}}) => {
+				data.subscribe(({ data: { users_aggregate } }) => {
 					console.log(users_aggregate);
 					setCartExists(users_aggregate.aggregate.count > 0);
 				});
@@ -73,7 +73,7 @@ const ProductTypes: React.FC<{
 			});
 
 			if (data) {
-				data.subscribe(({data: {users_aggregate}}) => {
+				data.subscribe(({ data: { users_aggregate } }) => {
 					setWishlistExists(users_aggregate.aggregate.count > 0);
 				});
 				// setCartItems(data.data.cart);
@@ -107,7 +107,7 @@ const ProductTypes: React.FC<{
 				setLoading(true);
 
 				const {
-					data: {insert_cart},
+					data: { insert_cart },
 				} = await insertToUserCart({
 					variables: {
 						userId: user.id,
@@ -127,7 +127,7 @@ const ProductTypes: React.FC<{
 				if (checkIfJsonDuplicates(newCartStore, productType.id, "productTypeId")) {
 					newCartStore = newCartStore.filter((item) => item.productTypeId !== productType.id);
 				} else {
-					newCartStore.push({productTypeId: productType.id, count});
+					newCartStore.push({ productTypeId: productType.id, count });
 				}
 				setCartStore(newCartStore);
 			}
@@ -143,7 +143,7 @@ const ProductTypes: React.FC<{
 
 				if (!wishlistExists) {
 					const {
-						data: {insert_wishlists},
+						data: { insert_wishlists },
 					} = await apolloClient.mutate({
 						mutation: InsertWishlist,
 						variables: {
@@ -166,7 +166,7 @@ const ProductTypes: React.FC<{
 					}
 				} else {
 					const {
-						data: {delete_wishlists},
+						data: { delete_wishlists },
 					} = await deleteWishlist({
 						variables: {
 							userId: user.id,
@@ -266,7 +266,7 @@ const ProductTypes: React.FC<{
 								<>
 									<strong>Season</strong>
 									<br />
-									<span style={{textTransform: "capitalize"}}>
+									<span style={{ textTransform: "capitalize" }}>
 										{productType.product_seasons.map((season) => season.season.name).join(" | ")}
 									</span>
 									<br />
@@ -294,7 +294,7 @@ const ProductTypes: React.FC<{
 							)}
 							{productType.height && (
 								<>
-									<strong>Height</strong>
+									<strong>Size</strong>
 									<br />
 									<span>{productType.height}</span>
 									<br />
@@ -367,7 +367,7 @@ const ProductTypes: React.FC<{
 									<tr className="single-info"></tr>
 									<tr className="single-info">
 										<td className="quickview-value">
-											<a href="#">{subCategory}</a>,<a href="#">Year Round</a>
+											<a href="#">{subCategory}</a>
 										</td>
 									</tr>
 									<tr>
@@ -483,5 +483,5 @@ export const getDiscountedPrice = (productType: Product_Type): number => {
 		discountPrice = discountPrice - discountPrice * (productType.product.deal_of_the_days[0].discount / 100);
 	}
 
-	return discountPrice;
+	return Math.round(discountPrice);
 };

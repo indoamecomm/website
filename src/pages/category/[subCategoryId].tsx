@@ -1,10 +1,10 @@
 import Head from "next/head";
-import React, {useRef, useState} from "react";
-import {GetHeaderData} from "../../../queries/homeQuery";
-import {initializeApollo} from "../../apollo";
+import React, { useRef, useState } from "react";
+import { GetHeaderData } from "../../../queries/homeQuery";
+import { initializeApollo } from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
-import {Categories, Category, Product, Product_Type, Seasons, Store_Locations, SubCategory} from "../../generated/graphql";
+import { Categories, Category, Product, Product_Type, Seasons, Store_Locations, SubCategory } from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
 import {
 	GetCategories,
@@ -15,10 +15,10 @@ import {
 	GetTopPurchasedProducts,
 } from "../../../queries/productQuery";
 import Link from "next/link";
-import {useEffect} from "react";
+import { useEffect } from "react";
 import Spinner from "../../Components/Utils/Spinner";
-import {GetUserRatingByProductId} from "../../../queries/userQuery";
-import {useScript} from "../../hooks/useScript";
+import { GetUserRatingByProductId } from "../../../queries/userQuery";
+import { useScript } from "../../hooks/useScript";
 
 interface HeaderProps {
 	categories: Categories[];
@@ -81,7 +81,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 						backgroundImage={subCategory.coverImageUrl}
 						title={subCategory.name}
 						finalName={subCategory.name}
-						links={[{link: "/", name: "HOME"}]}
+						links={[{ link: "/", name: "HOME" }]}
 					/>
 					<CategoryMain
 						products={products}
@@ -110,13 +110,13 @@ interface MainProps {
 }
 
 const CategoryMain: React.FC<MainProps> = (props) => {
-	const {products, categories, subCategory, seasons, productCount, topThreeProductTypes} = props;
+	const { products, categories, subCategory, seasons, productCount, topThreeProductTypes } = props;
 
 	const [seasonId, setSeasonId] = useState<number | null>(null);
 	const [productLoading, setProductLoading] = useState<boolean>(false);
 	const apolloClient = initializeApollo();
 	const [filteredProducts, setFilteredProducts] = useState<any | null>(products);
-	const [orderObject, setOrderObject] = useState<any | null>({});
+	const [orderObject, setOrderObject] = useState<any | null>({ id: "asc" });
 	const [valueChange, setValueChange] = useState<number>(6);
 	const [searchString, setSearchString] = useState<string>("");
 	const [limit, setLimit] = useState<number>(offset);
@@ -128,7 +128,7 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 	const getFilteredProducts = async () => {
 		setProductLoading(true);
 		const {
-			data: {product},
+			data: { product },
 		} = await apolloClient.query({
 			query: GetProductsByCategoryId,
 			variables: {
@@ -156,30 +156,30 @@ const CategoryMain: React.FC<MainProps> = (props) => {
 		setValueChange(valueChange);
 		switch (valueChange) {
 			case 0:
-				newObject = {id: "asc"};
+				newObject = { id: "asc" };
 				setOrderObject(newObject);
 				break;
 			case 1:
-				newObject = {id: "asc"};
+				newObject = { id: "asc" };
 				setOrderObject(newObject);
 				break;
 			case 2:
-				newObject = {id: "asc"};
-				setOrderObject({...newObject});
+				newObject = { id: "asc" };
+				setOrderObject({ ...newObject });
 				break;
 			case 3:
-				newObject = {createdAt: "desc"};
+				newObject = { createdAt: "desc" };
 
-				setOrderObject({...newObject});
+				setOrderObject({ ...newObject });
 				break;
 			case 4:
-				newObject = {productTypes_aggregate: {avg: {discountedPrice: "asc"}}};
+				newObject = { productTypes_aggregate: { avg: { discountedPrice: "asc" } } };
 
-				setOrderObject({...newObject});
+				setOrderObject({ ...newObject });
 				break;
 			case 5:
-				newObject = {productTypes_aggregate: {avg: {discountedPrice: "desc"}}};
-				setOrderObject({...newObject});
+				newObject = { productTypes_aggregate: { avg: { discountedPrice: "desc" } } };
+				setOrderObject({ ...newObject });
 				break;
 		}
 	}, [valueChange]);
@@ -246,7 +246,7 @@ interface CategoryHeader {
 }
 
 const CategoryHeader: React.FC<CategoryHeader> = (props) => {
-	const {seasons, setSeasonId, setValueChange, value} = props;
+	const { seasons, setSeasonId, setValueChange, value } = props;
 
 	return (
 		<div className="shop-page-header">
@@ -317,7 +317,7 @@ const CategorySidebar: React.FC<{
 	setSearchString: (string) => void;
 	topThreeProductTypes: any[];
 }> = (props) => {
-	const {categories, searchString, setSearchString, topThreeProductTypes} = props;
+	const { categories, searchString, setSearchString, topThreeProductTypes } = props;
 
 	const getCount = (category: Categories): number => {
 		let count = 0;
@@ -409,8 +409,8 @@ const CategorySidebar: React.FC<{
 	);
 };
 
-const ProductSideCard: React.FC<{product: any}> = (props) => {
-	const {product} = props;
+const ProductSideCard: React.FC<{ product: any }> = (props) => {
+	const { product } = props;
 
 	const apolloClient = initializeApollo();
 	const [rating, setRating] = useState<number>(1);
@@ -423,7 +423,7 @@ const ProductSideCard: React.FC<{product: any}> = (props) => {
 					productTypeId: product.productType.id,
 				},
 			})
-			.then(({data}) => {
+			.then(({ data }) => {
 				setRating(data.user_ratings_aggregate.aggregate.avg.rating);
 			});
 	}, []);
@@ -451,7 +451,7 @@ const ProductSideCard: React.FC<{product: any}> = (props) => {
 						<div className="price">
 							{product.productType.originalPrice ? (
 								<span className="main-price discounted">₹{product.productType.originalPrice}</span>
-							) : <span/>}
+							) : <span />}
 							<span className="discounted-price">₹{product.productType.discountedPrice}</span>
 						</div>
 						<div className="rating">
@@ -467,9 +467,9 @@ const ProductSideCard: React.FC<{product: any}> = (props) => {
 	);
 };
 
-const CategoryCard: React.FC<{product: Product}> = (props) => {
+const CategoryCard: React.FC<{ product: Product }> = (props) => {
 	const {
-		product: {name, hoverImageUrl, imageUrl, description, productTypes_aggregate, id},
+		product: { name, hoverImageUrl, imageUrl, description, productTypes_aggregate, id },
 	} = props;
 
 	const minDiscountedPrice = productTypes_aggregate.aggregate?.min?.discountedPrice ?? null;
@@ -579,42 +579,45 @@ export async function getStaticPaths() {
 
 	// Get the paths we want to pre-render based on posts
 	const {
-		data: {sub_categories: subCategories},
+		data: { sub_categories: subCategories },
 	} = await apolloClient.query({
 		query: GetSubCategories,
 	});
 
 	const paths = subCategories.map((subCategory: SubCategory) => ({
-		params: {subCategoryId: subCategory.id.toString()},
+		params: { subCategoryId: subCategory.id.toString() },
 	}));
 
 	// We'll pre-render only these paths at build time.
 	// { fallback: false } means other routes should 404.
-	return {paths, fallback: false};
+	return { paths, fallback: false };
 }
 
-export async function getStaticProps({params}) {
+export async function getStaticProps({ params }) {
 	const apolloClient = initializeApollo();
 
 	const {
-		data: {store_locations: storeLocations, categories: categoriesHeader},
+		data: { store_locations: storeLocations, categories: categoriesHeader },
 	} = await apolloClient.query({
 		query: GetHeaderData,
 	});
 
 	const {
-		data: {seasons},
+		data: { seasons },
 	} = await apolloClient.query({
 		query: GetSeasons,
+		variables: {
+			subCategoryId: params ? params.subCategoryId : null
+		}
 	});
 
 	const {
-		data: {categories},
+		data: { categories },
 	} = await apolloClient.query({
 		query: GetCategories,
 	});
 	const {
-		data: {product, product_aggregate},
+		data: { product, product_aggregate },
 	} = await apolloClient.query({
 		query: GetProductsByCategoryId,
 		variables: {
@@ -626,7 +629,7 @@ export async function getStaticProps({params}) {
 	});
 
 	const {
-		data: {sub_categories: subCategories},
+		data: { sub_categories: subCategories },
 	} = await apolloClient.query({
 		query: GetSubCategoriesDetails,
 		variables: {
@@ -635,7 +638,7 @@ export async function getStaticProps({params}) {
 	});
 
 	const {
-		data: {topThreeProductTypes},
+		data: { topThreeProductTypes },
 	} = await apolloClient.query({
 		query: GetTopPurchasedProducts,
 	});
@@ -645,7 +648,7 @@ export async function getStaticProps({params}) {
 			categories,
 			storeLocations,
 			product,
-			seasons,
+			seasons: seasons.filter((season) => season.product_seasons_aggregate.aggregate.count > 0),
 			categoriesHeader,
 			subCategory: subCategories[0],
 			productCount: product_aggregate.aggregate.count,
