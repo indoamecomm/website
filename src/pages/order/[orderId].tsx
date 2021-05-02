@@ -1,24 +1,23 @@
 import Head from "next/head";
-import React, {useContext, useEffect, useRef, useState} from "react";
-import {GetHeaderData} from "../../../queries/homeQuery";
-import {initializeApollo} from "../../apollo";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { GetHeaderData } from "../../../queries/homeQuery";
+import { initializeApollo } from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
-import {Category, Order, Orders, Order_Product_Types, Store_Locations} from "../../generated/graphql";
+import { Category, Order, Orders, Order_Product_Types, Store_Locations } from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
-import {CancelOrder, GetOrderByUserId, GetOrders, InsertUserCart} from "../../../queries/userQuery";
-import {useAuth} from "../../hooks/useAuth";
+import { CancelOrder, GetOrderByUserId, GetOrders, InsertUserCart } from "../../../queries/userQuery";
+import { useAuth } from "../../hooks/useAuth";
 
-import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
-import {useRouter} from "next/router";
+import { getDiscountedPrice } from "../../Components/Product/ProductTypes";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import OrderUserContext from "../../Context/orderUserContext";
 import Modal from "react-modal";
-import {InsertUserRatings, UpdateUserRatings} from "../../../queries/productQuery";
-import {useMutation} from "@apollo/client";
-import toast, {Toaster} from "react-hot-toast";
+import { InsertUserRatings, UpdateUserRatings } from "../../../queries/productQuery";
+import toast, { Toaster } from "react-hot-toast";
 import Spinner from "../../Components/Utils/Spinner";
-import {useScript} from "../../hooks/useScript";
+import { useScript } from "../../hooks/useScript";
 
 interface HeaderProps {
 	categories: Category[];
@@ -26,7 +25,7 @@ interface HeaderProps {
 }
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
-	const {categories, storeLocations} = props;
+	const { categories, storeLocations } = props;
 
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -66,7 +65,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
 						title={"Order"}
 						finalName={"ORDER"}
-						links={[{link: "/", name: "HOME"}]}
+						links={[{ link: "/", name: "HOME" }]}
 					/>
 					<CartMain />
 				</div>
@@ -78,13 +77,13 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 export default index;
 
 const CartMain: React.FC = () => {
-	const {user} = useAuth();
+	const { user } = useAuth();
 	const [order, setOrder] = useState<Orders>();
 
 	const apolloClient = initializeApollo();
 	const router = useRouter();
-	const {orderId} = router.query;
-	const {orderUserId} = useContext(OrderUserContext);
+	const { orderId } = router.query;
+	const { orderUserId } = useContext(OrderUserContext);
 	const [refetch, setRefetch] = useState<number>(1);
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -97,7 +96,7 @@ const CartMain: React.FC = () => {
 			setLoading(true);
 			if (orderUserId) {
 				const {
-					data: {orders},
+					data: { orders },
 				} = await apolloClient.query({
 					query: GetOrderByUserId,
 					variables: {
@@ -110,7 +109,7 @@ const CartMain: React.FC = () => {
 				setOrder(orders[0]);
 			} else if (user) {
 				const {
-					data: {orders},
+					data: { orders },
 				} = await apolloClient.query({
 					query: GetOrderByUserId,
 					variables: {
@@ -138,6 +137,8 @@ const CartMain: React.FC = () => {
 	}, [user, refetch]);
 
 	const reOrder = async () => {
+		const apolloClient = initializeApollo();
+
 		// console.log(order?.order_product_types);
 		// order?.order_product_types.forEach((product) => {
 		// 	console.log(product);
@@ -152,7 +153,7 @@ const CartMain: React.FC = () => {
 			};
 		});
 		const {
-			data: {insert_cart},
+			data: { insert_cart },
 		} = await apolloClient.mutate({
 			mutation: InsertUserCart,
 			variables: {
@@ -197,7 +198,8 @@ const CartMain: React.FC = () => {
 												<th className="product-price">Price</th>
 												<th className="product-quantity">Quantity</th>
 												<th className="product-subtotal">Total</th>
-												<th className="product-remove">Rate</th>
+												<th className="product-price">Status</th>
+												{user && <th className="product-remove">Rate</th>}
 											</tr>
 										</thead>
 										<tbody>
@@ -264,7 +266,7 @@ const CartMain: React.FC = () => {
 										{(order.order_status.id === 1 || order.order_status.id === 6) && (
 											<button
 												className="lezada-button-danger lezada-button--xl"
-												style={{margin: 0}}
+												style={{ margin: 0 }}
 												onClick={() => {
 													setCancelOrderModal(true);
 												}}>
@@ -272,7 +274,7 @@ const CartMain: React.FC = () => {
 											</button>
 										)}
 										{!reOrderLoading ? (
-											<button className="lezada-button lezada-button--xl" style={{margin: 0}} onClick={reOrder}>
+											<button className="lezada-button lezada-button--xl" style={{ margin: 0 }} onClick={reOrder}>
 												REORDER
 											</button>
 										) : (
@@ -312,7 +314,7 @@ const CartMain: React.FC = () => {
 														<p>{order.address?.zipcode}</p>
 													</div>
 												</td>
-												<td colSpan={2} style={{verticalAlign: "top"}}>
+												<td colSpan={2} style={{ verticalAlign: "top" }}>
 													<h3>{order.order_status.name}</h3>
 												</td>
 											</tr>
@@ -332,9 +334,11 @@ const CartMain: React.FC = () => {
 	);
 };
 
-const CartProduct: React.FC<{orderProduct: Order_Product_Types; setRefetch: (number) => void}> = (props) => {
-	const {orderProduct, setRefetch} = props;
+const CartProduct: React.FC<{ orderProduct: Order_Product_Types; setRefetch: (number) => void }> = (props) => {
+	const { orderProduct, setRefetch } = props;
 	const [ratingsModal, setRatingsModal] = useState<boolean>(false);
+
+	const { user } = useAuth();
 
 	const [ratingsData, setRatingsData] = useState(orderProduct.product_type);
 
@@ -378,12 +382,15 @@ const CartProduct: React.FC<{orderProduct: Order_Product_Types; setRefetch: (num
 			<td className="total-price">
 				<span className="price">₹{orderProduct.count * (getDiscountedPrice(orderProduct.product_type) ?? 0)}</span>
 			</td>
+			<td className="product-quantity">
+				<span className="price">{orderProduct.order_status.name}</span>
+			</td>
 			<td className="total-price">
-				<button className="lezada-button lezada-button--medium" style={{margin: 0}} onClick={() => setRatingsModal(true)}>
+				{user && (<button className="lezada-button lezada-button--medium" style={{ margin: 0 }} onClick={() => setRatingsModal(true)}>
 					{orderProduct.product_type.user_ratings.length > 0
 						? `Edit Rating(${orderProduct.product_type.user_ratings[0].rating})`
 						: "Rate"}
-				</button>
+				</button>)}
 			</td>
 		</tr>
 	);
@@ -400,15 +407,13 @@ interface ModalProps {
 }
 
 const RatingsModal: React.FC<ModalProps> = (props) => {
-	const {open, setOpen, setData, data, setRefetch} = props;
+	const { open, setOpen, setData, data, setRefetch } = props;
 	const [rating, setRating] = useState<number>(0);
-	const [insertUserRatings] = useMutation(InsertUserRatings);
-	const [updateUserRatings] = useMutation(UpdateUserRatings);
 
-	const {user} = useAuth();
+	const { user } = useAuth();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [existingRating, setExistingRating] = useState<any>(null);
-	const {orderUserId} = useContext(OrderUserContext);
+	const { orderUserId } = useContext(OrderUserContext);
 
 	useEffect(() => {
 		if (data && data.user_ratings.length > 0) {
@@ -425,11 +430,13 @@ const RatingsModal: React.FC<ModalProps> = (props) => {
 		}
 	};
 	const insertRatings = async () => {
+		const apolloClient = initializeApollo();
 		try {
 			setLoading(true);
 			const {
-				data: {insert_user_ratings},
-			} = await insertUserRatings({
+				data: { insert_user_ratings },
+			} = await apolloClient.mutate({
+				mutation: InsertUserRatings,
 				variables: {
 					userId: user ? user.id : orderUserId,
 					productTypeId: data.id,
@@ -452,11 +459,13 @@ const RatingsModal: React.FC<ModalProps> = (props) => {
 	};
 
 	const updateRating = async () => {
+		const apolloClient = initializeApollo();
 		try {
 			setLoading(true);
 			const {
-				data: {update_user_ratings},
-			} = await updateUserRatings({
+				data: { update_user_ratings },
+			} = await apolloClient.mutate({
+				mutation: UpdateUserRatings,
 				variables: {
 					ratingId: existingRating.id,
 					rating,
@@ -493,7 +502,7 @@ const RatingsModal: React.FC<ModalProps> = (props) => {
 				/>
 			</div>
 			<div className="modal__content">
-				<div className="rating text-center" style={{marginBottom: "2em"}}>
+				<div className="rating text-center" style={{ marginBottom: "2em" }}>
 					{[1, 2, 3, 4, 5].map((element) => (
 						<span key={element}>
 							{rating < element ? (
@@ -521,7 +530,7 @@ const RatingsModal: React.FC<ModalProps> = (props) => {
 					))}
 				</div>
 				<div className="row text-center">
-					{!loading ? (
+					{user && (!loading ? (
 						<button
 							className="lezada-button lezada-button--medium mt-20 mx-auto"
 							type="button"
@@ -533,7 +542,7 @@ const RatingsModal: React.FC<ModalProps> = (props) => {
 						<div className=" mt-20 mx-auto">
 							<Spinner width="40px" height="40px" />
 						</div>
-					)}
+					))}
 				</div>
 			</div>
 		</Modal>
@@ -543,7 +552,7 @@ export async function getStaticProps() {
 	const apolloClient = initializeApollo();
 
 	const {
-		data: {categories, store_locations: storeLocations},
+		data: { categories, store_locations: storeLocations },
 	} = await apolloClient.query({
 		query: GetHeaderData,
 	});
@@ -563,7 +572,7 @@ export const getStaticPaths = async () => {
 
 	// Get the paths we want to pre-render based on posts
 	const {
-		data: {orders},
+		data: { orders },
 	} = await apolloClient.query({
 		query: GetOrders,
 	});
@@ -571,12 +580,12 @@ export const getStaticPaths = async () => {
 		orders &&
 		orders.length > 0 &&
 		orders.map((order: Order) => ({
-			params: {orderId: order.id.toString()},
+			params: { orderId: order.id.toString() },
 		}));
 
 	// We'll pre-render only these paths at build time.
 	// { fallback: false } means other routes should 404.
-	return {paths, fallback: true};
+	return { paths, fallback: true };
 };
 
 interface CancelModalProps {
@@ -587,14 +596,14 @@ interface CancelModalProps {
 }
 
 const CancelModal: React.FC<CancelModalProps> = (props) => {
-	const {orderId, open, setOpen, refetch} = props;
+	const { orderId, open, setOpen, refetch } = props;
 	const client = initializeApollo();
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const cancelOrder = async () => {
 		setLoading(true);
 		const {
-			data: {update_orders},
+			data: { update_orders },
 		} = await client.mutate({
 			mutation: CancelOrder,
 			variables: {

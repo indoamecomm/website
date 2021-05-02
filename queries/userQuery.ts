@@ -454,6 +454,9 @@ export const GetOrderByUserId = gql`
 			}
 			order_product_types {
 				id
+				order_status {
+					name
+				}
 				product_type {
 					id
 					imageUrl
