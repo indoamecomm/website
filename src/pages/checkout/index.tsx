@@ -1,13 +1,13 @@
 import Head from "next/head";
-import React, {useContext, useRef} from "react";
-import {GetHeaderData} from "../../../queries/homeQuery";
-import {initializeApollo} from "../../apollo";
+import React, { useContext, useRef } from "react";
+import { GetHeaderData } from "../../../queries/homeQuery";
+import { initializeApollo } from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
-import {Address, Cart, Category, Store_Locations, User} from "../../generated/graphql";
+import { Address, Cart, Category, Store_Locations, User } from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
-import {useAuth} from "../../hooks/useAuth";
-import {useEffect} from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { useEffect } from "react";
 import {
 	CheckCouponValidity,
 	CreateOrder,
@@ -17,21 +17,21 @@ import {
 	UpdateOrderStatus,
 	VerifyPayment,
 } from "../../../queries/userQuery";
-import {useState} from "react";
-import {getSubTotal} from "../../Components/Header/Cart";
-import {useMutation} from "@apollo/client";
-import toast, {Toaster} from "react-hot-toast";
+import { useState } from "react";
+import { getSubTotal } from "../../Components/Header/Cart";
+import { useMutation } from "@apollo/client";
+import toast, { Toaster } from "react-hot-toast";
 import Modal from "react-modal";
 import Spinner from "../../Components/Utils/Spinner";
-import {AddressEdit} from "../account";
+import { AddressEdit } from "../account";
 // import ReactTooltip from "react-tooltip";
 import dynamic from "next/dynamic";
-import {useRouter} from "next/router";
-import {getDiscountedPrice} from "../../Components/Product/ProductTypes";
-import {GetProductTypesById} from "../../../queries/productQuery";
+import { useRouter } from "next/router";
+import { getDiscountedPrice } from "../../Components/Product/ProductTypes";
+import { GetProductTypesById } from "../../../queries/productQuery";
 import cartContext from "../../Context/cartContext";
 import OrderUserContext from "../../Context/orderUserContext";
-import {useScript} from "../../hooks/useScript";
+import { useScript } from "../../hooks/useScript";
 
 interface HeaderProps {
 	categories: Category[];
@@ -39,7 +39,7 @@ interface HeaderProps {
 }
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
-	const {categories, storeLocations} = props;
+	const { categories, storeLocations } = props;
 	useEffect(() => {
 		const rootEl: any = document.getElementById("root");
 
@@ -85,7 +85,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
 						title={"Checkout"}
 						finalName={"CHECKOUT"}
-						links={[{link: "/", name: "HOME"}]}
+						links={[{ link: "/", name: "HOME" }]}
 					/>
 					<Checkout />
 				</div>
@@ -98,7 +98,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 export default index;
 
 const Checkout: React.FC = () => {
-	const {user} = useAuth();
+	const { user } = useAuth();
 	const [cart, setCart] = useState<Cart[]>([]);
 	const [userDetails, setUserDetails] = useState<User>();
 
@@ -118,8 +118,8 @@ const Checkout: React.FC = () => {
 	const [couponName, setCouponName] = useState<string>("");
 	const [activeCoupon, setActiveCoupon] = useState<any>(null);
 	const [refetch, setRefetch] = useState<number>(1);
-	const {cart: cartStore, setCart: setCartStore} = useContext(cartContext);
-	const {setOrderUserId} = useContext(OrderUserContext);
+	const { cart: cartStore, setCart: setCartStore } = useContext(cartContext);
+	const { setOrderUserId } = useContext(OrderUserContext);
 
 	//For Unauthenticated User
 	const [email, setEmail] = useState<string>("");
@@ -153,7 +153,7 @@ const Checkout: React.FC = () => {
 			if (user) {
 				setQueryLoading(true);
 				const {
-					data: {users},
+					data: { users },
 				} = await apolloClient.query({
 					query: GetUserCartDetails,
 					variables: {
@@ -194,7 +194,7 @@ const Checkout: React.FC = () => {
 				setQueryLoading(false);
 			} else {
 				const {
-					data: {product_type},
+					data: { product_type },
 				} = await apolloClient.query({
 					query: GetProductTypesById,
 					variables: {
@@ -233,7 +233,7 @@ const Checkout: React.FC = () => {
 			});
 
 			const {
-				data: {createOrder},
+				data: { createOrder },
 			} = await placeOrderMutation({
 				variables: {
 					addressId: activeAddress ? activeAddress.id : null,
@@ -256,7 +256,7 @@ const Checkout: React.FC = () => {
 					// order_id: "order_GeBMz369ne4rF4",
 					handler: async (response) => {
 						const {
-							data: {code, message},
+							data: { code, message },
 						} = await verifyOrder({
 							variables: {
 								razorpayOrderId: createOrder.razorpayOrderId,
@@ -337,7 +337,7 @@ const Checkout: React.FC = () => {
 				});
 
 				const {
-					data: {createOrder},
+					data: { createOrder },
 				} = await placeOrderMutationUnauthenticated({
 					variables: {
 						currency: "INR",
@@ -367,7 +367,7 @@ const Checkout: React.FC = () => {
 						// order_id: "order_GeBMz369ne4rF4",
 						handler: async (response: any) => {
 							const {
-								data: {code, message},
+								data: { code, message },
 							} = await verifyOrder({
 								variables: {
 									razorpayOrderId: createOrder.razorpayOrderId,
@@ -447,7 +447,7 @@ const Checkout: React.FC = () => {
 			const {
 				data: {
 					coupons_aggregate: {
-						aggregate: {count},
+						aggregate: { count },
 						nodes,
 					},
 				},
@@ -474,7 +474,7 @@ const Checkout: React.FC = () => {
 			setCouponLoading(false);
 		}
 	};
-	const ReactTooltip = dynamic(() => import("react-tooltip"), {ssr: false});
+	const ReactTooltip = dynamic(() => import("react-tooltip"), { ssr: false });
 
 	return (
 		<div className="checkout-page-area mb-130">
@@ -557,7 +557,7 @@ const Checkout: React.FC = () => {
 												<div className="col-12">
 													<button
 														data-for={!activeAddress && "main"}
-														style={!activeAddress ? {opacity: 0.7} : {opacity: 1}}
+														style={!activeAddress ? { opacity: 0.7 } : { opacity: 1 }}
 														className="lezada-button lezada-button--medium mt-30"
 														data-tip={"Please add address"}
 														onClick={activeAddress ? placeOrder : undefined}
@@ -575,7 +575,7 @@ const Checkout: React.FC = () => {
 											{!user && !loading ? (
 												<div className="col-12">
 													<button
-														style={disabledButton ? {opacity: 0.7} : {opacity: 1}}
+														style={disabledButton ? { opacity: 0.7 } : { opacity: 1 }}
 														className="lezada-button lezada-button--medium mt-30"
 														onClick={placeOrderUnauthenticated}
 														disabled={disabledButton}
@@ -610,7 +610,7 @@ const CheckoutUserForm: React.FC<{
 	refetch: number;
 	setRefetch: (value: any) => void;
 }> = (props) => {
-	const {user, address, activeAddress, setActiveAddress, refetch, setRefetch} = props;
+	const { user, address, activeAddress, setActiveAddress, refetch, setRefetch } = props;
 
 	return (
 		<div className="col-lg-7 mb-20">
@@ -670,6 +670,8 @@ const CheckoutUnauthenticatedUser: React.FC<any> = (props) => {
 		zipcode,
 		setZipcode,
 	} = props;
+
+	const statesList = ['Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli', 'Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu', 'Jharkhand', 'Karnataka', 'Kashmir', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttarakhand', 'Uttar Pradesh', 'West Bengal'];
 
 	return (
 		<div className="col-lg-7 mb-20">
@@ -754,6 +756,7 @@ const CheckoutUnauthenticatedUser: React.FC<any> = (props) => {
 					<div className="col-md-6 col-12 mb-20">
 						<label>State*</label>
 						<input
+							list="statesList"
 							type="text"
 							placeholder="State"
 							value={state}
@@ -761,6 +764,9 @@ const CheckoutUnauthenticatedUser: React.FC<any> = (props) => {
 								setState(event.target.value);
 							}}
 						/>
+						<datalist id="statesList">
+							{statesList.map(state => <option value={state} />)}
+						</datalist>
 					</div>
 					<div className="col-md-6 col-12 mb-20">
 						<label>Zip Code*</label>
@@ -787,7 +793,7 @@ const CheckoutAddress: React.FC<{
 	refetch: number;
 	setRefetch: (value: any) => void;
 }> = (props) => {
-	const {address, activeAddress, setActiveAddress, user, refetch, setRefetch} = props;
+	const { address, activeAddress, setActiveAddress, user, refetch, setRefetch } = props;
 	const [openAddressModal, setOpenAddressModal] = useState<boolean>(false);
 
 	const [addressListModal, setAddressListModal] = useState<boolean>(false);
@@ -797,7 +803,7 @@ const CheckoutAddress: React.FC<{
 
 	useEffect(() => {
 		if (address && address.length > 0) {
-			setAddressList({addresses: address});
+			setAddressList({ addresses: address });
 			setActiveAddress(address[address.length - 1]);
 		}
 	}, [address]);
@@ -874,9 +880,9 @@ interface ModalProps {
 }
 
 const AddressListModal: React.FC<ModalProps> = (props) => {
-	const {open, setOpen, data, onClickAddress, activeAddress: selectedAddress, refetch, setRefetch} = props;
+	const { open, setOpen, data, onClickAddress, activeAddress: selectedAddress, refetch, setRefetch } = props;
 	const [openAddressModal, setOpenAddressModal] = useState<boolean>(false);
-	const {user} = useAuth();
+	const { user } = useAuth();
 
 	return (
 		<Modal overlayClassName="overlay" className="modal__main modal-list__address" isOpen={open}>
@@ -906,9 +912,8 @@ const AddressListModal: React.FC<ModalProps> = (props) => {
 							data.addresses.map((activeAddress) => (
 								<div
 									key={activeAddress.id}
-									className={`address__container ${
-										activeAddress.id === selectedAddress.id ? "address__container-active" : ""
-									}`}
+									className={`address__container ${activeAddress.id === selectedAddress.id ? "address__container-active" : ""
+										}`}
 									onClick={() => {
 										//@ts-ignore
 										onClickAddress(activeAddress ? activeAddress : "");
@@ -946,8 +951,8 @@ const AddressListModal: React.FC<ModalProps> = (props) => {
 		</Modal>
 	);
 };
-const CheckoutCart: React.FC<{cart: Cart[]; activeCoupon: any}> = (props) => {
-	const {cart, activeCoupon} = props;
+const CheckoutCart: React.FC<{ cart: Cart[]; activeCoupon: any }> = (props) => {
+	const { cart, activeCoupon } = props;
 
 	return (
 		<div className="col-12 mb-60">
@@ -988,7 +993,7 @@ export async function getStaticProps() {
 	const apolloClient = initializeApollo();
 
 	const {
-		data: {categories, store_locations: storeLocations},
+		data: { categories, store_locations: storeLocations },
 	} = await apolloClient.query({
 		query: GetHeaderData,
 	});
