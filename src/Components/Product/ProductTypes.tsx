@@ -398,7 +398,7 @@ const ProductTypes: React.FC<{
 					</div>
 					{/*=======  End of shop product description  =======*/}
 				</div>
-				<div className={`col-lg-6 mb-md-70 mb-sm-70 ${leftOrient ? "order-lg-1" : "order-lg-2"}`}>
+				<div onContextMenu={(e) => e.preventDefault()} className={`col-lg-6 mb-md-70 mb-sm-70 ${leftOrient ? "order-lg-1" : "order-lg-2"}`}>
 					{/*=======  shop product big image gallery  =======*/}
 					<div className="shop-product__big-image-gallery-wrapper mb-30">
 						{/*=======  shop product gallery icons  =======*/}

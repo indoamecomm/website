@@ -71,7 +71,7 @@ const Blog: React.FC<{blog: Blogs}> = ({blog}) => {
 		<div className="col">
 			<div className="single-slider-post">
 				{/*=======  image  =======*/}
-				<div className="single-slider-post__image mb-30">
+				<div onContextMenu={(e) => e.preventDefault()} className="single-slider-post__image mb-30">
 					<Link href={`/blogs/${blog.id}`}>
 						<a>
 							<img src={blog.imageUrl ?? " "} className="img-fluid" alt={blog.title} />

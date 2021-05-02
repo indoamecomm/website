@@ -35,17 +35,18 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 					<div className="decor-single-slider" key={productType.id}>
 						<div className="decor-single-slider-content">
 							{/*=======  slider image  =======*/}
-							<div className="slider-image" style={{background: 'black', overflow: 'hidden'}}>
+							<div onContextMenu={(e) => e.preventDefault()} className="slider-image" style={{background: 'black', overflow: 'hidden'}}>
 								<img style={{"opacity": '0.6'}} src={productType.recommendedCoverImage ?? ""} className="img-fluid" alt="" />
 							</div>
 							{/*=======  End of slider image  =======*/}
 							{/*=======  slider content  =======*/}
 							<div className="slider-content">
-								<div className="color-title color-title--white" style={{color: "#FFFFFF"}}>
+								{/* <div className="color-title color-title--white" style={{color: "#FFFFFF"}}>
 									{productType.product.sub_category.name}
-								</div>
+								</div> */}
 								<div className="main-title" style={{color: "#FFFFFF"}}>
-									{productType.product.name} <br /> {productType.name}
+									{/* {productType.product.name} <br />  */}
+									{productType.name}
 								</div>
 								<Link href={`/product/${productType.productId}`}>
 									<a className="lezada-button lezada-button--medium">shop now</a>

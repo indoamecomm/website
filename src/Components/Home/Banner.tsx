@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import {Banner_Product, Banner_Type} from "../../generated/graphql";
+import { Banner_Product, Banner_Type } from "../../generated/graphql";
 
 interface BannerProps {
 	shopCollection: Banner_Type[];
@@ -8,7 +8,7 @@ interface BannerProps {
 }
 
 const Banner: React.FC<BannerProps> = (props) => {
-	const {shopCollection, highlyUsed} = props;
+	const { shopCollection, highlyUsed } = props;
 
 	const shopCollection1 = shopCollection[0].banners[0];
 	//const shopCollection2 = shopCollection[0].banners[1];
@@ -25,6 +25,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 						{/*=======  slider wrapper  =======*/}
 						<div className="slider-wrapper">
 							<div
+							onContextMenu={(e) => e.preventDefault()}
 								id="rev_slider_13_1_wrapper"
 								className="rev_slider_wrapper fullwidthbanner-container"
 								data-alias="homepage-13"
@@ -68,7 +69,8 @@ const Banner: React.FC<BannerProps> = (props) => {
 											data-param10
 											data-description>
 											<img
-												style={{opacity: '0.7'}}
+												
+												style={{ opacity: '0.7' }}
 												src={shopCollection1?.image ?? undefined}
 												alt={shopCollection1?.title ?? undefined}
 												// data-lazyload={"/images/revimages/transparent.png"}
@@ -187,7 +189,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 													cursor: "pointer",
 												}}>
 												<Link href={getBannerLink(shopCollection1.bannerProducts[0])}>
-													<a style={{color: '#ffffff'}} className="revslider-button-red">{shopCollection1.title}</a>
+													<a style={{ color: '#ffffff' }} className="revslider-button-red">{shopCollection1.title}</a>
 												</Link>
 											</div>
 										</li>
@@ -486,7 +488,7 @@ const Banner: React.FC<BannerProps> = (props) => {
 										</li>
 									 */}
 									</ul>
-									<div className="tp-bannertimer tp-bottom" style={{visibility: "hidden"}} />{" "}
+									<div className="tp-bannertimer tp-bottom" style={{ visibility: "hidden" }} />{" "}
 								</div>
 							</div>
 							{/* END REVOLUTION SLIDER */}
@@ -495,41 +497,41 @@ const Banner: React.FC<BannerProps> = (props) => {
 					</div>
 					<div className="col-lg-6">
 						<div className="row">
-							<div className="col-lg-12 mb-40">
+							<div onContextMenu={(e) => e.preventDefault()} className="col-lg-12 mb-40">
 								{/*=======  hover zoom banner  =======*/}
-								<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverzoom">
+								<div style={{ background: 'black', overflow: 'hidden' }} className="single-banner single-banner--hoverzoom">
 									<Link href={getBannerLink(highlyUsed1.bannerProducts[0])}>
 										<a>
 											<img
-											style={{opacity: '0.7'}}
+												style={{ opacity: '0.7' }}
 												src={highlyUsed1.image as string}
 												className="img-fluid"
 												alt={highlyUsed1.title as string}
 											/>
 											<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
 												<SplitWordToSentence word={highlyUsed1.title as string} />
-												<span style={{color: '#ffffff'}} className="price">&#8377; {highlyUsed1.cost}</span>
+												<span style={{ color: '#ffffff' }} className="price">&#8377; {highlyUsed1.cost}</span>
 											</span>
 										</a>
 									</Link>
 								</div>
 								{/*=======  End of hover zoom banner  =======*/}
 							</div>
-							<div className="col-lg-12">
+							<div onContextMenu={(e) => e.preventDefault()} className="col-lg-12">
 								{/*=======  hover zoom banner  =======*/}
-								<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverzoom">
+								<div style={{ background: 'black', overflow: 'hidden' }} className="single-banner single-banner--hoverzoom">
 									<Link href={getBannerLink(highlyUsed2.bannerProducts[0])}>
 										<a>
 											{" "}
 											<img
-											style={{opacity: '0.7'}}
+												style={{ opacity: '0.7' }}
 												src={highlyUsed2.image as string}
 												className="img-fluid"
 												alt={highlyUsed2.title as string}
 											/>
 											<span className="banner-content banner-content--product-type banner-content--product-type--bigtitle">
 												<SplitWordToSentence word={highlyUsed2.title as string} />
-												<span style={{color: '#ffffff'}} className="price">&#8377; {highlyUsed2.cost}</span>
+												<span style={{ color: '#ffffff' }} className="price">&#8377; {highlyUsed2.cost}</span>
 											</span>
 										</a>
 									</Link>
@@ -546,11 +548,11 @@ const Banner: React.FC<BannerProps> = (props) => {
 
 export default Banner;
 
-const SplitWordToSentence: React.FC<{word: string}> = (props) => {
-	const {word} = props;
+const SplitWordToSentence: React.FC<{ word: string }> = (props) => {
+	const { word } = props;
 
 	return (
-		<span style={{color: '#ffffff'}} className="name">
+		<span style={{ color: '#ffffff' }} className="name">
 			{word.split(" ")[0]} {word.split(" ")[1]}
 			<br />
 			{word.split(" ").slice(2).join(" ")}

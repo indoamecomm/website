@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
-import {Banner_Type} from "../../generated/graphql";
-import {getBannerLink} from "./Banner";
+import { Banner_Type } from "../../generated/graphql";
+import { getBannerLink } from "./Banner";
 
 interface FeaturedProductProps {
 	featuredProduct: Banner_Type[];
@@ -26,9 +26,9 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 							className="rev_slider_wrapper fullwidthbanner-container"
 							data-alias="banner-cabinet"
 							data-source="gallery"
-							style={{margin: "0px auto", background: "transparent", padding: "0px", marginTop: "0px", marginBottom: "0px"}}>
+							style={{ margin: "0px auto", background: "transparent", padding: "0px", marginTop: "0px", marginBottom: "0px" }}>
 							{/* START REVOLUTION SLIDER 5.4.7 fullwidth mode */}
-							<div id="rev_slider_6_1" className="rev_slider fullwidthabanner" style={{display: "none"}} data-version="5.4.7">
+							<div id="rev_slider_6_1" className="rev_slider fullwidthabanner" style={{ display: "none" }} data-version="5.4.7">
 								<ul>
 									{/* SLIDE  */}
 									<li
@@ -58,7 +58,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 										<img
 											src="/images/revimages/transparent.png"
 											data-bgcolor="#ffffff"
-											style={{background: "#ffffff"}}
+											style={{ background: "#ffffff" }}
 											alt=""
 											data-bgposition="center center"
 											data-bgfit="cover"
@@ -103,6 +103,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 										</div>
 										{/* LAYER NR. 2 */}
 										<div
+											onContextMenu={(e) => e.preventDefault()}
 											className="tp-caption   tp-resizeme rs-parallaxlevel-1"
 											id="slide-14-layer-4"
 											data-x="['left','left','left','left']"
@@ -120,7 +121,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 											data-paddingright="[0,0,0,0]"
 											data-paddingbottom="[0,0,0,0]"
 											data-paddingleft="[0,0,0,0]"
-											style={{zIndex: 6}}>
+											style={{ zIndex: 6 }}>
 											<img
 												src={featuredProduct.image ?? ""}
 												alt=""
@@ -182,7 +183,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 											data-paddingright="[0,0,0,0]"
 											data-paddingbottom="[0,0,0,0]"
 											data-paddingleft="[0,0,0,0]"
-											style={{zIndex: 8, backgroundColor: "rgb(51,51,51)", borderRadius: "50px 50px 50px 50px"}}>
+											style={{ zIndex: 8, backgroundColor: "rgb(51,51,51)", borderRadius: "50px 50px 50px 50px" }}>
 											{" "}
 										</div>
 										{/* LAYER NR. 5 */}
@@ -387,7 +388,7 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 										</div>
 									</li>
 								</ul>
-								<div className="tp-bannertimer tp-bottom" style={{visibility: "hidden"}} />{" "}
+								<div className="tp-bannertimer tp-bottom" style={{ visibility: "hidden" }} />{" "}
 							</div>
 						</div>
 						{/* END REVOLUTION SLIDER */}
@@ -400,8 +401,8 @@ const FeaturedProduct: React.FC<FeaturedProductProps> = (props: FeaturedProductP
 
 export default FeaturedProduct;
 
-const SplitWordToSentence: React.FC<{word: string}> = (props) => {
-	const {word} = props;
+const SplitWordToSentence: React.FC<{ word: string }> = (props) => {
+	const { word } = props;
 	return (
 		<span className="name">
 			{word.split(" ")[0]} {word.split(" ")[1]}

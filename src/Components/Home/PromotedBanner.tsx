@@ -18,7 +18,7 @@ const PromotedBanner: React.FC<PromotedBannerProps> = (props) => {
 				<div className="row">
 					<div className="col-md-6 mb-30">
 						{/*=======  single banner  =======*/}
-						<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverborder">
+						<div onContextMenu={(e) => e.preventDefault()} style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverborder">
 							<Link href={getBannerLink(promotedBanner1.bannerProducts[0])}>
 								<a className="banner-link" />
 							</Link>
@@ -34,7 +34,7 @@ const PromotedBanner: React.FC<PromotedBannerProps> = (props) => {
 					</div>
 					<div className="col-md-6 mb-30">
 						{/*=======  single banner  =======*/}
-						<div style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverborder">
+						<div onContextMenu={(e) => e.preventDefault()} style={{background: 'black', overflow: 'hidden'}} className="single-banner single-banner--hoverborder">
 							<Link href={getBannerLink(promotedBanner2.bannerProducts[0])}>
 								<a className="banner-link" />
 							</Link>

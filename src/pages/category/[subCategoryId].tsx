@@ -432,7 +432,7 @@ const ProductSideCard: React.FC<{ product: any }> = (props) => {
 		<div className="single-widget-product-wrapper">
 			<div className="single-widget-product">
 				{/*=======  image  =======*/}
-				<div className="single-widget-product__image">
+				<div onContextMenu={(e) => e.preventDefault()} className="single-widget-product__image">
 					<Link href={`/product/${product.productType.productId}`}>
 						<a>
 							<img src={product.productType.imageUrl} className="img-fluid" alt={product.productType.name} />
@@ -483,7 +483,7 @@ const CategoryCard: React.FC<{ product: Product }> = (props) => {
 		<div className="col-12 col-lg-is-5 col-md-6 col-sm-6 mb-45 hot new sale">
 			<div className="single-product">
 				{/*=======  single product image  =======*/}
-				<div className="single-product__image">
+				<div onContextMenu={(e) => e.preventDefault()} className="single-product__image">
 					<Link href={`/product/${id}`}>
 						<a className="image-wrap">
 							<img src={imageUrl} className="img-fluid" alt={name + "Image "} />

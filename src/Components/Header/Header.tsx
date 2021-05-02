@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 								<div className="single-icon user-login">
 									<Link href={user ? "/account" : "/login"}>
 										<a>
-											<i className="ion-android-person"></i>
+											<i className={user != null ? 'ion-android-contact': 'ion-android-person'}></i>
 										</a>
 									</Link>
 								</div>

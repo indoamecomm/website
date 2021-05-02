@@ -78,20 +78,20 @@ export const GetProducts = gql`
 `;
 
 export const GetRecommendations = gql`
-	query GetProductRecommendations($productId: Int!, $subCategoryId: Int!) {
-		product_type(limit: 20, where: {_and: [{productId: {_neq: $productId}}, {product: {subCategoryId: {_eq: $subCategoryId}}}, {isDeleted: {_eq: false}}]}) {
-			id
-			name
-			recommendedCoverImage
-			productId
-			product {
-				name
-				sub_category {
-					name
-				}
-			}
+query GetProductRecommendations($productId: Int!, $subCategoryId: Int!) {
+	product_type(limit: 20, where: {_and: [{productId: {_neq: $productId}}, {product: {subCategoryId: {_eq: $subCategoryId}}}, {isDeleted: {_eq: false}}]}, distinct_on: productId) {
+	  id
+	  name
+	  recommendedCoverImage
+	  productId
+	  product {
+		name
+		sub_category {
+		  name
 		}
+	  }
 	}
+  }
 
 `;
 
