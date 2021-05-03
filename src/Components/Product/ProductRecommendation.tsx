@@ -47,12 +47,12 @@ const ProductRecommendation: React.FC<{productTypesRecommendation: Product_Type[
 							{/*=======  End of slider image  =======*/}
 							{/*=======  slider content  =======*/}
 							<div className="slider-content">
-								{/* <div className="color-title color-title--white" style={{color: "#FFFFFF"}}>
+								<div className="color-title color-title--white" style={{color: "#FFFFFF"}}>
 									{productType.product.sub_category.name}
-								</div> */}
+								</div>
 								<div className="main-title" style={{color: "#FFFFFF"}}>
-									{/* {productType.product.name} <br />  */}
-									{productType.name}
+									{productType.product.name} <br /> 
+									{/* {productType.name} */}
 								</div>
 								<a
 									className="lezada-button lezada-button--medium"
