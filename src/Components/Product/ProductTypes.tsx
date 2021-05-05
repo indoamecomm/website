@@ -218,14 +218,14 @@ const ProductTypes: React.FC<{
 						</div>
 						<div className="shop-product__price mb-30">
 							{productType.originalPrice && productType.originalPrice > 0 ? (
-								<span className="main-price discounted">&#8377; Hello {productType.originalPrice}</span>
+								<span className="main-price discounted">&#8377;{productType.originalPrice}</span>
 							) : (
 								<span />
 							)}
 							<span className="discounted-price">&#8377; {getDiscountedPrice(productType)}</span>
 						</div>
 						<div className="shop-product__short-desc mb-50">
-							{productType.plant && (
+							{productType.plant && productType.plant.trim().length > 0 && (
 								<>
 									<strong>Plant</strong>
 									<br />
@@ -235,7 +235,7 @@ const ProductTypes: React.FC<{
 								</>
 							)}
 
-							{productType.type && (
+							{productType.type && productType.type.trim().length > 0 && (
 								<>
 									<strong>Type</strong>
 									<br />
@@ -244,7 +244,7 @@ const ProductTypes: React.FC<{
 									<br />
 								</>
 							)}
-							{productType.duration && (
+							{productType.duration && productType.duration.trim().length > 0 && (
 								<>
 									<strong>Duration</strong>
 									<br />
@@ -253,7 +253,7 @@ const ProductTypes: React.FC<{
 									<br />
 								</>
 							)}
-							{productType.remark && (
+							{productType.remark && productType.remark.trim().length > 0 && (
 								<>
 									<strong>Remarks</strong>
 									<br />
@@ -273,7 +273,7 @@ const ProductTypes: React.FC<{
 									<br />
 								</>
 							)}
-							{productType.quantity && (
+							{productType.quantity && productType.quantity.trim().length > 0 && (
 								<>
 									<strong>Quantity</strong>
 									<br />
@@ -283,7 +283,7 @@ const ProductTypes: React.FC<{
 								</>
 							)}
 
-							{productType.exposure && (
+							{productType.exposure && productType.exposure.trim().length > 0 && (
 								<>
 									<strong>Exposure</strong>
 									<br />
@@ -292,7 +292,7 @@ const ProductTypes: React.FC<{
 									<br />
 								</>
 							)}
-							{productType.height && (
+							{productType.height && productType.height.trim().length > 0 && (
 								<>
 									<strong>Size</strong>
 									<br />
@@ -301,7 +301,7 @@ const ProductTypes: React.FC<{
 									<br />
 								</>
 							)}
-							{productType.spread && (
+							{productType.spread && productType.spread.trim().length > 0 && (
 								<>
 									<strong>Spread</strong>
 									<br />
@@ -310,7 +310,7 @@ const ProductTypes: React.FC<{
 									<br />
 								</>
 							)}
-							{productType.spacing && (
+							{productType.spacing && productType.spacing.trim().length > 0 && (
 								<>
 									<strong>Spacing</strong>
 									<br />
@@ -332,7 +332,7 @@ const ProductTypes: React.FC<{
 											onClick={() => setCount((oldCount) => (oldCount - 1 > 0 ? oldCount - 1 : 1))}>
 											-
 										</a>
-										<input type="text" value={count} onChange={(event) => setCount(parseInt(event.target.value))} />
+										<input type="text" value={count} onChange={(event) => setCount(isNaN(parseInt(event.target.value)) ? 1 : parseInt(event.target.value))} />
 										<a className="inc qty-btn" onClick={() => setCount((oldCount) => oldCount + 1)}>
 											+
 										</a>
