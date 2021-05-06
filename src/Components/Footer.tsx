@@ -84,13 +84,11 @@ const Footer = () => {
 						{/*=======  single widget  =======*/}
 					</div>
 					<div className="col footer-single-widget">
-						{/*=======  single widget  =======*/}
+						
 						<h5 className="widget-title">FOLLOW US ON</h5>
-						{/*=======  footer navigation container  =======*/}
 						<div className="footer-nav-container footer-social-links">
 							<nav>
 								<ul>
-									
 									<li>
 										<a href="https://www.facebook.com/Indo-American-Hybrid-Seeds-India-Pvt-Ltd-Vegetable-Crops-113434713907434" target="_blank">
 											<i className="fa fa-facebook" /> Facebook
@@ -100,8 +98,7 @@ const Footer = () => {
 								</ul>
 							</nav>
 						</div>
-						{/*=======  End of footer navigation container  =======*/}
-						{/*=======  single widget  =======*/}
+					
 					</div>
 					<div className="col footer-single-widget">
 						{/*=======  single widget  =======*/}
