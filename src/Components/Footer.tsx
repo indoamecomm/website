@@ -84,7 +84,6 @@ const Footer = () => {
 						{/*=======  single widget  =======*/}
 					</div>
 					<div className="col footer-single-widget">
-						
 						<h5 className="widget-title">FOLLOW US ON</h5>
 						<div className="footer-nav-container footer-social-links">
 							<nav>
@@ -98,7 +97,6 @@ const Footer = () => {
 								</ul>
 							</nav>
 						</div>
-					
 					</div>
 					<div className="col footer-single-widget">
 						{/*=======  single widget  =======*/}
