@@ -23,7 +23,6 @@ export const useAuth: any = () => {
 
 // Provider hook that creates an auth object and handles it's state
 const useAuthProvider = () => {
-	const apolloClient = initializeApollo();
 
 	const [user, setUser] = useState<User | null>(null);
 	const createUser = (hasuraUser: User) => {
