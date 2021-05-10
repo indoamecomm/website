@@ -29,7 +29,7 @@ const ProductDescription: React.FC<ProductDescriptionProps> = (props) => {
 							)}
 						</div>
 					</div>
-					<div className="col-md-6 pl-60 pl-sm-15 pl-xs-15 pl-xxs-15 mb-30">
+					<div onContextMenu={(e) => e.preventDefault()} className="col-md-6 pl-60 pl-sm-15 pl-xs-15 pl-xxs-15 mb-30">
 						{/*=======  single image  =======*/}
 						<div className="single-category__image single-category__image--two text-center text-md-right">
 							<img src={productImage} className="img-fluid" alt={`${name} main image`} />

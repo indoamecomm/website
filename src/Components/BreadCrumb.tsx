@@ -19,7 +19,7 @@ const BreadCrumb: React.FC<BreadCrumbProps> = (props) => {
 		<div className={`breadcrumb-area  pt-50 pb-70 mb-100`} style={{ backgroundImage: `url(${backgroundImage}), linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3))`, backgroundBlendMode: "overlay" }}>
 			<div className="container">
 				<div className="row">
-					<div className="col-lg-12">
+					<div onContextMenu={(e) => e.preventDefault()} className="col-lg-12">
 						<h1 className="breadcrumb-title" style={{ color: "white" }}>{title}</h1>
 						{/*=======  breadcrumb list  =======*/}
 						<ul className="breadcrumb-list">

@@ -138,10 +138,10 @@ const Product: React.FC<{productType: ProductType}> = (props) => {
 		<div className="single-widget-product-wrapper">
 			<div className="single-widget-product">
 				{/*=======  image  =======*/}
-				<div className="single-widget-product__image">
+				<div onContextMenu={(e) => e.preventDefault()} className="single-widget-product__image">
 					<Link href={`/product/${productType.productId}`}>
 						<a>
-							<img src={productType.imageUrl} className="img-fluid" alt={productType.name} />
+							<img src={productType?.imageUrl ?? ""} className="img-fluid" alt={productType.name} />
 						</a>
 					</Link>
 				</div>

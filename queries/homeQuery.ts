@@ -1,21 +1,21 @@
 import { gql } from "@apollo/client";
 
 export const GetHeaderData = gql`
-	query GetHeaderData {
-		categories(order_by: {id: asc}) {
-			id
-			name
-			subCategories: sub_categories(order_by: {id: asc}) {
-				id
-				name
-				isDeleted
-			}
-		}
-		store_locations(order_by: {id: asc}) {
-			id
-			name
-		}
+query GetHeaderData {
+	categories(order_by: {id: asc}, where: {isDeleted: {_eq: false}}) {
+	  id
+	  name
+	  subCategories: sub_categories(order_by: {id: asc}, where: {isDeleted: {_eq: false}}) {
+		id
+		name
+		isDeleted
+	  }
 	}
+	store_locations(order_by: {id: asc}) {
+	  id
+	  name
+	}
+  }
 `;
 
 export const GetBannerData = gql`

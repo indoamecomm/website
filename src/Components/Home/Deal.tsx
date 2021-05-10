@@ -12,7 +12,7 @@ const Deal: React.FC<{dealOfTheDay: Deal_Of_The_Day}> = (props) => {
 					<div className="col-lg-12">
 						<div className="countdown-background pt-30 pb-30">
 							<div className="row align-items-center">
-								<div className="col-12 col-xl-5 col-lg-3">
+								<div onContextMenu={(e) => e.preventDefault()} className="col-12 col-xl-5 col-lg-3">
 									<div className="countdown-image text-center">
 										<img src={getDealImage(dealOfTheDay)} className="img-fluid" alt="" />
 									</div>

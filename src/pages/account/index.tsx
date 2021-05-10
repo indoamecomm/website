@@ -1,13 +1,13 @@
 import Head from "next/head";
-import React, {useContext, useRef} from "react";
-import {GetHeaderData} from "../../../queries/homeQuery";
-import {initializeApollo} from "../../apollo";
+import React, { useContext, useRef } from "react";
+import { GetHeaderData } from "../../../queries/homeQuery";
+import { initializeApollo } from "../../apollo";
 import Footer from "../../Components/Footer";
 import Header from "../../Components/Header/Header";
-import {Category, Store_Locations} from "../../generated/graphql";
+import { Category, Store_Locations } from "../../generated/graphql";
 import BreadCrumb from "../../Components/BreadCrumb";
-import {useAuth} from "../../hooks/useAuth";
-import {useEffect} from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { useEffect } from "react";
 import {
 	GetAccountDetails,
 	InsertAddress,
@@ -15,17 +15,17 @@ import {
 	UpdateAddress,
 	UpdateUserAccountDetails,
 } from "../../../queries/userQuery";
-import {useState} from "react";
-import {format} from "date-fns";
-import {useMutation} from "@apollo/client";
-import toast, {Toaster} from "react-hot-toast";
+import { useState } from "react";
+import { format } from "date-fns";
+import { useMutation } from "@apollo/client";
+import toast, { Toaster } from "react-hot-toast";
 import Spinner from "../../Components/Utils/Spinner";
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
 import Modal from "react-modal";
 import Link from "next/link";
-import {PDFDownloadLink} from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import Invoice from "../../Components/Invoice/Invoice";
-import {useScript} from "../../hooks/useScript";
+import { useScript } from "../../hooks/useScript";
 import cartContext from "../../Context/cartContext";
 import wishlistContext from "../../Context/wishlistContext";
 
@@ -35,7 +35,7 @@ interface HeaderProps {
 }
 
 const index: React.FC<HeaderProps> = (props: HeaderProps) => {
-	const {categories, storeLocations} = props;
+	const { categories, storeLocations } = props;
 	useEffect(() => {
 		const rootEl: any = document.getElementById("root");
 
@@ -79,7 +79,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 						backgroundImage={"/images/breadcrumb-bg/01.jpg"}
 						title={"My Account"}
 						finalName={"MY ACCOUNT"}
-						links={[{link: "/", name: "HOME"}]}
+						links={[{ link: "/", name: "HOME" }]}
 					/>
 					<Account />
 				</div>
@@ -92,7 +92,7 @@ const index: React.FC<HeaderProps> = (props: HeaderProps) => {
 export default index;
 
 const Account: React.FC = () => {
-	const {user, changePassword: changePass, signOut} = useAuth();
+	const { user, changePassword: changePass, signOut } = useAuth();
 	const apolloClient = initializeApollo();
 
 	const [orders, setOrders] = useState<any[] | null>(null);
@@ -113,13 +113,13 @@ const Account: React.FC = () => {
 	const router = useRouter();
 	const [activeTab, setActiveTab] = useState<number>(parseInt(router?.query?.id ? (router?.query?.id as string) : "1"));
 	const [navigationLoading, setNavigationLoading] = useState(false);
-	const {cart, setCart} = useContext(cartContext);
-	const {wishlist, setWishlist} = useContext(wishlistContext);
+	const { cart, setCart } = useContext(cartContext);
+	const { wishlist, setWishlist } = useContext(wishlistContext);
 
 	const nestNavigation = async (id: number) => {
 		setNavigationLoading(true);
 		setActiveTab(id);
-		await router.push("/account", {query: {id}});
+		await router.push("/account", { query: { id } });
 		setNavigationLoading(false);
 	};
 
@@ -173,7 +173,7 @@ const Account: React.FC = () => {
 					lastName,
 				},
 			})
-			.then(({data: {update_users}}) => {
+			.then(({ data: { update_users } }) => {
 				setDetailsLoading(false);
 				if (update_users.affected_rows > 0) {
 					toast.success("Details Update Successfully");
@@ -214,7 +214,7 @@ const Account: React.FC = () => {
 
 		if (newPassword === confirmPassword) {
 			setPasswordLoading(true);
-			changePass({email, password: currentPassword, newPassword}).then((data: any) => {
+			changePass({ email, password: currentPassword, newPassword }).then((data: any) => {
 				setPasswordLoading(false);
 
 				if (data.error) {
@@ -237,7 +237,7 @@ const Account: React.FC = () => {
 					},
 					fetchPolicy: "network-only",
 				})
-				.then(({data: {orders, addresses, users}}) => {
+				.then(({ data: { orders, addresses, users } }) => {
 					setOrders(orders);
 					setAddresses(addresses);
 					setFirstName(users[0].firstName);
@@ -517,11 +517,11 @@ const Account: React.FC = () => {
 
 																<div
 																	className="single-input-item"
-																	style={{cursor: "not-allowed", opacity: 0.7}}>
+																	style={{ cursor: "not-allowed", opacity: 0.7 }}>
 																	<label
 																		htmlFor="email"
 																		className="required"
-																		style={{cursor: "disabled"}}>
+																		style={{ cursor: "disabled" }}>
 																		Email Address
 																	</label>
 																	<input type="email" id="email" value={email} disabled={true} />
@@ -538,7 +538,7 @@ const Account: React.FC = () => {
 																	</div>
 																)}
 															</form>
-															<form className="mt-2" style={{marginTop: "3em"}} onSubmit={changePassword}>
+															<form className="mt-2" style={{ marginTop: "3em" }} onSubmit={changePassword}>
 																<fieldset>
 																	<legend>Password change</legend>
 																	<div className="single-input-item">
@@ -619,7 +619,7 @@ export async function getStaticProps() {
 	const apolloClient = initializeApollo();
 
 	const {
-		data: {categories, store_locations: storeLocations},
+		data: { categories, store_locations: storeLocations },
 	} = await apolloClient.query({
 		query: GetHeaderData,
 	});
@@ -634,9 +634,9 @@ export async function getStaticProps() {
 	};
 }
 
-const InvoiceItem: React.FC<{order: any}> = (props) => {
-	const {order} = props;
-	const {user} = useAuth();
+const InvoiceItem: React.FC<{ order: any }> = (props) => {
+	const { order } = props;
+	const { user } = useAuth();
 
 	const invoice = {
 		id: "5df3180a09ea16dc4b95f910",
@@ -664,7 +664,7 @@ const InvoiceItem: React.FC<{order: any}> = (props) => {
 			{ready ? (
 				<td>
 					<PDFDownloadLink document={<Invoice invoice={invoice} />} fileName="Invoice.pdf">
-						{({loading}) => (loading ? "Loading..." : "Download")}
+						{({ loading }) => (loading ? "Loading..." : "Download")}
 					</PDFDownloadLink>
 				</td>
 			) : (
@@ -687,7 +687,7 @@ interface ModalProps {
 	refetch?: number;
 }
 export const AddressEdit: React.FC<ModalProps> = (props) => {
-	const {open, setOpen, data: address, setData, userId, setRefetch, refetch} = props;
+	const { open, setOpen, data: address, setData, userId, setRefetch, refetch } = props;
 	const [lineOne, setLineOne] = useState<string>("");
 	const [lineTwo, setLineTwo] = useState<string>("");
 	const [name, setName] = useState<string>("");
@@ -696,6 +696,8 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 	const [town, setTown] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 	const [editAddress] = useMutation(UpdateAddress);
+
+	const statesList = ['Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli', 'Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu', 'Jharkhand', 'Karnataka', 'Kashmir', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttarakhand', 'Uttar Pradesh', 'West Bengal']
 
 	useEffect(() => {
 		if (address) {
@@ -726,7 +728,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 			const newClient = initializeApollo();
 
 			if (!address) {
-				const {data} = await newClient.mutate({
+				const { data } = await newClient.mutate({
 					mutation: InsertAddress,
 					variables: {
 						lineOne,
@@ -748,7 +750,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 					toast.error("Some unknown error occurred");
 				}
 			} else {
-				const {data} = await editAddress({
+				const { data } = await editAddress({
 					variables: {
 						lineOne,
 						lineTwo,
@@ -794,10 +796,10 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 				<div>
 					<div className="modal__content lezada-form">
 						<form onSubmit={submit}>
-							<div className="row modal__content" style={{margin: "auto", width: "40rem"}}>
+							<div className="row modal__content" style={{ margin: "auto", width: "40rem" }}>
 								<div className="col-lg-6 mb-50">
 									<input
-										style={{width: "100%"}}
+										style={{ width: "100%" }}
 										type="text"
 										placeholder="Name"
 										required
@@ -808,7 +810,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 								</div>
 								<div className="col-lg-6 mb-30">
 									<input
-										style={{width: "100%"}}
+										style={{ width: "100%" }}
 										type="text"
 										placeholder="City"
 										required
@@ -819,7 +821,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 								</div>
 								<div className="col-lg-12 mb-50">
 									<input
-										style={{width: "100%"}}
+										style={{ width: "100%" }}
 										type="text"
 										placeholder="Line One"
 										required
@@ -830,7 +832,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 								</div>
 								<div className="col-lg-12 mb-30">
 									<input
-										style={{width: "100%"}}
+										style={{ width: "100%" }}
 										type="text"
 										placeholder="Line Two"
 										value={lineTwo}
@@ -841,7 +843,8 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 
 								<div className="col-lg-6 mb-50">
 									<input
-										style={{width: "100%"}}
+										list="statesList"
+										style={{ width: "100%" }}
 										type="text"
 										placeholder="State"
 										required
@@ -849,11 +852,14 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 										name="state"
 										onChange={(event) => setState(event.target.value)}
 									/>
+									<datalist id="statesList">
+										{statesList.map(state => <option value={state} />)}
+									</datalist>
 								</div>
 								<div className="col-lg-6 mb-30">
 									<input
 										type="text"
-										style={{width: "100%"}}
+										style={{ width: "100%" }}
 										placeholder="Zip code"
 										required
 										value={zip}
@@ -881,7 +887,7 @@ export const AddressEdit: React.FC<ModalProps> = (props) => {
 };
 
 const LogoutModal: React.FC<ModalProps> = (props) => {
-	const {open, setOpen, setData} = props;
+	const { open, setOpen, setData } = props;
 
 	return (
 		<Modal overlayClassName="overlay" className="modal__main modal-logout" isOpen={open}>

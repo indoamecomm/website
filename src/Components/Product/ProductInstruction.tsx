@@ -47,6 +47,7 @@ export default ProductInstruction;
 
 const Instruction: React.FC<{instructionTitle: Instruction_Titles; index: number}> = (props) => {
 	const {instructionTitle, index} = props;
+	console.log("index", index)
 	return (
 		<div className={`tab-pane fade ${!index && " show active"}`} id={`product-series-${index + 1}`} role="tabpanel" aria-labelledby={`product-tab-${index + 1}`}>
 			<div className="shop-product__additional-info">
@@ -56,7 +57,7 @@ const Instruction: React.FC<{instructionTitle: Instruction_Titles; index: number
 							? instructionTitle.instructions.map((instruction) => (
 									<tr key={instruction.id}>
 										<th>
-											{index < 9 && "0"}
+											{instruction.index < 10 && "0"}
 											{instruction.index}
 										</th>
 										<td>

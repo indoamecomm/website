@@ -1,9 +1,9 @@
 import Head from "next/head";
-import React, {useRef} from "react";
-import {initializeApollo} from "../apollo";
+import React, { useRef } from "react";
+import { initializeApollo } from "../apollo";
 import Header from "../Components/Header/Header";
-import {GetBannerData, GetBlogsList, GetDealOfTheDay, GetHeaderData, GetProductListing} from "../../queries/homeQuery";
-import {Banner_Type, Blogs, Category, Deal_Of_The_Day, ProductType, Store_Locations} from "../generated/graphql";
+import { GetBannerData, GetBlogsList, GetDealOfTheDay, GetHeaderData, GetProductListing } from "../../queries/homeQuery";
+import { Banner_Type, Blogs, Category, Deal_Of_The_Day, ProductType, Store_Locations } from "../generated/graphql";
 import Banner from "../Components/Home/Banner";
 import Deal from "../Components/Home/Deal";
 import PromotedBanner from "../Components/Home/PromotedBanner";
@@ -11,9 +11,9 @@ import ProductListing from "../Components/Home/ProductListing";
 import FeaturedProduct from "../Components/Home/FeaturedProduct";
 import BlogList from "../Components/Home/BlogList";
 import Footer from "../Components/Footer";
-import {useAuth} from "../hooks/useAuth";
-import {GetStaticProps} from "next";
-import {useScript} from "../hooks/useScript";
+import { useAuth } from "../hooks/useAuth";
+import { GetStaticProps } from "next";
+import { useScript } from "../hooks/useScript";
 
 interface HomeProps {
 	categories: Category[];
@@ -101,7 +101,7 @@ const Home: React.FC<HomeProps> = (props: HomeProps) => {
 export default Home;
 
 const SectionTitle: React.FC = () => {
-	const {user} = useAuth();
+	const { user } = useAuth();
 
 	return (
 		<div className="section-title-container mb-40">
@@ -168,8 +168,7 @@ const InstagramSlider: React.FC = () => {
 						</div>
 						{/*=====  End of instagram image slider  ======*/}
 					</div>
-					<div className="col-lg-4 order-1 order-lg-2">
-						{/*=======  instagram intro  =======*/}
+					{/* <div className="col-lg-4 order-1 order-lg-2">
 						<div className="instagram-section-intro pl-50 pl-lg-50 pl-md-0 pl-sm-0 pl-xs-0 pl-xxs-0 mb-0 mb-lg-0 mb-md-50 mb-sm-50 mb-xs-50 mb-xxs-50">
 							<p>
 								<a href="https://www.instagram.com/" target="_blank">
@@ -178,8 +177,7 @@ const InstagramSlider: React.FC = () => {
 							</p>
 							<h3>Follow us on Instagram</h3>
 						</div>
-						{/*=======  End of instagram intro  =======*/}
-					</div>
+					</div> */}
 				</div>
 			</div>
 		</div>
@@ -190,19 +188,19 @@ export const getStaticProps: GetStaticProps = async () => {
 	const apolloClient = initializeApollo();
 
 	const {
-		data: {categories, store_locations: storeLocations},
+		data: { categories, store_locations: storeLocations },
 	} = await apolloClient.query({
 		query: GetHeaderData,
 	});
 
 	const {
-		data: {shopCollection, highlyUsed, promotedBanners, featuredProduct},
+		data: { shopCollection, highlyUsed, promotedBanners, featuredProduct },
 	} = await apolloClient.query({
 		query: GetBannerData,
 	});
 
 	const {
-		data: {deal_of_the_day},
+		data: { deal_of_the_day },
 	} = await apolloClient.query({
 		query: GetDealOfTheDay,
 		variables: {
@@ -213,7 +211,7 @@ export const getStaticProps: GetStaticProps = async () => {
 	console.log(deal_of_the_day);
 
 	const {
-		data: {newProducts, featuredProducts, topRated},
+		data: { newProducts, featuredProducts, topRated },
 	} = await apolloClient.query({
 		query: GetProductListing,
 		variables: {
@@ -222,7 +220,7 @@ export const getStaticProps: GetStaticProps = async () => {
 	});
 
 	const {
-		data: {blogs},
+		data: { blogs },
 	} = await apolloClient.query({
 		query: GetBlogsList,
 		variables: {

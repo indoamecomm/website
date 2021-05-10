@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 								<div className="single-icon user-login">
 									<Link href={user ? "/account" : "/login"}>
 										<a>
-											<i className="ion-android-person"></i>
+											<i className={user != null ? 'ion-android-contact': 'ion-android-person'}></i>
 										</a>
 									</Link>
 								</div>
@@ -246,18 +246,8 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<a className="mega-column-title">Social Presence</a>
 													<ul className="mega-sub-menu">
 														<li>
-															<a href="https://www.facebook.com/indamseeds/?fref=ts" target="newwindow">
+															<a href="https://www.facebook.com/Indo-American-Hybrid-Seeds-India-Pvt-Ltd-Vegetable-Crops-113434713907434" target="newwindow">
 																Facebook
-															</a>
-														</li>
-														<li>
-															<a href="https://www.instagram.com/" target="newwindow">
-																Instagram
-															</a>
-														</li>
-														<li>
-															<a href="https://www.youtube.com" target="newwindow">
-																YouTube
 															</a>
 														</li>
 														<br />
@@ -399,18 +389,8 @@ const Header: React.FC<HeaderProps> = (props) => {
 													<a className="mega-column-title">Social Presence</a>
 													<ul className="mega-sub-menu">
 														<li>
-															<a href="https://www.facebook.com/indamseeds/?fref=ts" target="newwindow">
+															<a href="https://www.facebook.com/Indo-American-Hybrid-Seeds-India-Pvt-Ltd-Vegetable-Crops-113434713907434" target="newwindow">
 																Facebook
-															</a>
-														</li>
-														<li>
-															<a href="https://www.instagram.com/" target="newwindow">
-																Instagram
-															</a>
-														</li>
-														<li>
-															<a href="https://www.youtube.com" target="newwindow">
-																YouTube
 															</a>
 														</li>
 													</ul>

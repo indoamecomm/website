@@ -1,15 +1,15 @@
-import {auth} from "../config/firebase";
+import { auth } from "../config/firebase";
 import firebase from "firebase/app";
 
-import {useState, useContext, createContext, ReactNode} from "react";
-import {initializeApollo} from "../apollo";
-import {GetUserByFirebaseUUID, UserSignUp as UserSignUpQuery} from "../../queries/userQuery";
-import {User} from "../generated/graphql";
-import {useEffect} from "react";
-const authContext = createContext<any>({user: {}});
-const {Provider} = authContext;
+import { useState, useContext, createContext, ReactNode } from "react";
+import { initializeApollo } from "../apollo";
+import { GetUserByFirebaseUUID, UserSignUp as UserSignUpQuery } from "../../queries/userQuery";
+import { User } from "../generated/graphql";
+import { useEffect } from "react";
+const authContext = createContext<any>({ user: {} });
+const { Provider } = authContext;
 
-export function AuthProvider(props: {children: ReactNode}): JSX.Element {
+export function AuthProvider(props: { children: ReactNode }): JSX.Element {
 	const auth = useAuthProvider();
 	return <Provider value={auth}>{props.children}</Provider>;
 }
@@ -30,9 +30,10 @@ const useAuthProvider = () => {
 		setUser(() => hasuraUser);
 		return user;
 	};
-	const signUp = async ({firstName, lastName, email, password, phoneNumber}: any) => {
+	const signUp = async ({ firstName, lastName, email, password, phoneNumber }: any) => {
+		const apolloClient = initializeApollo();
 		const {
-			data: {UserSignUp},
+			data: { UserSignUp },
 		} = await apolloClient.mutate({
 			mutation: UserSignUpQuery,
 			variables: {
@@ -47,13 +48,14 @@ const useAuthProvider = () => {
 		if (UserSignUp.Error) {
 			throw UserSignUp.Error;
 		} else {
-			return signIn({email, password});
+			return signIn({ email, password });
 		}
 	};
 
 	const getUserAdditionalData = async (firebaseUser: firebase.User): Promise<User[]> => {
+		const apolloClient = initializeApollo();
 		const {
-			data: {users},
+			data: { users },
 		} = await apolloClient.query({
 			query: GetUserByFirebaseUUID,
 			variables: {
@@ -93,14 +95,14 @@ const useAuthProvider = () => {
 
 
 
-	const signIn = ({email, password}: any) => {
+	const signIn = ({ email, password }: any) => {
 		return auth
 			.signInWithEmailAndPassword(email, password)
 			.then(async (response) => {
 				if (response.user) {
 					const users = await getUserAdditionalData(response.user);
 					if (users.length === 0) {
-						return {error: {message: "User Does not exist please SignUp to continue"}};
+						return { error: { message: "User Does not exist please SignUp to continue" } };
 					}
 					const hasuraUser: User = users[0];
 					setUser(hasuraUser);
@@ -108,11 +110,11 @@ const useAuthProvider = () => {
 				}
 			})
 			.catch((error) => {
-				return {error};
+				return { error };
 			});
 	};
 
-	const changePassword = async ({email, password, newPassword}: any) => {
+	const changePassword = async ({ email, password, newPassword }: any) => {
 		return auth
 			.signInWithEmailAndPassword(email, password)
 			.then(async (response) => {
@@ -149,7 +151,7 @@ const useAuthProvider = () => {
 	};
 
 
-	
+
 	return {
 		user,
 		signIn,

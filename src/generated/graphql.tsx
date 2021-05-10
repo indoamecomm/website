@@ -8669,6 +8669,7 @@ export type Order_Product_Types = {
   order: Orders;
   orderId: Scalars['bigint'];
   productTypeId: Scalars['Int'];
+  order_status: OrderStatus
   /** An object relationship */
   product_type: Product_Type;
   updatedAt?: Maybe<Scalars['timestamptz']>;
