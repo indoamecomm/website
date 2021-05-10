@@ -92,8 +92,7 @@ export const GetRecommendations = gql`
 			}
 		}
 	}
-
-`;
+`
 
 
 export const GetProductsByCategoryId = gql`
