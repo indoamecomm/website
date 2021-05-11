@@ -205,7 +205,9 @@ const ProductTypes: React.FC<{
 			<Toaster position="bottom-center" />
 
 			<div className="row pb-100">
-				<div className={`col-lg-6 mb-md-70 mb-sm-70 ${leftOrient ? "order-lg-1" : "order-lg-2"}`}>
+				<div
+					onContextMenu={(e) => e.preventDefault()}
+					className={`col-lg-6 mb-md-70 mb-sm-70 ${leftOrient ? "order-lg-1" : "order-lg-2"}`}>
 					{/*=======  shop product big image gallery  =======*/}
 					<div className="shop-product__big-image-gallery-wrapper mb-30">
 						{/*=======  shop product gallery icons  =======*/}
@@ -259,6 +261,7 @@ const ProductTypes: React.FC<{
 						</div>
 					</div>
 				</div>
+
 				<div className={`col-lg-6 ${leftOrient ? "order-lg-2" : "order-lg-1"}`}>
 					{/*=======  shop product description  =======*/}
 					<div className="shop-product__description">
@@ -457,63 +460,6 @@ const ProductTypes: React.FC<{
 						{/*=======  End of other info table  =======*/}
 					</div>
 					{/*=======  End of shop product description  =======*/}
-				</div>
-
-				<div
-					onContextMenu={(e) => e.preventDefault()}
-					className={`col-lg-6 mb-md-70 mb-sm-70 ${leftOrient ? "order-lg-1" : "order-lg-2"}`}>
-					{/*=======  shop product big image gallery  =======*/}
-					<div className="shop-product__big-image-gallery-wrapper mb-30">
-						{/*=======  shop product gallery icons  =======*/}
-						<div className="shop-product-rightside-icons">
-							{wishlistLoading ? (
-								<span className="wishlist-icon">
-									<Spinner width="10px" height="10px" />
-								</span>
-							) : (
-								<span className="wishlist-icon">
-									<a
-										onClick={addToWishlist}
-										// data-tippy={!wishlistExists ? "Add to wishlists dude" : "Remove from wishlist"}
-										data-tippy-placement="left"
-										data-tippy-inertia="true"
-										data-tippy-animation="shift-away"
-										data-tippy-delay={50}
-										data-tippy-arrow="true"
-										data-tippy-theme="sharpborder">
-										{wishlistExists ? (
-											<i className="ion-android-favorite" />
-										) : (
-											<i className="ion-android-favorite-outline" />
-										)}
-									</a>
-								</span>
-							)}
-							<span className="enlarge-icon">
-								<a
-									className="btn-zoom-popup"
-									href="#"
-									data-tippy="Click to enlarge"
-									data-tippy-placement="left"
-									data-tippy-inertia="true"
-									data-tippy-animation="shift-away"
-									data-tippy-delay={50}
-									data-tippy-arrow="true"
-									data-tippy-theme="sharpborder">
-									<i className="ion-android-expand" />
-								</a>
-							</span>
-						</div>
-						{/*=======  End of shop product gallery icons  =======*/}
-						<div className="shop-product__big-image-gallery-slider">
-							{/*=======  single image  =======*/}
-							<div className="single-image">
-								<img src={productType.imageUrl ?? ""} className="img-fluid" alt={productType.name} />
-							</div>
-							{/*=======  End of single image  =======*/}
-							{/*=======  single image  =======*/}
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
